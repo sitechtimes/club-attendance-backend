@@ -1,7 +1,8 @@
 const { google } = require("googleapis");
 
+//Function that authentice user
+//and returns user's google object data
 exports.authSheets = async (req, res, next) => {
-  //Function for authentication object
   const auth = new google.auth.GoogleAuth({
     keyFile: "keys.json",
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
@@ -21,6 +22,7 @@ exports.authSheets = async (req, res, next) => {
   next();
 };
 
+//google sheet id for "testing"
 const id = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 
 exports.readCell = async (req, res) => {
