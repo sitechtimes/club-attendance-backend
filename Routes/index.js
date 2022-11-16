@@ -1,13 +1,7 @@
 const express = require("express");
 const router = new express.Router();
+const readValue = require("../Controllers/googleSheet.Controller");
 
-router.get("/", async (req, res) => {
-    const teacher = {name: "Whalen", age:31, tenure: true };
-    try {
-        res.json(teacher);
-    } catch (error) {
-        console.log(error);
-    }
-});
+router.get("/", readValue.authSheets, readValue.readCell);
 
 module.exports = router;
