@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
-require("dotenv").config({ path: "variables.env" });
+const googleUserKey = require("../Key/googleKey");
+require("dotenv").config({ path: "../Key/variables.env" });
 
 //Function that access to google sheet
 //and returns user's google sheet object data
