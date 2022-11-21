@@ -1,8 +1,9 @@
 const { google } = require("googleapis");
+require("dotenv").config({ path: "variables.env" });
 
-//Function that authentice user
-//and returns user's google object data
-exports.authSheets = async (req, res, next) => {
+//Function that access to google sheet
+//and returns user's google sheet object data
+exports.authSheetsMiddleware = async (req, res, next) => {
   const auth = new google.auth.GoogleAuth({
     keyFile: "keys.json",
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
@@ -23,14 +24,14 @@ exports.authSheets = async (req, res, next) => {
 };
 
 //google sheet id for "testing"
-const id = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
+const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
 
 exports.readCell = async (req, res) => {
   const sheets = req.object.sheets;
 
   // Read rows from spreadsheet
   const getRows = await sheets.spreadsheets.values.get({
-    spreadsheetId: id,
+    spreadsheetId: MAIN_CLUB_ID,
     range: "Sheet1",
   });
 
