@@ -1,12 +1,11 @@
 const { google } = require("googleapis");
-const sheetAuth = require("../Keys/sheetAuth");
 require("dotenv").config({ path: "variables.env" });
 
 //Function that access to google sheet
 //and returns user's google sheet object data
 exports.authSheetsMiddleware = async (req, res, next) => {
   const auth = new google.auth.GoogleAuth({
-    keyFile: JSON.stringify(sheetAuth),
+    keyFile: "keys.json",
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 
