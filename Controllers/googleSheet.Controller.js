@@ -44,8 +44,7 @@ exports.compareQRCodeMiddleware = async (req, res, next) => {
         if (eachQRCode === userQRCode.qrCode) {
           idOfSheet = qrValue[i][1];
         } else {
-          false;
-          // what happen when qr no same
+          return res.status(404).json("No matching QR Code");
         }
       }
     }
