@@ -37,9 +37,6 @@ exports.compareQRCodeMiddleware = async (req, res, next) => {
     });
     const qrValue = getQRArray.data.values;
 
-    // const googleIDCode = qrValue.forEach((indivArray) => {
-    //   console.log(indivArray);
-    // });
     let idOfSheet = null;
     function googleIDCode() {
       for (let i = 0; qrValue.length > i; i++) {
