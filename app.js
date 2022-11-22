@@ -7,4 +7,5 @@ app.listen(port, () => {
   console.log(`Server is up on ${port}`);
 });
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use("/", routes);
