@@ -35,14 +35,14 @@ app.post("/", async (req, res) => {
   const getRows = await googleSheets.spreadsheets.values.get({
     auth,
     spreadsheetId,
-    range: "Sheet1!A:A",
+    range: "Information!A:A",
   });
  
   // Write row(s) to spreadsheet
   await googleSheets.spreadsheets.values.append({
     auth,
     spreadsheetId,
-    range: "Sheet1!A:E",
+    range: "Information!A:E",
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [[clubname, advisor, president, clubcode, room]],
