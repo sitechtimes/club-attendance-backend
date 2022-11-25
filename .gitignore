@@ -1,4 +1,4 @@
 node_modules
 keys.json
-.env
+*.env
 sheetAuth.js
