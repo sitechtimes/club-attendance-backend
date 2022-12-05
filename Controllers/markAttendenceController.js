@@ -48,9 +48,11 @@ exports.markAttendence = async (req, res) => {
       status: req.body.user.status,
     };
 
+    const sheetName = req.body.date;
+    console.log(sheetName);
     await sheets.spreadsheets.values.append({
       spreadsheetId: req.sheetID,
-      range: req.body.date,
+      range: sheetName,
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [[markUser.name, markUser.osis, markUser.status]],
