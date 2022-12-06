@@ -5,6 +5,7 @@ const sheetAuth = require("../Controllers/googleSheetAuthController");
 const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
+const login = require("../Controllers/loginMiddleware");
 
 //read the main google spreadsheet data
 router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
@@ -42,5 +43,7 @@ router.post(
   joinClub.compareClubCodeMiddleware,
   AttendeceDate.createAttendeceDate
 );
+
+router.post("/login", login.loginMiddleware);
 
 module.exports = router;
