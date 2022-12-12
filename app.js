@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", routes);
 
 app.post('/login', (req,res)=>{
-  let token = req.body.token;
+  let token = credential.getIdTokens().get(0).getIdToken();
   let idToken = credential.getIdTokens().get(0).getIdToken();
 
   async function verify() {
