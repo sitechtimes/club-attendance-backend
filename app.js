@@ -5,7 +5,7 @@ const routes = require("./Routes/index");
 const cookieParser = require('cookie-parser')
 
 const {OAuth2Client} = require('google-auth-library');
-const CLIENT_ID = '896694709483-dpdmbclc3o40j3d53ql06bcplgsmut9q.apps.googleusercontent.com'
+const CLIENT_ID = '696624175161-fjet2s1pbefuqnmn42o65p33b5tqa5p1.apps.googleusercontent.com'
 const client = new OAuth2Client(CLIENT_ID);
 
 app.use(cookieParser());
