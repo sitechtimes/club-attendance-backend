@@ -19,6 +19,7 @@ app.use("/", routes);
 
 app.post('/login', (req,res)=>{
   let token = req.body.token;
+  let idToken = credential.getIdTokens().get(0).getIdToken();
 
   async function verify() {
       const ticket = await client.verifyIdToken({
