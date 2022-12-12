@@ -5,11 +5,11 @@ const sheetAuth = require("../Controllers/googleSheetAuthController");
 const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
-const login = require("../Controllers/loginMiddleware");
-const cors = require("../Controllers/corscontroller");
+const login = require("../Controllers/verificationMiddleware");
+const cors = require("cors");
 
 //read the main google spreadsheet data
-router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
+router.get("/", cors(), sheetAuth.authSheetsMiddleware, mainValue.readCell);
 
 //read the club google spreadsheet data
 router.get(
@@ -45,6 +45,6 @@ router.post(
   AttendeceDate.createAttendeceDate
 );
 
-router.post("/login", login.loginMiddleware);
+router.post("/login", cors(), login.loginMiddleware);
 
 module.exports = router;
