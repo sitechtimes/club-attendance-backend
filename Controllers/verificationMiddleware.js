@@ -1,4 +1,6 @@
 const { OAuth2Client } = require("google-auth-library");
+const CLIENT_ID =
+  "696624175161-fjet2s1pbefuqnmn42o65p33b5tqa5p1.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
 exports.loginMiddleware = async (req, res) => {
@@ -17,6 +19,7 @@ exports.loginMiddleware = async (req, res) => {
       const userid = payload["sub"];
       // If request specified a G Suite domain:
       // const domain = payload['hd'];
+      console.log(userid);
     }
     verify().catch(console.error);
   } catch (error) {
