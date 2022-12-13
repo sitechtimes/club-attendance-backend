@@ -1,10 +1,9 @@
 const { OAuth2Client } = require("google-auth-library");
-const CLIENT_ID =
-  "896694709483-dpdmbclc3o40j3d53ql06bcplgsmut9q.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
 exports.loginMiddleware = async (req, res) => {
   try {
+    //No CSRF protection
     console.log(req.body);
 
     async function verify() {
