@@ -1,27 +1,36 @@
 const { OAuth2Client } = require("google-auth-library");
-const CLIENT_ID =
-  "696624175161-fjet2s1pbefuqnmn42o65p33b5tqa5p1.apps.googleusercontent.com";
-const client = new OAuth2Client(CLIENT_ID);
+const client = new OAuth2Client();
 
-exports.loginMiddleware = async (req, res) => {
+exports.loginMiddleware = async (req, res, next) => {
   try {
     //No CSRF protection
     console.log(req.body);
+    const userResponse = req.body.response;
 
-    async function verify() {
-      const ticket = await client.verifyIdToken({
-        idToken: req.body.credential,
-        audience: CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
-        // Or, if multiple clients access the backend:
-        //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+    async function verifyToken(token) {
+      client.setCredentials({ access_token: token });
+      const userinfo = await client.request({
+        url: "https://www.googleapis.com/oauth2/v3/userinfo",
       });
-      const payload = ticket.getPayload();
-      const userid = payload["sub"];
-      // If request specified a G Suite domain:
-      // const domain = payload['hd'];
-      console.log(userid);
+      return userinfo.data;
     }
-    verify().catch(console.error);
+
+    //this verfiy user token
+    verifyToken(userResponse.access_token)
+      .then((userInfo) => {
+        console.log(userInfo);
+        //set put userInfo into request called req.userInfo
+        req.userInfo = userInfo;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    if (!(userInfo === null || userInfo === undefined)) {
+      next();
+    } else {
+      //send back response if there is no userInfo
+    }
   } catch (error) {
     console.log(error);
   }
