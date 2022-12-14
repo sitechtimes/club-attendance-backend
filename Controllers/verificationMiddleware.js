@@ -3,7 +3,6 @@ const client = new OAuth2Client();
 
 exports.loginMiddleware = async (req, res, next) => {
   try {
-    //No CSRF protection
     console.log(req.body);
     const userResponse = req.body.response;
 
@@ -15,21 +14,48 @@ exports.loginMiddleware = async (req, res, next) => {
       return userinfo.data;
     }
 
+    const userData = [];
     //this verfiy user token
     verifyToken(userResponse.access_token)
       .then((userInfo) => {
         console.log(userInfo);
         //set put userInfo into request called req.userInfo
+
         req.userInfo = userInfo;
+        req.userInfo.hd = userResponse.hd;
+
+        if (
+          !(
+            userInfo === null ||
+            userInfo === undefined ||
+            userResponse.hd === undefined ||
+            userResponse.hd === null
+          )
+        ) {
+          next();
+        } else {
+          console.log("something went wrong");
+          //send back response if there is no userInfo
+        }
       })
       .catch((error) => {
         console.log(error);
       });
+    //reminder to resict this to nycstudents domain
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-    if (!(userInfo === null || userInfo === undefined)) {
-      next();
-    } else {
-      //send back response if there is no userInfo
+exports.studentOrTeacher = async (req, res) => {
+  try {
+    const userInfo = req.userInfo;
+    if (userInfo.hd === "nycstudents.net") {
+      console.log("student");
+      res.json("student");
+    } else if (userInfo.hd === "schools.nyc.gov") {
+      console.log("teacher");
+      res.json("teacher");
     }
   } catch (error) {
     console.log(error);
