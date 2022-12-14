@@ -52,7 +52,7 @@ exports.studentOrTeacher = async (req, res) => {
     const userInfo = req.userInfo;
     if (userInfo.hd === "nycstudents.net") {
       console.log("student");
-      res.json("student");
+      return res.redirect("/club");
     } else if (userInfo.hd === "schools.nyc.gov") {
       console.log("teacher");
       res.json("teacher");
