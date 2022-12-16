@@ -9,6 +9,8 @@ const login = require("../Controllers/verificationMiddleware");
 
 router.post("/login", login.loginMiddleware, login.studentOrTeacher);
 
+// router.get("/studentOrTeacher", login.studentOrTeacher);
+
 //read the main google spreadsheet data
 router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
 
