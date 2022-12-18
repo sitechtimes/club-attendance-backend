@@ -2,13 +2,26 @@ const express = require("express");
 const port = process.env.PORT || 3000;
 const app = express();
 const routes = require("./Routes/index");
+const session = require("express-session");
 const cors = require("cors");
+
+require("dotenv").config({ path: "variables.env" });
+const SESSION_SECRET = `${process.env.SESSION_SECRET}`;
 
 app.listen(port, () => {
   console.log(`Server is up on ${port}`);
 });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: `${SESSION_SECRET}`,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
 
 //this code is guard clauses for cors, which i will deal with
 // const corsOptionsDelegate = (req, callback) => {
