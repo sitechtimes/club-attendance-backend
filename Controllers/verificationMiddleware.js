@@ -27,11 +27,7 @@ exports.loginMiddleware = async (req, res, next) => {
       let sheet = google.sheets({version: 'v4', auth: client});
       let values = [
         [
-         req.userInfo.sub, 
-         req.userInfo.given_name, 
-         req.userInfo.family_name, 
-         req.userInfo.email, 
-         req.userInfo.hd
+         JSON.stringify(req.userInfo),
         ]
       ];
       let resource = {
