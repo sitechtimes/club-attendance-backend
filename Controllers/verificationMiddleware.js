@@ -1,5 +1,7 @@
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
+const { google } = require("googleapis");
+const spreadsheetId = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 
 exports.loginMiddleware = async (req, res, next) => {
   try {
@@ -21,6 +23,32 @@ exports.loginMiddleware = async (req, res, next) => {
 
       req.userInfo = userInfo;
       req.userInfo.hd = userResponse.hd;
+
+      let sheet = google.sheets({version: 'v4', auth: client});
+      let values = [
+        [
+         req.userInfo.sub, 
+         req.userInfo.given_name, 
+         req.userInfo.family_name, 
+         req.userInfo.email, 
+         req.userInfo.hd
+        ]
+      ];
+      let resource = {
+        values,
+      };
+      sheet.spreadsheets.values.append({
+        spreadsheetId,
+        range: 'A1',
+        resource,
+        valueInputOption: 'RAW',
+      }, (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('User credentials successfully entered in Google Sheets.');
+        }
+      });
 
       if (
         userInfo &&
