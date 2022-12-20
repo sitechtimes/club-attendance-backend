@@ -3,6 +3,15 @@ const client = new OAuth2Client();
 const { google } = require("googleapis");
 const spreadsheetId = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 
+const auth = new google.auth.GoogleAuth({
+  keyFile: "credentials.json",
+  scopes: "https://www.googleapis.com/auth/spreadsheets",
+});
+
+// Instance of Google Sheets API
+const googleSheets = google.sheets({ version: "v4", auth: client });
+
+
 exports.loginMiddleware = async (req, res, next) => {
   try {
     console.log(req.body);
@@ -34,8 +43,9 @@ exports.loginMiddleware = async (req, res, next) => {
         values,
       };
       sheet.spreadsheets.values.append({
+        auth, 
         spreadsheetId,
-        range: 'A1',
+        range: 'Information!A:A',
         resource,
         valueInputOption: 'RAW',
       }, (err, result) => {
