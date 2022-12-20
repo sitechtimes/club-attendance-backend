@@ -1,11 +1,22 @@
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
-
+const { google } = require("googleapis");
+const spreadsheetId = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
+ 
+const auth = new google.auth.GoogleAuth({
+  keyFile: "keys.json",
+  scopes: "https://www.googleapis.com/auth/spreadsheets",
+});
+ 
+// Instance of Google Sheets API
+const googleSheets = google.sheets({ version: "v4", auth: client });
+ 
+ 
 exports.loginMiddleware = async (req, res, next) => {
   try {
     console.log(req.body);
     const userResponse = req.body.userCredential;
-
+ 
     async function verifyToken(token) {
       client.setCredentials({ access_token: token });
       const userinfo = await client.request({
@@ -13,37 +24,57 @@ exports.loginMiddleware = async (req, res, next) => {
       });
       return userinfo.data;
     }
-
+ 
     // this verfiy user token
     verifyToken(userResponse.access_token).then((userInfo) => {
       console.log(userInfo);
-      // console.log(req.session);
       //set put userInfo into request called req.userInfo
+ 
       req.userInfo = userInfo;
       req.userInfo.hd = userResponse.hd;
-
+ 
+      let sheet = google.sheets({version: 'v4', auth: client});
+      let values = [
+        [
+         JSON.stringify(req.userInfo.sub),
+         JSON.stringify(req.userInfo.name),
+         JSON.stringify(req.userInfo.given_name),
+         JSON.stringify(req.userInfo.family_name),
+         JSON.stringify(req.userInfo.picture),
+         JSON.stringify(req.userInfo.email),
+         JSON.stringify(req.userInfo.email_verified),
+         JSON.stringify(req.userInfo.locale),
+         JSON.stringify(req.userInfo.hd),
+        ]
+      ];
+      let resource = {
+        values,
+      };
+      sheet.spreadsheets.values.append({
+        auth,
+        spreadsheetId,
+        range: 'Information!A:I',
+        resource,
+        valueInputOption: 'RAW',
+      }, (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('User credentials successfully entered in Google Sheets.');
+        }
+      });
+ 
       if (
         userInfo &&
         (userResponse.hd === "nycstudents.net" ||
           userResponse.hd === "schools.nyc.gov")
       ) {
-        const newUserData = {
-          userInfo: {
-            sub: req.userInfo.sub,
-            firstName: req.userInfo.given_name,
-            lastName: req.userInfo.family_name,
-            email: req.userInfo.email,
-            googleDomain: req.userInfo.hd,
-          },
-        };
-        req.newUserData = newUserData;
-
-        next();
+        return next();
       } else {
         // this else does not work
         console.log("something went wrong");
-        res.json(
-          "You must use a school email. (nycstudents.net or schools.nyc.gov)"
+        return res.end(
+          "You must use a school email. Ex: nycstudents.net or schools.nyc.gov"
         );
       }
     });
@@ -52,6 +83,7 @@ exports.loginMiddleware = async (req, res, next) => {
     console.log(error);
   }
 };
+
 
 // exports.studentOrTeacher = async (req, res) => {
 //   try {
