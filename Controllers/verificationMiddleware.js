@@ -53,31 +53,31 @@ exports.loginMiddleware = async (req, res, next) => {
   }
 };
 
-exports.studentOrTeacher = async (req, res) => {
-  try {
-    const userInfo = req.userInfo;
-    if (userInfo.hd === "nycstudents.net") {
-      console.log("student");
-      req.newUserData.type = "student";
-      const response = req.newUserData;
+// exports.studentOrTeacher = async (req, res) => {
+//   try {
+//     const userInfo = req.userInfo;
+//     if (userInfo.hd === "nycstudents.net") {
+//       console.log("student");
+//       req.newUserData.type = "student";
+//       const response = req.newUserData;
 
-      //add user data to session
-      // req.session.user = response;
+//       //add user data to session
+//       // req.session.user = response;
 
-      console.log(response);
-      res.json(response);
-    } else if (userInfo.hd === "schools.nyc.gov") {
-      console.log("teacher");
-      req.newUserData.type = "teacher";
-      const response = req.newUserData;
+//       console.log(response);
+//       res.json(response);
+//     } else if (userInfo.hd === "schools.nyc.gov") {
+//       console.log("teacher");
+//       req.newUserData.type = "teacher";
+//       const response = req.newUserData;
 
-      //add user data to session
-      // req.session.user = response;
+//       //add user data to session
+//       // req.session.user = response;
 
-      res.json(response);
-    }
-  } catch (error) {
-    console.log(error);
-    res.json(401);
-  }
-};
+//       res.json(response);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json(401);
+//   }
+// };

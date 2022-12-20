@@ -7,7 +7,7 @@ const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const login = require("../Controllers/verificationMiddleware");
 
-router.post("/login", login.loginMiddleware, login.studentOrTeacher);
+router.post("/login", login.loginMiddleware);
 
 // router.get("/studentOrTeacher", login.studentOrTeacher);
 
