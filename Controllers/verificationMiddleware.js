@@ -17,6 +17,7 @@ exports.loginMiddleware = async (req, res, next) => {
     // this verfiy user token
     verifyToken(userResponse.access_token).then((userInfo) => {
       console.log(userInfo);
+      // console.log(req.session);
       //set put userInfo into request called req.userInfo
       req.userInfo = userInfo;
       req.userInfo.hd = userResponse.hd;
@@ -33,17 +34,16 @@ exports.loginMiddleware = async (req, res, next) => {
             lastName: req.userInfo.family_name,
             email: req.userInfo.email,
             googleDomain: req.userInfo.hd,
-            expires_in: req.body.userCredential.expires_in,
           },
         };
-        req.body.newUserData = newUserData;
+        req.newUserData = newUserData;
 
-        return next();
+        next();
       } else {
         // this else does not work
         console.log("something went wrong");
-        return res.end(
-          "You must use a school email. Ex: nycstudents.net or schools.nyc.gov"
+        res.json(
+          "You must use a school email. (nycstudents.net or schools.nyc.gov)"
         );
       }
     });
@@ -58,29 +58,26 @@ exports.studentOrTeacher = async (req, res) => {
     const userInfo = req.userInfo;
     if (userInfo.hd === "nycstudents.net") {
       console.log("student");
-      req.body.newUserData.type = "student";
-      const response = req.body.newUserData;
+      req.newUserData.type = "student";
+      const response = req.newUserData;
+
+      //add user data to session
       // req.session.user = response;
-      // // save the session before redirection to ensure page
-      // // load does not happen before session is saved
-      // req.session.save(function (err) {
-      //   if (err) return next(err);
-      // });
+
       console.log(response);
-      return res.json(response);
+      res.json(response);
     } else if (userInfo.hd === "schools.nyc.gov") {
       console.log("teacher");
-      const response = req.body.newUserData;
+      req.newUserData.type = "teacher";
+      const response = req.newUserData;
+
+      //add user data to session
       // req.session.user = response;
-      // // save the session before redirection to ensure page
-      // // load does not happen before session is saved
-      // req.session.save(function (err) {
-      //   if (err) return next(err);
-      // });
-      return res.json(response);
+
+      res.json(response);
     }
   } catch (error) {
     console.log(error);
-    return res.json(401);
+    res.json(401);
   }
 };
