@@ -188,22 +188,8 @@ exports.checkUserData = async (req, res) => {
     } else if (userInfo.hd === "schools.nyc.gov") {
       console.log("teacher");
       req.userInfo.type = "teacher";
-      // console.log(req.userInfo);
 
-      //add what you did for sudent here
-      //make everything more dynamic
-
-      addUserData(req.userInfo);
-
-      const response = {
-        uid: req.userInfo.sub,
-        firstName: req.userInfo.given_name,
-        lastName: req.userInfo.family_name,
-        email: req.userInfo.email,
-        type: req.userInfo.type,
-        emailDomain: req.userInfo.hd,
-      };
-      return res.json(response);
+      return res.json("teacher logic not finish");
     }
   } catch (error) {
     console.log(error);
