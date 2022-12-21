@@ -40,6 +40,7 @@ exports.readCell = async (req, res) => {
       qrCode: value[6],
       clubSpreadsheetId: value[7],
       clubCode: value[8],
+      nextMeeting: value[9],
     }));
 
     //retrun the data
