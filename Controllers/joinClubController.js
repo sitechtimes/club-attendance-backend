@@ -34,7 +34,7 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
     googleIDCode();
 
     req.sheetID = idOfSheet;
-    next();
+    return next();
   } catch (error) {
     console.log(error);
   }

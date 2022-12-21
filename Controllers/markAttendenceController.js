@@ -7,6 +7,7 @@ const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
 exports.compareQRCodeMiddleware = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
+
     const userQRCode = req.body; //this is the data from the frontend
 
     //this specific which google spreadsheet we are acessing
@@ -32,7 +33,7 @@ exports.compareQRCodeMiddleware = async (req, res, next) => {
     }
     googleIDCode();
     req.sheetID = idOfSheet;
-    next();
+    return next();
   } catch (error) {
     console.log(error);
   }
