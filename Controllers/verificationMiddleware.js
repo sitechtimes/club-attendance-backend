@@ -22,6 +22,7 @@ exports.verifyemailMiddleware = async (req, res, next) => {
       req.userInfo = userInfo;
       req.userInfo.hd = incomingUserData.hd;
 
+      //restricted to only school email
       if (
         userInfo &&
         (incomingUserData.hd === "nycstudents.net" ||
@@ -36,7 +37,6 @@ exports.verifyemailMiddleware = async (req, res, next) => {
         );
       }
     });
-    // reminder to resict this to nycstudents domain
   } catch (error) {
     console.log(error);
   }

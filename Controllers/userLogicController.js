@@ -89,53 +89,42 @@ exports.checkUserData = async (req, res, next) => {
   try {
     const sheetsValue = req.object.sheets;
 
-    if (req.userInfo.hd === "nycstudents.net") {
-      console.log("student");
+    console.log("student");
 
-      // google sheet api range
-      const range = "studentData";
+    // google sheet api range
+    const range = "userData";
 
-      const ifUserExist = await userDataExist(
+    const ifUserExist = await userDataExist(
+      sheetsValue,
+      userDataSpreadSheetId,
+      range
+    ).then((response) =>
+      compareValue(response, req.userInfo.sub).then((compareValueResponse) => {
+        return compareValueResponse;
+      })
+    );
+
+    //maybe this can be change into better fucntion
+    //im sleepy
+    if (!ifUserExist) {
+      const user = await userDataExist(
         sheetsValue,
         userDataSpreadSheetId,
         range
       ).then((response) =>
-        compareValue(response, req.userInfo.sub).then(
-          (compareValueResponse) => {
-            return compareValueResponse;
-          }
-        )
+        getUserData(response, req.userInfo.sub).then((getUserDataeResponse) => {
+          return getUserDataeResponse;
+        })
       );
-
-      //maybe this can be change into better fucntion
-      //im sleepy
-      if (!ifUserExist) {
-        const user = await userDataExist(
-          sheetsValue,
-          userDataSpreadSheetId,
-          range
-        ).then((response) =>
-          getUserData(response, req.userInfo.sub).then(
-            (getUserDataeResponse) => {
-              return getUserDataeResponse;
-            }
-          )
-        );
-        console.log(user);
-        const response = user;
-        console.log("user data exist");
-        return res.json(response);
-      }
-
-      //here for create new user
-
-      return next();
-    } else if (userInfo.hd === "schools.nyc.gov") {
-      console.log("teacher");
-      req.userInfo.type = "teacher";
-      // i think i will redirect this to the teacher route
-      return res.json("teacher logic not finish");
+      console.log(user);
+      const response = user;
+      console.log("user data exist");
+      return res.json(response);
     }
+
+    //here for create new user
+
+    return next();
   } catch (error) {
     console.log(error);
     res.json(401);
@@ -145,6 +134,7 @@ exports.checkUserData = async (req, res, next) => {
 // const clubJoined = {
 //   firstClub: "209ruopqiwjf",
 // };
+
 function getEveryValue(spreadSheetValue, valueComparing) {
   let eachClubPostion = [];
   for (let i = 0; spreadSheetValue.length > i; i++) {
