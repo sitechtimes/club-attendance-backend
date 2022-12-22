@@ -79,6 +79,7 @@ function getUserData(spreadSheetValue, valueComparing) {
     email: user[3],
     type: user[4],
     emailDomain: user[5],
+    positionOfClub: JSON.parse(user[6]),
   };
 
   return Promise.resolve(newUserDataObject);
@@ -120,6 +121,7 @@ exports.checkUserData = async (req, res, next) => {
             }
           )
         );
+        console.log(user);
         const response = user;
         console.log("user data exist");
         return res.json(response);
@@ -143,6 +145,19 @@ exports.checkUserData = async (req, res, next) => {
 // const clubJoined = {
 //   firstClub: "209ruopqiwjf",
 // };
+function getEveryValue(spreadSheetValue, valueComparing) {
+  let eachClubPostion = [];
+  for (let i = 0; spreadSheetValue.length > i; i++) {
+    //the number zero need to be change to the data representing number
+    //0 might return "Michael" for example
+    let eachId = spreadSheetValue[i][5];
+
+    if (eachId === valueComparing) {
+      eachClubPostion.push(spreadSheetValue[i]);
+    }
+  }
+  return Promise.resolve(eachClubPostion);
+}
 
 async function checkIfPresident(sheets, spreadsheetId, valueComparing) {
   const range = "Information";
@@ -150,7 +165,7 @@ async function checkIfPresident(sheets, spreadsheetId, valueComparing) {
   let response;
   await userDataExist(sheets, spreadsheetId, range).then(
     (userDataExistResponse) => {
-      compareValue(userDataExistResponse, valueComparing).then(
+      getEveryValue(userDataExistResponse, valueComparing).then(
         (compareValueResponse) => {
           response = compareValueResponse;
           return compareValueResponse;
@@ -176,20 +191,39 @@ exports.createNewUser = async (req, res) => {
       return response;
     });
 
-    console.log(ifPresident);
-    // if (ifPresident) {
-    //   const positionOfClubObject = [
-    //     {
-    //       keyClub: "president",
-    //       clubCode: "3TzWJPg",
-    //     },
-    //   ];
-    //   req.userInfo.positionOfClub = JSON.stringify(positionOfClubObject);
-    // }
-    // console.log(req.userInfo);
+    if (ifPresident.length !== 0) {
+      const presidentObject = [];
+
+      ifPresident.forEach((array) => {
+        console.log(array[8]);
+        const object = {
+          clubName: array[0],
+          clubCode: array[11],
+        };
+        presidentObject.push(object);
+      });
+
+      console.log(presidentObject);
+
+      req.userInfo.positionOfClub = JSON.stringify(presidentObject);
+    } else {
+      req.userInfo.positionOfClub = JSON.stringify([
+        {
+          position: "User is not a president of any club.",
+        },
+      ]);
+    }
+    console.log(req.userInfo);
 
     addUserData(sheetsValue, req.userInfo, userDataSpreadSheetId);
-    console.log("user created ");
+    console.log("user created");
+
+    // let clubPostion;
+    // if (req.userInfo.positionOfClub === "none") {
+    //   clubPostion = req.userInfo.positionOfClub;
+    // } else if (req.userInfo.positionOfClub !== "none") {
+    //   clubPostion = JSON.parse(req.userInfo.positionOfClub);
+    // }
 
     const response = {
       uid: req.userInfo.sub,
@@ -198,7 +232,7 @@ exports.createNewUser = async (req, res) => {
       email: req.userInfo.email,
       type: req.userInfo.type,
       emailDomain: req.userInfo.hd,
-      // positionOfClub: JSON.parse(req.userInfo.positionOfClub),
+      positionOfClub: JSON.parse(req.userInfo.positionOfClub),
     };
     return res.json(response);
   } catch (error) {
