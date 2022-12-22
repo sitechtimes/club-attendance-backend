@@ -6,12 +6,14 @@ const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const login = require("../Controllers/verificationMiddleware");
+const userLogic = require("../Controllers/userLogicController");
 
 router.post(
   "/login",
   login.verifyemailMiddleware,
   sheetAuth.authSheetsMiddleware,
-  login.checkUserData
+  userLogic.checkUserData,
+  userLogic.createNewUser
 );
 
 // router.get("/studentOrTeacher", login.studentOrTeacher);
