@@ -1,4 +1,3 @@
-const { google } = require("googleapis");
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
 const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
@@ -21,7 +20,7 @@ async function addUserData(sheet, userData, spreadsheetId) {
   return Promise.resolve(
     await sheet.spreadsheets.values.append({
       spreadsheetId: spreadsheetId,
-      range: "studentData",
+      range: "userData",
       valueInputOption: "USER_ENTERED",
       resource: {
         values: values,
@@ -31,14 +30,14 @@ async function addUserData(sheet, userData, spreadsheetId) {
 }
 
 function compareValue(spreadSheetValue, valueComparing) {
-  let suchVale = true;
+  let suchVale = false;
   for (let i = 0; spreadSheetValue.length > i; i++) {
     //the number zero need to be change to the data representing number
     //0 might return "Michael" for example
     let eachId = spreadSheetValue[i][0];
 
     if (eachId === valueComparing) {
-      suchVale = false;
+      suchVale = true;
       break;
     }
   }
@@ -106,7 +105,7 @@ exports.checkUserData = async (req, res, next) => {
 
     //maybe this can be change into better fucntion
     //im sleepy
-    if (!ifUserExist) {
+    if (ifUserExist) {
       const user = await userDataExist(
         sheetsValue,
         userDataSpreadSheetId,

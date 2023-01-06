@@ -7,6 +7,7 @@ const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const login = require("../Controllers/verificationMiddleware");
 const userLogic = require("../Controllers/userLogicController");
+const getAttendence = require("../Controllers/getAttendenceController");
 
 router.post(
   "/login",
@@ -53,6 +54,13 @@ router.post(
   sheetAuth.authSheetsMiddleware,
   joinClub.compareClubCodeMiddleware,
   AttendeceDate.createAttendeceDate
+);
+
+router.post(
+  "/getClubAttendence",
+  sheetAuth.authSheetsMiddleware,
+  getAttendence.checkDates,
+  getAttendence.getclubAttendence
 );
 
 module.exports = router;
