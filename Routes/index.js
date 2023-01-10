@@ -6,6 +6,14 @@ const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const login = require("../Controllers/verificationMiddleware");
+const addClub = require("../Controllers/clubcode");
+
+
+router.get(
+  "/addclub",
+  addClub.addClubCode,
+  addClub.addUserDataToClub,
+);
 
 router.post(
   "/login",
