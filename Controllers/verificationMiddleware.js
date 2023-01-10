@@ -105,7 +105,7 @@ function compareValue(spreadSheetValue, valueComparing) {
 async function userDataExist(sheets) {
   const studentData = await sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetId,
-    range: "studentData",
+    range: "userData",
   });
 
   const credentialData = studentData.data.values;
