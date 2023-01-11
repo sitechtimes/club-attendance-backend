@@ -5,7 +5,7 @@ const sheetAuth = require("../Controllers/googleSheetAuthController");
 const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
-const login = require("../Controllers/verificationMiddleware");
+const login = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const getAttendence = require("../Controllers/getAttendenceController");
 

@@ -4,8 +4,11 @@ const client = new OAuth2Client();
 exports.verifyemailMiddleware = async (req, res, next) => {
   try {
     //  console.log(req.body);
+
+    //this is the google crediental that is being sent over
     const incomingUserData = req.body.userCredential;
 
+    //this function verfiy the access token generated from google login
     async function verifyToken(token) {
       client.setCredentials({ access_token: token });
       const userinfo = await client.request({
@@ -14,12 +17,13 @@ exports.verifyemailMiddleware = async (req, res, next) => {
       return userinfo.data;
     }
 
-    // this verfiy user token
     verifyToken(incomingUserData.access_token).then((userInfo) => {
       // console.log(userInfo);
       //set put userInfo into request called req.userInfo
 
+      //this sets the decoded JWT token data to request
       req.userInfo = userInfo;
+      //this sets the google domain
       req.userInfo.hd = incomingUserData.hd;
 
       //restricted to only school email

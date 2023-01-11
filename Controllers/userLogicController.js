@@ -1,10 +1,17 @@
+//this file require the env package to get env variable
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
 const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
+//google spreadsheet id for "User Data"
+const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 
-const userDataSpreadSheetId = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-
+//this function add user to google, which takes three
+// parameter: sheet, which is sheet id from req.obect from
+//verficationMiddleware
+//user data that was pass through after google auth verifcation
+//spreadsheetid is from the url id from google sheets
 async function addUserData(sheet, userData, spreadsheetId) {
+  //this is the value we are going to add to google sheets
   let values = [
     [
       userData.sub,
@@ -29,6 +36,8 @@ async function addUserData(sheet, userData, spreadsheetId) {
   );
 }
 
+//this function compare two values one from the google sheet
+//and another from user input
 function compareValue(spreadSheetValue, valueComparing) {
   let suchVale = false;
   for (let i = 0; spreadSheetValue.length > i; i++) {
@@ -44,6 +53,7 @@ function compareValue(spreadSheetValue, valueComparing) {
   return Promise.resolve(suchVale);
 }
 
+//this function will return the user data from the google sheet called userdata
 async function userDataExist(sheets, spreadsheetId, range) {
   const studentData = await sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetId,
@@ -52,10 +62,9 @@ async function userDataExist(sheets, spreadsheetId, range) {
 
   const credentialData = studentData.data.values;
   return credentialData;
-  //make this a resuable function
-  // compareValue(credentialData, userData.sub);
 }
 
+//this function get user data from "User Data" google sheet
 function getUserData(spreadSheetValue, valueComparing) {
   let user = null;
   for (let i = 0; spreadSheetValue.length > i; i++) {
@@ -68,8 +77,6 @@ function getUserData(spreadSheetValue, valueComparing) {
       break;
     }
   }
-  //   console.log("rbjnklevjoinklj");
-  //   console.log(user);
 
   const newUserDataObject = {
     uid: user[0],
@@ -95,7 +102,7 @@ exports.checkUserData = async (req, res, next) => {
 
     const ifUserExist = await userDataExist(
       sheetsValue,
-      userDataSpreadSheetId,
+      USER_DATA_SPREADSHEET_ID,
       range
     ).then((response) =>
       compareValue(response, req.userInfo.sub).then((compareValueResponse) => {
@@ -108,7 +115,7 @@ exports.checkUserData = async (req, res, next) => {
     if (ifUserExist) {
       const user = await userDataExist(
         sheetsValue,
-        userDataSpreadSheetId,
+        USER_DATA_SPREADSHEET_ID,
         range
       ).then((response) =>
         getUserData(response, req.userInfo.sub).then((getUserDataeResponse) => {
@@ -130,10 +137,6 @@ exports.checkUserData = async (req, res, next) => {
   }
 };
 
-// const clubJoined = {
-//   firstClub: "209ruopqiwjf",
-// };
-
 function getEveryValue(spreadSheetValue, valueComparing) {
   let eachClubPostion = [];
   for (let i = 0; spreadSheetValue.length > i; i++) {
@@ -148,18 +151,14 @@ function getEveryValue(spreadSheetValue, valueComparing) {
   return Promise.resolve(eachClubPostion);
 }
 
-async function checkIfPresident(sheets, spreadsheetId, valueComparing) {
-  const range = "Information";
-
-  let response;
-  await userDataExist(sheets, spreadsheetId, range).then(
-    (userDataExistResponse) => {
-      getEveryValue(userDataExistResponse, valueComparing).then(
-        (compareValueResponse) => {
-          response = compareValueResponse;
-          return compareValueResponse;
-        }
+async function checkIfPresident(sheets, spreadsheetId, valueComparing, range) {
+  const response = await userDataExist(sheets, spreadsheetId, range).then(
+    async (userDataExistResponse) => {
+      const compareValueResponse = await getEveryValue(
+        userDataExistResponse,
+        valueComparing
       );
+      return compareValueResponse;
     }
   );
 
@@ -175,7 +174,8 @@ exports.createNewUser = async (req, res) => {
     const ifPresident = await checkIfPresident(
       sheetsValue,
       MAIN_CLUB_ID,
-      req.userInfo.sub
+      req.userInfo.sub,
+      "Information"
     ).then((response) => {
       return response;
     });
@@ -186,69 +186,42 @@ exports.createNewUser = async (req, res) => {
       ifPresident.forEach((array) => {
         console.log(array[8]);
         const object = {
-          clubName: array[0],
           clubCode: array[11],
+          postion: "president",
         };
         presidentObject.push(object);
       });
 
       console.log(presidentObject);
-
       req.userInfo.positionOfClub = JSON.stringify(presidentObject);
     } else {
       req.userInfo.positionOfClub = JSON.stringify([
         {
-          position: "User is not a president of any club.",
+          clubStatus: "User have not join any club yet.",
         },
       ]);
     }
     console.log(req.userInfo);
 
-    addUserData(sheetsValue, req.userInfo, userDataSpreadSheetId);
+    const response = await addUserData(
+      sheetsValue,
+      req.userInfo,
+      USER_DATA_SPREADSHEET_ID
+    ).then(async () => {
+      return await userDataExist(
+        sheetsValue,
+        USER_DATA_SPREADSHEET_ID,
+        "userData"
+      ).then((response) =>
+        getUserData(response, req.userInfo.sub).then((getUserDataeResponse) => {
+          return getUserDataeResponse;
+        })
+      );
+    });
+
     console.log("user created");
-
-    // let clubPostion;
-    // if (req.userInfo.positionOfClub === "none") {
-    //   clubPostion = req.userInfo.positionOfClub;
-    // } else if (req.userInfo.positionOfClub !== "none") {
-    //   clubPostion = JSON.parse(req.userInfo.positionOfClub);
-    // }
-
-    const response = {
-      uid: req.userInfo.sub,
-      firstName: req.userInfo.given_name,
-      lastName: req.userInfo.family_name,
-      email: req.userInfo.email,
-      type: req.userInfo.type,
-      emailDomain: req.userInfo.hd,
-      positionOfClub: JSON.parse(req.userInfo.positionOfClub),
-    };
     return res.json(response);
   } catch (error) {
     console.log(error);
   }
 };
-
-// exports.createNewUser = async (res, req) => {
-//   console.log(req.userInfo);
-//   try {
-//     console.log(req.user);
-//     console.log("user data did not exist");
-//     req.userInfo.type = "student";
-
-//     console.log(req.userInfo);
-
-//     addUserData(req.userInfo);
-//     const response = {
-//       uid: req.userInfo.sub,
-//       firstName: req.userInfo.given_name,
-//       lastName: req.userInfo.family_name,
-//       email: req.userInfo.email,
-//       type: req.userInfo.type,
-//       emailDomain: req.userInfo.hd,
-//     };
-//     return res.json(response);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
