@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "variables.env" });
 
 //google spreadsheet id for "Main-Club-Data"
-const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 
 //this lets us read all the data from main spreadsheet
 exports.readCell = async (req, res) => {
@@ -10,7 +10,7 @@ exports.readCell = async (req, res) => {
 
     // Read rows from spreadsheet
     const getRows = await sheets.spreadsheets.values.get({
-      spreadsheetId: MAIN_CLUB_ID,
+      spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
       range: "Information",
     });
 

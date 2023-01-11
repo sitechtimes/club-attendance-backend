@@ -1,7 +1,7 @@
 //this file require the env package to get env variable
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
-const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 
@@ -173,7 +173,7 @@ exports.createNewUser = async (req, res) => {
 
     const ifPresident = await checkIfPresident(
       sheetsValue,
-      MAIN_CLUB_ID,
+      CLUB_DATA_SPREADSHEET_ID,
       req.userInfo.sub,
       "Information"
     ).then((response) => {

@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "variables.env" });
 
 //google spreadsheet id for "Main-Club-Data"
-const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 
 //this compare the incoming qr code with google spreadsheet qr code
 exports.compareQRCodeMiddleware = async (req, res, next) => {
@@ -12,7 +12,7 @@ exports.compareQRCodeMiddleware = async (req, res, next) => {
 
     //this specific which google spreadsheet we are acessing
     const getQRArray = await sheets.spreadsheets.values.get({
-      spreadsheetId: MAIN_CLUB_ID,
+      spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
       range: "Information!G1:H5",
     });
 

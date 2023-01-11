@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "variables.env" });
 
 //google spreadsheet id for "Main-Club-Data"
-const MAIN_CLUB_ID = `${process.env.MAIN_CLUB_DATA_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 
 //This middleware compare the incoming club code from frontend
 //to the club code in the google spreadsheet.
@@ -12,7 +12,7 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
 
     //this specific which google spreadsheet we are acessing
     const getClubCodeArray = await sheets.spreadsheets.values.get({
-      spreadsheetId: MAIN_CLUB_ID,
+      spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
       range: "Information!H1:I5",
     });
 
