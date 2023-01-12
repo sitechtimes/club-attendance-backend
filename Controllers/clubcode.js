@@ -36,7 +36,7 @@ exports.addClubCode = async (req, res) =>{
         console.log(rowNumber);
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: UserData,
-            range: `userData!H${rowNumber}:H${rowNumber}`,
+            range: `userData!J${rowNumber}:J${rowNumber}`,
             valueInputOption: "USER_ENTERED",
             resource: {
                 values: [[ClubCode]]
@@ -50,11 +50,11 @@ exports.addClubCode = async (req, res) =>{
 // Compare the ClubCode to the values in columne L of MainClubData sheet then get the sheetID(ClubData) of the club with the same ClubCode
 exports.addUserDataToClub = async (req, res) =>{
     try {
-        const mainClubDataSheet = google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+        const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
-            range: "Information!L1:L",
-        }).data;
-        const clubCodeList = (mainClubDataSheet).values;
+            range: "Information!L2:L",
+        });
+        const clubCodeList = (mainClubDataSheet).data.values;
         const clubCodesLength = clubCodeList?.length;
         console.log(clubCodeList);
         console.log(clubCodesLength);
@@ -70,16 +70,15 @@ exports.addUserDataToClub = async (req, res) =>{
             spreadsheetId: MainClubData,
             range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
         });
-        let ClubData = clubData.values[0];
-        console.log(hey);
+        let clubSheet = clubData.data.values[0][0];
         
         // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
         google.sheets({ version: "v4", auth }).spreadsheets.values.append({
-          spreadsheetId: ClubData,
+          spreadsheetId: clubSheet,
           range: "Infomration!A1",
           valueInputOption: "USER_ENTERED",
           resources:{
-            values: [['Hao Ran', 'Chen', '2487', 'Member']]
+          values: [['Hao Ran', 'Chen', '2487', 'Member']]
           }
         });
     } catch (error) {
