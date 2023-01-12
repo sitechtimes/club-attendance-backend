@@ -1,7 +1,6 @@
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
-const cubDataSpreadSheetId = "1Ovr869R9tXWL_4gQt2t_fL2NVRWRJpGNknyBDwvNhG4";
 const range = "Information";
 //auth to check if the person have permisson
 
@@ -18,7 +17,7 @@ async function clubDataExist(sheets, spreadsheetId, range) {
 }
 
 function compareValue(spreadSheetValue, valueComparing) {
-  let suchVale = false;
+  let ifExist = false;
   let sheetID = null;
   for (let i = 0; spreadSheetValue.length > i; i++) {
     //the number zero need to be change to the data representing number
@@ -26,13 +25,13 @@ function compareValue(spreadSheetValue, valueComparing) {
     let eachId = spreadSheetValue[i][11];
     let sheetId = spreadSheetValue[i][10];
     if (eachId === valueComparing) {
-      suchVale = true;
+      ifExist = true;
       sheetID = sheetId;
       break;
     }
   }
-  console.log(suchVale);
-  return Promise.resolve({ suchVale, sheetID });
+  console.log(ifExist);
+  return Promise.resolve({ ifExist, sheetID });
 }
 
 exports.checkDates = async (req, res, next) => {
@@ -52,7 +51,7 @@ exports.checkDates = async (req, res, next) => {
       )
     );
 
-    if (ifClubExist.suchVale) {
+    if (ifClubExist.ifExist) {
       req.sheetID = ifClubExist.sheetID;
       next();
     } else {

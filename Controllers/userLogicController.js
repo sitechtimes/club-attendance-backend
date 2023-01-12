@@ -19,6 +19,9 @@ async function addUserData(sheet, userData, spreadsheetId) {
       userData.family_name,
       userData.email,
       userData.type,
+      userData.osis,
+      userData.grade,
+      userData.officalClass,
       userData.hd,
       userData.positionOfClub,
     ],
@@ -84,19 +87,21 @@ function getUserData(spreadSheetValue, valueComparing) {
     lastName: user[2],
     email: user[3],
     type: user[4],
-    emailDomain: user[5],
-    positionOfClub: JSON.parse(user[6]),
+    osis: user[5],
+    grade: user[6],
+    officalClass: user[7],
+    emailDomain: user[8],
+    positionOfClub: JSON.parse(user[9]),
   };
 
   return Promise.resolve(newUserDataObject);
 }
 
+//need to use this function to check if user is exist
 exports.checkUserData = async (req, res, next) => {
   try {
     const sheetsValue = req.object.sheets;
-
     console.log("student");
-
     // google sheet api range
     const range = "userData";
 
@@ -110,9 +115,22 @@ exports.checkUserData = async (req, res, next) => {
       })
     );
 
-    //maybe this can be change into better fucntion
-    //im sleepy
-    if (ifUserExist) {
+    req.ifUserExist = ifUserExist;
+
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//need to use this function to check if user is exist
+exports.sendBackUserData = async (req, res, next) => {
+  try {
+    // google sheet api range
+    const range = "userData";
+    const sheetsValue = req.object.sheets;
+
+    if (req.ifUserExist) {
       const user = await userDataExist(
         sheetsValue,
         USER_DATA_SPREADSHEET_ID,
@@ -127,13 +145,9 @@ exports.checkUserData = async (req, res, next) => {
       console.log("user data exist");
       return res.json(response);
     }
-
-    //here for create new user
-
     return next();
   } catch (error) {
     console.log(error);
-    res.json(401);
   }
 };
 
@@ -169,7 +183,11 @@ exports.createNewUser = async (req, res) => {
   const sheetsValue = req.object.sheets;
   try {
     console.log("user data did not exist");
+
     req.userInfo.type = "student";
+    req.userInfo.osis = "none";
+    req.userInfo.grade = "none";
+    req.userInfo.officalClass = "none";
 
     const ifPresident = await checkIfPresident(
       sheetsValue,
@@ -221,6 +239,97 @@ exports.createNewUser = async (req, res) => {
 
     console.log("user created");
     return res.json(response);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//Additional Information(osis, grade, offical class)
+exports.aaaaa = async (res, req) => {
+  console.log(req.user);
+  if (req.user.additionalInfoType === "osis") {
+    const sheetsValue = req.object.sheets;
+    const range = "userData";
+
+    await userDataExist(sheetsValue, USER_DATA_SPREADSHEET_ID, range).then(
+      async (response) => {
+        console.log("test");
+        console.log(response);
+        console.log("test");
+
+        for (let i = 0; response.length > i; i++) {
+          //the number zero need to be change to the data representing number
+          //0 might return "Michael" for example
+          let eachId = spreadSheetValue[i][0];
+
+          if (eachId === valueComparing) {
+            suchVale = true;
+            break;
+          }
+        }
+
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: id,
+          range: range,
+          valueInputOption: "USER_ENTERED",
+          resource: {
+            values: [["2. Sophomore"]],
+          },
+        });
+      }
+    );
+  } else if (req.body.additionalInfoType === "officalClass") {
+  } else if (req.body.additionalInfoType === "grade") {
+  }
+};
+
+exports.addOsisGradeOfficalClass = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    console.log(req.body.additionalInfoType);
+
+    const sheetsValue = req.object.sheets;
+    async function findAndUpdateValue(rowAlphabet) {
+      await userDataExist(sheetsValue, USER_DATA_SPREADSHEET_ID, "userData")
+        .then(async (response) => {
+          console.log(response);
+          let rowNumber = 0;
+
+          for (let i = 0; response.length > i; i++) {
+            //the number zero need to be change to the data representing number
+            //0 might return "Michael" for example
+            let eachId = response[i][0];
+            rowNumber++;
+
+            if (eachId === req.body.user.uid) {
+              break;
+            }
+          }
+          console.log(rowNumber);
+          return rowNumber;
+        })
+        .then(async (number) => {
+          await sheetsValue.spreadsheets.values.update({
+            spreadsheetId: USER_DATA_SPREADSHEET_ID,
+            range: `userData!${rowAlphabet}${number}`,
+            valueInputOption: "USER_ENTERED",
+            resource: {
+              values: [[`${req.body.additionalInfoValue}`]],
+            },
+          });
+        });
+    }
+
+    if (req.body.additionalInfoType === "osis") {
+      findAndUpdateValue("F");
+      console.log("updated OSIS");
+    } else if (req.body.additionalInfoType === "officalClass") {
+      findAndUpdateValue("H");
+      console.log("updated offical class");
+    } else if (req.body.additionalInfoType === "grade") {
+      findAndUpdateValue("H");
+      console.log("updated grade");
+    }
   } catch (error) {
     console.log(error);
   }

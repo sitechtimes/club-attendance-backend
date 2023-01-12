@@ -20,6 +20,7 @@ exports.authSheetsMiddleware = async (req, res, next) => {
       authClient,
       sheets,
     };
+
     return next();
   } catch (error) {
     console.log(error);

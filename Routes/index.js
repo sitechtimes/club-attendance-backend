@@ -1,19 +1,20 @@
 const express = require("express");
 const router = new express.Router();
-const mainValue = require("../Controllers/mainSheet.Controller");
+const mainValue = require("../Controllers/allClubData");
 const sheetAuth = require("../Controllers/googleSheetAuthController");
 const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
-const login = require("../Controllers/verificationController");
+const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const getAttendence = require("../Controllers/getAttendenceController");
 
 router.post(
   "/login",
-  login.verifyemailMiddleware,
+  verify.verifyByGmailMiddleware,
   sheetAuth.authSheetsMiddleware,
   userLogic.checkUserData,
+  userLogic.sendBackUserData,
   userLogic.createNewUser
 );
 
@@ -21,6 +22,13 @@ router.post(
 
 //read the main google spreadsheet data
 router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
+
+router.post(
+  "/addOsisGradeOfficalClass",
+  sheetAuth.authSheetsMiddleware,
+  verify.verifyUser,
+  userLogic.addOsisGradeOfficalClass
+);
 
 //read the club google spreadsheet data
 router.get(
