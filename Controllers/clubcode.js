@@ -1,6 +1,6 @@
 const express = require("express");
 const { google } = require("googleapis");
-const { OAuth2Client } = require("google-auth-library");
+const { OAuth2Client, AuthClient } = require("google-auth-library");
 const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
@@ -50,25 +50,27 @@ exports.addClubCode = async (req, res) =>{
 // Compare the ClubCode to the values in columne L of MainClubData sheet then get the sheetID(ClubData) of the club with the same ClubCode
 exports.addUserDataToClub = async (req, res) =>{
     try {
-        const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+        const mainClubDataSheet = google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
             range: "Information!L1:L",
-        });
-        const clubCodeList = mainClubDataSheet.values;
+        }).data;
+        const clubCodeList = (mainClubDataSheet).values;
         const clubCodesLength = clubCodeList?.length;
-        let ClubDataRowNumber = 0;
+        console.log(clubCodeList);
+        console.log(clubCodesLength);
+        let clubDataRowNumber = 0;
         for (let i = 0; i < clubCodesLength; i++) {
             if (clubCodeList[i][0] === ClubCode) {
-                ClubDataRowNumber = i + 1;
+                clubDataRowNumber = i + 2;
                 break;
             }
         }
-        console.log(ClubDataRowNumber);
+        console.log(clubDataRowNumber);
         const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
-            range: `Information!K${ClubDataRowNumber}:k${ClubDataRowNumber}`,
+            range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
         });
-        let ClubData = clubData.values[0][0];
+        let ClubData = clubData.values[0];
         console.log(hey);
         
         // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
