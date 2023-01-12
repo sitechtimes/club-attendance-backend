@@ -11,8 +11,8 @@ const addClub = require("../Controllers/clubcode");
 
 router.get(
   "/addclub",
-  addClub.addClubCode,
   addClub.addUserDataToClub,
+  addClub.addClubCode,
 );
 
 router.post(

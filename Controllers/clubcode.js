@@ -5,8 +5,8 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 const UserData = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-const ClubCode = "7UXZkh1";
-const UserID = "387465762846329623498";
+const ClubCode = "xGoaGbJ";
+const UserID = "345347863485762875682";
 // const { IDs } = await verifyToken(incomingUserData.accessToken);
 // const incomingUserData = req.body.userCredential;
 
@@ -20,20 +20,21 @@ exports.addClubCode = async (req, res) =>{
     try {
         const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: UserData,
-            range: "userData!A1:A",
+            range: "userData!A2:A",
         });
-        const userIDList = (userDataSheet).values;
+        const userIDList = (userDataSheet).data.values;
         const listLength = userIDList?.length;
         console.log(listLength);
         console.log(userIDList);
         let rowNumber = 0;
         for (let i = 0; i < listLength; i++) {
-            if (userIDList[i][0] === UserID) {
-                rowNumber = i + 1;
+            if (userIDList[i][0]=== UserID) {
+                rowNumber = i + 2;
                 break;
             }
         }
-        await google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+        console.log(rowNumber);
+        google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: UserData,
             range: `userData!H${rowNumber}:H${rowNumber}`,
             valueInputOption: "USER_ENTERED",
@@ -54,25 +55,30 @@ exports.addUserDataToClub = async (req, res) =>{
             range: "Information!L1:L",
         });
         const clubCodeList = mainClubDataSheet.values;
+        const clubCodesLength = clubCodeList?.length;
         let ClubDataRowNumber = 0;
-        for (let i = 0; i < clubCodeList.length; i++) {
+        for (let i = 0; i < clubCodesLength; i++) {
             if (clubCodeList[i][0] === ClubCode) {
                 ClubDataRowNumber = i + 1;
                 break;
             }
         }
+        console.log(ClubDataRowNumber);
         const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
-            range: `Information!K${ClubDataRowNumber}`,
+            range: `Information!K${ClubDataRowNumber}:k${ClubDataRowNumber}`,
         });
         let ClubData = clubData.values[0][0];
+        console.log(hey);
         
         // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
         google.sheets({ version: "v4", auth }).spreadsheets.values.append({
           spreadsheetId: ClubData,
           range: "Infomration!A1",
           valueInputOption: "USER_ENTERED",
-          values: [['Hao Ran', 'Chen', '2487', 'Member']]
+          resources:{
+            values: [['Hao Ran', 'Chen', '2487', 'Member']]
+          }
         });
     } catch (error) {
         console.log(error);
