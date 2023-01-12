@@ -323,7 +323,11 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
     if (req.body.additionalInfoType === "osis") {
       findAndUpdateValue("F");
       console.log("updated OSIS");
-      return res.json("Successful");
+      return res.json({
+        response: "Successful",
+        type: "osis",
+        value: req.body.additionalInfoValue,
+      });
     } else if (req.body.additionalInfoType === "officalClass") {
       findAndUpdateValue("H");
       console.log("updated offical class");
