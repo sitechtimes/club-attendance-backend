@@ -16,7 +16,7 @@ const auth = new google.auth.GoogleAuth({
 });
 
 // Compare the UserID to the values in column A of "UserData" sheet then add ClubCode into user's Club Code into column H 
-exports.addClubCode = async (req, res) =>{
+exports.addClubCode = async (req, res, next) =>{
     try {
         const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: UserData,
@@ -38,6 +38,7 @@ exports.addClubCode = async (req, res) =>{
             spreadsheetId: UserData,
             range: `userData!J${rowNumber}:J${rowNumber}`,
             valueInputOption: "USER_ENTERED",
+            includeValuesInResponse,
             resource: {
                 values: [[ClubCode]]
             },
@@ -71,15 +72,16 @@ exports.addUserDataToClub = async (req, res) =>{
             range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
         });
         let clubSheet = clubData.data.values[0][0];
+        console.log(clubSheet);
         
         // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
-        google.sheets({ version: "v4", auth }).spreadsheets.values.append({
+        google.sheets({ version: "v4", auth }).spreadsheets.values.update({
           spreadsheetId: clubSheet,
-          range: "Infomration!A1",
+          range: "Information!A2:D2",
           valueInputOption: "USER_ENTERED",
-          resources:{
-          values: [['Hao Ran', 'Chen', '2487', 'Member']]
-          }
+          resource:{
+            values: [['Hao Ran', 'Chen', '2487', 'Member']]
+          },
         });
     } catch (error) {
         console.log(error);
