@@ -11,12 +11,7 @@ const getAttendence = require("../Controllers/getAttendenceController");
 const login = require("../Controllers/verificationMiddleware");
 const addClub = require("../Controllers/clubcode");
 
-
-router.get(
-  "/addclub",
-  addClub.addClubCode,
-  addClub.addUserDataToClub,
-);
+router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
 router.post(
   "/login",
