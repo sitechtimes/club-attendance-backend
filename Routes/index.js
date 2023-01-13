@@ -8,7 +8,6 @@ const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const getAttendence = require("../Controllers/getAttendenceController");
-const login = require("../Controllers/verificationMiddleware");
 const addClub = require("../Controllers/clubcode");
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
@@ -21,8 +20,6 @@ router.post(
   userLogic.sendBackUserData,
   userLogic.createNewUser
 );
-
-// router.get("/studentOrTeacher", login.studentOrTeacher);
 
 //read the main google spreadsheet data
 router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
