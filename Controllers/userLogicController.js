@@ -320,25 +320,40 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
         });
     }
 
+    //do we really need function constructor?
+    function ReturnResponse(status, type, value) {
+      this.status = status;
+      this.type = type;
+      this.value = value;
+    }
+
     if (req.body.additionalInfoType === "osis") {
       findAndUpdateValue("F");
       console.log("updated OSIS");
-      return res.json({
-        response: "Successful",
-        type: "osis",
-        value: req.body.additionalInfoValue,
-      });
+      const response = new ReturnResponse(
+        "Successful",
+        "osis",
+        req.body.additionalInfoValue
+      );
+      return res.json(response);
     } else if (req.body.additionalInfoType === "officalClass") {
       findAndUpdateValue("H");
       console.log("updated offical class");
-      return res.json("OSIS");
+      const response = new ReturnResponse(
+        "Successful",
+        "officalClass",
+        req.body.additionalInfoValue
+      );
+      return res.json(response);
     } else if (req.body.additionalInfoType === "grade") {
       findAndUpdateValue("G");
       console.log("updated grade");
-      return res.json({
-        response: "sucessfull",
-        type: "grade",
-      });
+      const response = new ReturnResponse(
+        "Successful",
+        "grade",
+        req.body.additionalInfoValue
+      );
+      return res.json(response);
     } else {
       return res.json({
         response: "Unsucessfull",
