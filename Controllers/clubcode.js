@@ -5,8 +5,8 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 const UserData = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-const ClubCode = "xGoaGbJ";
-const UserID = "345347863485762875682";
+const ClubCode = "3TzWJPg";
+const UserID = "104965533549487561020";
 // const { IDs } = await verifyToken(incomingUserData.accessToken);
 // const incomingUserData = req.body.userCredential;
 
@@ -36,13 +36,13 @@ exports.addClubCode = async (req, res, next) =>{
         console.log(rowNumber);
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: UserData,
-            range: `userData!J${rowNumber}:J${rowNumber}`,
+            range: `userData!K${rowNumber}:K${rowNumber}`,
             valueInputOption: "USER_ENTERED",
-            includeValuesInResponse,
             resource: {
                 values: [[ClubCode]]
             },
         });
+        return next();
     } catch (error) {
         console.log(error);
     }
