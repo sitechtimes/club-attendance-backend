@@ -72,4 +72,6 @@ router.post(
   getAttendence.getclubAttendence
 );
 
+router.post("/test", sheetAuth.authSheetsMiddleware, userLogic.test);
+
 module.exports = router;

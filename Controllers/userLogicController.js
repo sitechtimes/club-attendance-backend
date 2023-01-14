@@ -4,6 +4,7 @@ require("dotenv").config({ path: "variables.env" });
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
+const { sheetColumnAlphabetFinder } = require("../utility.js");
 
 //this function add user to google, which takes three
 // parameter: sheet, which is sheet id from req.obect from
@@ -245,43 +246,6 @@ exports.createNewUser = async (req, res) => {
 };
 
 //Additional Information(osis, grade, offical class)
-exports.aaaaa = async (res, req) => {
-  console.log(req.user);
-  if (req.user.additionalInfoType === "osis") {
-    const sheetsValue = req.object.sheets;
-    const range = "userData";
-
-    await userDataExist(sheetsValue, USER_DATA_SPREADSHEET_ID, range).then(
-      async (response) => {
-        console.log("test");
-        console.log(response);
-        console.log("test");
-
-        for (let i = 0; response.length > i; i++) {
-          //the number zero need to be change to the data representing number
-          //0 might return "Michael" for example
-          let eachId = spreadSheetValue[i][0];
-
-          if (eachId === valueComparing) {
-            suchVale = true;
-            break;
-          }
-        }
-
-        await sheets.spreadsheets.values.update({
-          spreadsheetId: id,
-          range: range,
-          valueInputOption: "USER_ENTERED",
-          resource: {
-            values: [["2. Sophomore"]],
-          },
-        });
-      }
-    );
-  } else if (req.body.additionalInfoType === "officalClass") {
-  } else if (req.body.additionalInfoType === "grade") {
-  }
-};
 
 exports.addOsisGradeOfficalClass = async (req, res, next) => {
   try {
@@ -359,6 +323,23 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
         response: "Unsucessfull",
       });
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.test = async (req, res) => {
+  try {
+    const sheetsValue = req.object.sheets;
+    sheetColumnAlphabetFinder(
+      sheetsValue,
+      CLUB_DATA_SPREADSHEET_ID,
+      "information",
+      "Room #"
+    ).then((response) => {
+      console.log(response);
+      res.json(response);
+    });
   } catch (error) {
     console.log(error);
   }
