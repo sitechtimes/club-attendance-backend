@@ -13,12 +13,13 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
     //this specific which google spreadsheet we are acessing
     const getClubCodeArray = await sheets.spreadsheets.values.get({
       spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
-      range: "Information!H1:I5",
+      range: "Information!K1:L5",
     });
 
     //this gets the google spreadsheet's row data
     const qrValue = getClubCodeArray.data.values;
 
+    console.log(qrValue);
     //this variable will be needed to access the specific club google spreadsheet id
     let idOfSheet = null;
 
@@ -26,6 +27,7 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
     function googleIDCode() {
       for (let i = 0; qrValue.length > i; i++) {
         let eachClubCode = qrValue[i][1];
+        console.log(eachClubCode);
         if (eachClubCode === userClubCode.clubCode) {
           idOfSheet = qrValue[i][0];
         }

@@ -32,7 +32,7 @@ router.post(
 );
 
 //read the club google spreadsheet data
-router.get(
+router.post(
   "/readClub",
   sheetAuth.authSheetsMiddleware,
   joinClub.compareClubCodeMiddleware,

@@ -4,7 +4,10 @@ require("dotenv").config({ path: "variables.env" });
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
-const { sheetColumnAlphabetFinder } = require("../utility.js");
+const {
+  sheetColumnAlphabetFinder,
+  sheetRowNumberFinder,
+} = require("../utility.js");
 
 //this function add user to google, which takes three
 // parameter: sheet, which is sheet id from req.obect from
@@ -331,15 +334,13 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
 exports.test = async (req, res) => {
   try {
     const sheetsValue = req.object.sheets;
-    sheetColumnAlphabetFinder(
+    const userDataRange = "userData";
+    await sheetRowNumberFinder(
       sheetsValue,
-      CLUB_DATA_SPREADSHEET_ID,
-      "information",
-      "Room #"
-    ).then((response) => {
-      console.log(response);
-      res.json(response);
-    });
+      USER_DATA_SPREADSHEET_ID,
+      userDataRange,
+      "101233693992321242090"
+    );
   } catch (error) {
     console.log(error);
   }
