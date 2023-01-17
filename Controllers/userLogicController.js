@@ -210,6 +210,7 @@ exports.createNewUser = async (req, res) => {
         const object = {
           clubCode: array[11],
           postion: "president",
+          clubName: array[0],
         };
         presidentObject.push(object);
       });
