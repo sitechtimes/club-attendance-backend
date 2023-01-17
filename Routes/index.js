@@ -8,7 +8,7 @@ const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const getAttendence = require("../Controllers/getAttendenceController");
-const login = require("../Controllers/verificationMiddleware");
+// const login = require("../Controllers/verificationMiddleware");
 const addClub = require("../Controllers/clubcode");
 
 

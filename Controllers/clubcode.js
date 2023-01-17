@@ -51,6 +51,7 @@ exports.addClubCode = async (req, res, next) =>{
 // Compare the ClubCode to the values in columne L of MainClubData sheet then get the sheetID(ClubData) of the club with the same ClubCode
 exports.addUserDataToClub = async (req, res) =>{
     try {
+        // This gets the row number of the clubcode, this rownumber would "identify" the specific club
         const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
             range: "Information!L2:L",
@@ -67,12 +68,40 @@ exports.addUserDataToClub = async (req, res) =>{
             }
         }
         console.log(clubDataRowNumber);
-        const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+
+        // This uses the row number to get the club's sheetid
+        const clubSheetData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
             range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
         });
-        let clubSheet = clubData.data.values[0][0];
+        let clubSheet = clubSheetData.data.values[0][0];
         console.log(clubSheet);
+
+         // This is same code as above to get user rowNumber, this could be used to get more User Info
+        const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: UserData,
+            range: "userData!A2:A",
+        });
+        const userIDList = (userDataSheet).data.values;
+        const listLength = userIDList?.length;
+        console.log(listLength);
+        console.log(userIDList);
+        let userRowNumber2 = 0;
+        for (let i = 0; i < listLength; i++) {
+            if (userIDList[i][0]=== UserID) {
+                userRowNumber2 = i + 2;
+                break;
+            }
+        }
+        console.log(userRowNumber2);
+
+        // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
+        const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: UserData,
+            range: `A${userRowNumber2}:H${userRowNumber2}`,
+        });
+        let clubsd = clubData.data.values[0][1];
+        console.log(clubData);
         
         // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
