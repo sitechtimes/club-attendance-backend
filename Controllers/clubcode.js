@@ -5,9 +5,9 @@ const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
-const UserData = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
+const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 const ClubCode = "6Rl1kv4";
-const UserID = "104965533549487561020";
+const UserID = user.sub;
 // const { IDs } = await verifyToken(incomingUserData.accessToken);
 // const incomingUserData = req.body.userCredential;
 
@@ -21,7 +21,7 @@ exports.addClubCode = async (req, res, next) =>{
     try {
         console.log(req.body);
         const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: UserData,
+            spreadsheetId: userDataSheetID,
             range: "userData!A2:A",
         });
         const userIDList = (userDataSheet).data.values;
@@ -37,7 +37,7 @@ exports.addClubCode = async (req, res, next) =>{
         }
         console.log(rowNumber);
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-            spreadsheetId: UserData,
+            spreadsheetId: userDataSheetID,
             range: `userData!K${rowNumber}:K${rowNumber}`,
             valueInputOption: "USER_ENTERED",
             resource: {
@@ -81,7 +81,7 @@ exports.addUserDataToClub = async (req, res) =>{
 
          // This is same code as above to get user rowNumber, this could be used to get more User Info
         const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: UserData,
+            spreadsheetId: userDataSheetID,
             range: "userData!A2:A",
         });
         const userIDList = (userDataSheet).data.values;
@@ -99,7 +99,7 @@ exports.addUserDataToClub = async (req, res) =>{
 
         // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
         const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: UserData,
+            spreadsheetId: userDataSheetID,
             range: `A${userRowNumber2}:H${userRowNumber2}`,
         });
         let UID = clubData.data.values[0][0];
