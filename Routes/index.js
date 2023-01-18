@@ -11,7 +11,7 @@ const getAttendence = require("../Controllers/getAttendenceController");
 const addClub = require("../Controllers/clubcode");
 
 
-router.get(
+router.post(
   "/addclub",
   addClub.addClubCode,
   addClub.addUserDataToClub,
