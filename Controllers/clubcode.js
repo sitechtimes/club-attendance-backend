@@ -11,110 +11,119 @@ const UserID = "104965533549487561020";
 // const incomingUserData = req.body.userCredential;
 
 const auth = new google.auth.GoogleAuth({
-    keyFile: "keys.json",
-    scopes: "https://www.googleapis.com/auth/spreadsheets",
+  keyFile: "keys.json",
+  scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
 
-// Compare the UserID to the values in column A of "UserData" sheet then add ClubCode into user's Club Code into column H 
-exports.addClubCode = async (req, res, next) =>{
-    try {
-        const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: UserData,
-            range: "userData!A2:A",
-        });
-        const userIDList = (userDataSheet).data.values;
-        const listLength = userIDList?.length;
-        console.log(listLength);
-        console.log(userIDList);
-        let rowNumber = 0;
-        for (let i = 0; i < listLength; i++) {
-            if (userIDList[i][0]=== UserID) {
-                rowNumber = i + 2;
-                break;
-            }
-        }
-        console.log(rowNumber);
-        google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-            spreadsheetId: UserData,
-            range: `userData!K${rowNumber}:K${rowNumber}`,
-            valueInputOption: "USER_ENTERED",
-            resource: {
-                values: [[ClubCode]]
-            },
-        });
-        return next();
-    } catch (error) {
-        console.log(error);
+// Compare the UserID to the values in column A of "UserData" sheet then add ClubCode into user's Club Code into column H
+exports.addClubCode = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    const userDataSheet = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: UserData,
+        range: "userData!A2:A",
+      });
+    const userIDList = userDataSheet.data.values;
+    const listLength = userIDList?.length;
+    console.log(listLength);
+    console.log(userIDList);
+    let rowNumber = 0;
+    for (let i = 0; i < listLength; i++) {
+      if (userIDList[i][0] === UserID) {
+        rowNumber = i + 2;
+        break;
+      }
     }
+    console.log(rowNumber);
+    google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+      spreadsheetId: UserData,
+      range: `userData!K${rowNumber}:K${rowNumber}`,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [[ClubCode]],
+      },
+    });
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // Compare the ClubCode to the values in columne L of MainClubData sheet then get the sheetID(ClubData) of the club with the same ClubCode
-exports.addUserDataToClub = async (req, res) =>{
-    try {
-        // This gets the row number of the clubcode, this rownumber would "identify" the specific club
-        const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: MainClubData,
-            range: "Information!L2:L",
-        });
-        const clubCodeList = (mainClubDataSheet).data.values;
-        const clubCodesLength = clubCodeList?.length;
-        console.log(clubCodeList);
-        console.log(clubCodesLength);
-        let clubDataRowNumber = 0;
-        for (let i = 0; i < clubCodesLength; i++) {
-            if (clubCodeList[i][0] === ClubCode) {
-                clubDataRowNumber = i + 2;
-                break;
-            }
-        }
-        console.log(clubDataRowNumber);
-
-        // This uses the row number to get the club's sheetid
-        const clubSheetData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: MainClubData,
-            range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
-        });
-        let clubSheet = clubSheetData.data.values[0][0];
-        console.log(clubSheet);
-
-         // This is same code as above to get user rowNumber, this could be used to get more User Info
-        const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: UserData,
-            range: "userData!A2:A",
-        });
-        const userIDList = (userDataSheet).data.values;
-        const listLength = userIDList?.length;
-        console.log(listLength);
-        console.log(userIDList);
-        let userRowNumber2 = 0;
-        for (let i = 0; i < listLength; i++) {
-            if (userIDList[i][0]=== UserID) {
-                userRowNumber2 = i + 2;
-                break;
-            }
-        }
-        console.log(userRowNumber2);
-
-        // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
-        const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: UserData,
-            range: `A${userRowNumber2}:H${userRowNumber2}`,
-        });
-        let clubsd = clubData.data.values[0][1];
-        console.log(clubData);
-        
-        // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
-        google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-          spreadsheetId: clubSheet,
-          range: "Information!A2:D2",
-          valueInputOption: "USER_ENTERED",
-          resource:{
-            values: [['Hao Ran', 'Chen', '2487', 'Member']]
-          },
-        });
-    } catch (error) {
-        console.log(error);
+exports.addUserDataToClub = async (req, res) => {
+  try {
+    // This gets the row number of the clubcode, this rownumber would "identify" the specific club
+    const mainClubDataSheet = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: MainClubData,
+        range: "Information!L2:L",
+      });
+    const clubCodeList = mainClubDataSheet.data.values;
+    const clubCodesLength = clubCodeList?.length;
+    console.log(clubCodeList);
+    console.log(clubCodesLength);
+    let clubDataRowNumber = 0;
+    for (let i = 0; i < clubCodesLength; i++) {
+      if (clubCodeList[i][0] === ClubCode) {
+        clubDataRowNumber = i + 2;
+        break;
+      }
     }
+    console.log(clubDataRowNumber);
+
+    // This uses the row number to get the club's sheetid
+    const clubSheetData = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: MainClubData,
+        range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
+      });
+    let clubSheet = clubSheetData.data.values[0][0];
+    console.log(clubSheet);
+
+    // This is same code as above to get user rowNumber, this could be used to get more User Info
+    const userDataSheet = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: UserData,
+        range: "userData!A2:A",
+      });
+    const userIDList = userDataSheet.data.values;
+    const listLength = userIDList?.length;
+    console.log(listLength);
+    console.log(userIDList);
+    let userRowNumber2 = 0;
+    for (let i = 0; i < listLength; i++) {
+      if (userIDList[i][0] === UserID) {
+        userRowNumber2 = i + 2;
+        break;
+      }
+    }
+    console.log(userRowNumber2);
+
+    // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
+    const clubData = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: UserData,
+        range: `A${userRowNumber2}:H${userRowNumber2}`,
+      });
+    let clubsd = clubData.data.values[0][1];
+    console.log(clubData);
+
+    // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
+    google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+      spreadsheetId: clubSheet,
+      range: "Information!A2:D2",
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [["Hao Ran", "Chen", "2487", "Member"]],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
-
-
