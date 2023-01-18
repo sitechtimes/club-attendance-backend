@@ -46,7 +46,6 @@ app.use(
   cors({
     corsOptionsDelegate,
     credentials: true,
-    exposedHeaders: ["set-cookie"],
   }),
   routes
 );
