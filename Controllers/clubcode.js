@@ -123,7 +123,6 @@ exports.addUserDataToClub = async (req, res) =>{
           spreadsheetId: clubSheet,
           range: "Information!A2:H2",
           valueInputOption: "USER_ENTERED",
-          insertDataOption: "INSERT_ROWS",
           resource:{
             values: [[firstName, lastName, UID, OSIS, `member`, grade, email, offClass]]
           },
