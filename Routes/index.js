@@ -9,6 +9,7 @@ const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const getAttendence = require("../Controllers/getAttendenceController");
 const addClub = require("../Controllers/clubcode");
+const addAttendence = require("../Controllers/addAttendeceDateController");
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
@@ -72,6 +73,6 @@ router.post(
   getAttendence.getclubAttendence
 );
 
-router.post("/test", sheetAuth.authSheetsMiddleware, userLogic.test);
+router.get("/test", addAttendence.generateQRCode);
 
 module.exports = router;

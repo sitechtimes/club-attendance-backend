@@ -100,7 +100,32 @@ exports.readCell = async (req, res) => {
       range: "Information",
     });
 
-    res.send(getRows.data);
+    const sheetValues = getRows.data.values;
+
+    let sheetArray = [];
+
+    //this is what change the array into object
+    sheetValues.forEach((element) => {
+      const turnArrayToObject = Object.assign({}, element);
+      sheetArray.push(turnArrayToObject);
+    });
+
+    //this will have a new array that rearrange the data into better
+    //formatting
+    const sheetObject = sheetArray.map((value) => ({
+      firstName: value[0],
+      lastName: value[1],
+      uid: value[2],
+      osis: value[3],
+      position: value[4],
+      grade: value[5],
+      email: value[6],
+      officalClass: value[7],
+      numbOfAttendence: value[8],
+      numbOfAbsent: value[9],
+    }));
+
+    res.json(sheetObject);
   } catch (error) {
     // need better error handling
     // https://expressjs.com/en/guide/error-handling.html
