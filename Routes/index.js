@@ -73,6 +73,11 @@ router.post(
   getAttendence.getclubAttendence
 );
 
-router.get("/test", addAttendence.generateQRCode);
+router.post(
+  "/attendence-date",
+  sheetAuth.authSheetsMiddleware,
+  joinClub.compareClubCodeMiddleware,
+  joinClub.getAttendenceDate
+);
 
 module.exports = router;

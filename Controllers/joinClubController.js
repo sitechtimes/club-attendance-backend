@@ -89,6 +89,18 @@ exports.addUserToClub = async (req, res) => {
   }
 };
 
+const getSheets = async (sheets, spreadsheetId) => {
+  const result = (
+    await sheets.spreadsheets.get({
+      spreadsheetId,
+    })
+  ).data.sheets.map((sheet) => {
+    return sheet.properties.title;
+  });
+  console.log(result);
+  return result;
+};
+
 //this will read all the spreadsheet data
 exports.readCell = async (req, res) => {
   try {
@@ -112,6 +124,7 @@ exports.readCell = async (req, res) => {
 
     //this will have a new array that rearrange the data into better
     //formatting
+
     const sheetObject = sheetArray.map((value) => ({
       firstName: value[0],
       lastName: value[1],
@@ -124,7 +137,7 @@ exports.readCell = async (req, res) => {
       numbOfAttendence: value[8],
       numbOfAbsent: value[9],
     }));
-    console.log(sheetObject);
+
     res.json(sheetObject);
   } catch (error) {
     // need better error handling
@@ -136,5 +149,22 @@ exports.readCell = async (req, res) => {
     ) {
       res.json("Invaild Club Code");
     }
+  }
+};
+
+exports.getAttendenceDate = async (req, res) => {
+  try {
+    const sheets = req.object.sheets;
+    const attendeceDate = await getSheets(sheets, req.sheetID).then(
+      (response) => {
+        response.shift();
+        return response;
+      }
+    );
+
+    console.log(attendeceDate);
+    res.json(attendeceDate);
+  } catch (error) {
+    console.log(error);
   }
 };

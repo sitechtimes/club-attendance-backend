@@ -334,13 +334,22 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
 
 exports.test = async (req, res) => {
   try {
-    const sheetsValue = req.object.sheets;
-    const userDataRange = "userData";
-    await sheetRowNumberFinder(
-      sheetsValue,
-      USER_DATA_SPREADSHEET_ID,
-      userDataRange,
-      "101233693992321242090"
+    const sheets = req.object.sheets;
+    const getSheets = async (sheets, spreadsheetId) => {
+      const result = (
+        await sheets.spreadsheets.get({
+          spreadsheetId,
+        })
+      ).data.sheets.map((sheet) => {
+        return sheet.properties.title;
+      });
+
+      return result;
+    };
+    getSheets(sheets, "1Ovr869R9tXWL_4gQt2t_fL2NVRWRJpGNknyBDwvNhG4").then(
+      (response) => {
+        console.log(response);
+      }
     );
   } catch (error) {
     console.log(error);
