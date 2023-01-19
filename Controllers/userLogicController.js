@@ -335,22 +335,19 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
 exports.test = async (req, res) => {
   try {
     const sheets = req.object.sheets;
-    const getSheets = async (sheets, spreadsheetId) => {
-      const result = (
-        await sheets.spreadsheets.get({
-          spreadsheetId,
-        })
-      ).data.sheets.map((sheet) => {
-        return sheet.properties.title;
-      });
-
-      return result;
-    };
-    getSheets(sheets, "1Ovr869R9tXWL_4gQt2t_fL2NVRWRJpGNknyBDwvNhG4").then(
-      (response) => {
-        console.log(response);
-      }
+    const range = "userData";
+    const user = await userDataExist(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      range
+    ).then((response) =>
+      getUserData(response, req.body.uid).then((getUserDataeResponse) => {
+        return getUserDataeResponse;
+      })
     );
+    console.log(user);
+
+    return res.json(user.positionOfClub);
   } catch (error) {
     console.log(error);
   }

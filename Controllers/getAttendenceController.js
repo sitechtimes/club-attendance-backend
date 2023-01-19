@@ -83,8 +83,11 @@ exports.getclubAttendence = async (req, res) => {
     const attendenceData = sheetArray.map((value) => ({
       firstName: value[0],
       lastName: value[1],
-      uid: value[2],
-      status: value[3],
+      osis: value[2],
+      grade: value[3],
+      officalClass: value[4],
+      uid: value[5],
+      status: value[6],
     }));
 
     //retrun the data

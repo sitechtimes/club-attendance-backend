@@ -11,7 +11,9 @@ const getAttendence = require("../Controllers/getAttendenceController");
 const addClub = require("../Controllers/clubcode");
 const addAttendence = require("../Controllers/addAttendeceDateController");
 
-router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
+//read the main google spreadsheet data
+//need ti create auth
+router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
 
 router.post(
   "/login",
@@ -21,9 +23,6 @@ router.post(
   userLogic.sendBackUserData,
   userLogic.createNewUser
 );
-
-//read the main google spreadsheet data
-router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
 
 router.post(
   "/addOsisGradeOfficalClass",
@@ -73,11 +72,15 @@ router.post(
   getAttendence.getclubAttendence
 );
 
+router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
+
 router.post(
   "/attendence-date",
   sheetAuth.authSheetsMiddleware,
   joinClub.compareClubCodeMiddleware,
   joinClub.getAttendenceDate
 );
+
+router.post("/getUserClub", sheetAuth.authSheetsMiddleware, userLogic.test);
 
 module.exports = router;
