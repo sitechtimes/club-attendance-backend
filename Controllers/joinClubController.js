@@ -124,7 +124,7 @@ exports.readCell = async (req, res) => {
       numbOfAttendence: value[8],
       numbOfAbsent: value[9],
     }));
-
+    console.log(sheetObject);
     res.json(sheetObject);
   } catch (error) {
     // need better error handling
