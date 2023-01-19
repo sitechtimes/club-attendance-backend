@@ -24,6 +24,10 @@ exports.addClubCode = async (req, res, next) =>{
             spreadsheetId: userDataSheetID,
             range: "userData!A2:A",
         });
+        const userPosition = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: userDataSheetID,
+            range: "userData!J2:J",
+        });
         const userIDList = (userDataSheet).data.values;
         const listLength = userIDList?.length;
         console.log(listLength);
