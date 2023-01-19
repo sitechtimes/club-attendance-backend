@@ -6,8 +6,6 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-const ClubCode = "6Rl1kv4";
-const UserID = user.sub;
 // const { IDs } = await verifyToken(incomingUserData.accessToken);
 // const incomingUserData = req.body.userCredential;
 
@@ -20,6 +18,8 @@ const auth = new google.auth.GoogleAuth({
 exports.addClubCode = async (req, res, next) =>{
     try {
         console.log(req.body);
+        const UserID = req.body.user.uid;
+        const ClubCode = req.body.clubCode;
         const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: userDataSheetID,
             range: "userData!A2:A",
@@ -53,6 +53,8 @@ exports.addClubCode = async (req, res, next) =>{
 // Compare the ClubCode to the values in columne L of MainClubData sheet then get the sheetID(ClubData) of the club with the same ClubCode
 exports.addUserDataToClub = async (req, res) =>{
     try {
+        const UserID = req.body.user.uid;
+        const ClubCode = req.body.clubCode;
         // This gets the row number of the clubcode, this rownumber would "identify" the specific club
         const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
