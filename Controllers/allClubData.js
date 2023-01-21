@@ -44,8 +44,9 @@ exports.readCell = async (req, res) => {
       clubSpreadsheetId: value[10],
       clubCode: value[11],
     }));
-
+    sheetObject.shift();
     //retrun the data
+    console.log(sheetObject);
     res.send(sheetObject);
   } catch (error) {
     console.log(error);

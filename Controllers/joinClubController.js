@@ -138,6 +138,10 @@ exports.readCell = async (req, res) => {
       numbOfAbsent: value[9],
     }));
 
+    sheetObject.shift();
+
+    console.log(sheetObject);
+
     res.json(sheetObject);
   } catch (error) {
     // need better error handling

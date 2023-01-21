@@ -89,6 +89,7 @@ exports.getclubAttendence = async (req, res) => {
       uid: value[5],
       status: value[6],
     }));
+    attendenceData.shift();
 
     //retrun the data
     res.json(attendenceData);
