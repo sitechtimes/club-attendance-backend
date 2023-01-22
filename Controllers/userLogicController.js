@@ -197,7 +197,7 @@ exports.createNewUser = async (req, res) => {
       sheetsValue,
       CLUB_DATA_SPREADSHEET_ID,
       req.userInfo.sub,
-      "Information"
+      "clubData"
     ).then((response) => {
       return response;
     });
