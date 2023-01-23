@@ -277,6 +277,9 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
           return rowNumber;
         })
         .then(async (number) => {
+          console.log(`userData`);
+          console.log(`userData!${rowAlphabet}${number}`);
+          console.log(`userData`);
           await sheetsValue.spreadsheets.values.update({
             spreadsheetId: USER_DATA_SPREADSHEET_ID,
             range: `userData!${rowAlphabet}${number}`,
@@ -295,7 +298,7 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
       this.value = value;
     }
 
-    if (req.body.additionalInfoType === "osis") {
+    if (req.body.additionalInfoType === "OSIS") {
       findAndUpdateValue("F");
       console.log("updated OSIS");
       const response = new ReturnResponse(
