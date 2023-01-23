@@ -4,11 +4,10 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
+const { sheetColumnAlphabetFinder, ifValueExist } = require("../utility.js");
 
 exports.verifyByGmailMiddleware = async (req, res, next) => {
   try {
-    //  console.log(req.body);
-
     //this is the google crediental that is being sent over
     const incomingUserData = req.body.userCredential;
 
@@ -50,52 +49,37 @@ exports.verifyByGmailMiddleware = async (req, res, next) => {
   }
 };
 
-async function userDataExist(sheets, spreadsheetId, range) {
-  const studentData = await sheets.spreadsheets.values.get({
-    spreadsheetId: spreadsheetId,
-    range: range,
-  });
-
-  const credentialData = studentData.data.values;
-  return credentialData;
-}
-
-function compareValue(spreadSheetValue, valueComparing) {
-  let suchVale = false;
-  for (let i = 0; spreadSheetValue.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = spreadSheetValue[i][0];
-
-    if (eachId === valueComparing) {
-      suchVale = true;
-      break;
-    }
-  }
-  return Promise.resolve(suchVale);
-}
-
 exports.verifyUser = async (req, res, next) => {
   try {
+    console.log("running verifyingUser");
     console.log(req.body);
     if (req.body.user === null) {
       return res.json("User is not log in");
     }
 
-    const sheetsValue = req.object.sheets;
-    console.log("verifyingUser");
-    // google sheet api range
+    const uid = req.body.user.uid;
+    const sheets = req.object.sheets;
     const range = "userData";
 
-    const ifUserExist = await userDataExist(
-      sheetsValue,
+    console.log(uid);
+
+    const ifUserExist = await sheetColumnAlphabetFinder(
+      sheets,
       USER_DATA_SPREADSHEET_ID,
-      range
-    ).then((response) =>
-      compareValue(response, req.body.user.uid).then((compareValueResponse) => {
-        return compareValueResponse;
-      })
-    );
+      range,
+      "UID",
+      uid
+    ).then((res) => {
+      return ifValueExist(
+        sheets,
+        USER_DATA_SPREADSHEET_ID,
+        range,
+        res.columnNumber,
+        uid
+      );
+    });
+
+    console.log(ifUserExist);
 
     if (ifUserExist === true) {
       console.log("User exist");
