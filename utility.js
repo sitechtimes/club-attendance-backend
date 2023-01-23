@@ -90,6 +90,48 @@ const sheetColumnAlphabetFinder = async (
   }
 };
 
+function sheetRowNumberTrue(data, columnNumber, valueComparing) {
+  const matchValueArray = [];
+  let rowNumber = 0;
+
+  for (let i = 0; data.length > i; i++) {
+    //the number zero need to be change to the data representing number
+    //0 might return "Michael" for example
+    let eachId = data[i][columnNumber];
+    rowNumber++;
+    if (eachId === valueComparing) {
+      matchValueArray.push(rowNumber);
+    }
+  }
+
+  if (matchValueArray.length !== 0) {
+    console.log(matchValueArray);
+    return matchValueArray;
+  } else if (matchValueArray.length === 0) {
+    return "There is no such value in google sheet";
+  }
+}
+
+function sheetRowNumberFalse(data, columnNumber, valueComparing) {
+  let rowNumber = 0;
+  let ifValueExist = false;
+  for (let i = 0; data.length > i; i++) {
+    //the number zero need to be change to the data representing number
+    //0 might return "Michael" for example
+    let eachId = data[i][columnNumber];
+    rowNumber++;
+    if (eachId === valueComparing) {
+      ifValueExist = true;
+      break;
+    }
+  }
+
+  if (ifValueExist === true) {
+    console.log(rowNumber);
+    return rowNumber;
+  }
+}
+
 //find user column number
 //sheets- represents the sheets value from  the return object from authSheetsMiddleware
 //spreadsheetId- represents the id of the spreadsheet you are looking for
@@ -110,45 +152,10 @@ const sheetRowNumberFinder = async (
 ) => {
   console.log("running sheetRowNumberFinder");
   const data = await sheetData(sheets, spreadsheetId, range);
-
   if (addEveryValue) {
-    const matchValueArray = [];
-    let rowNumber = 0;
-
-    for (let i = 0; data.length > i; i++) {
-      //the number zero need to be change to the data representing number
-      //0 might return "Michael" for example
-      let eachId = data[i][columnNumber];
-      rowNumber++;
-      if (eachId === valueComparing) {
-        matchValueArray.push(rowNumber);
-      }
-    }
-    if (matchValueArray.length !== 0) {
-      console.log(matchValueArray);
-      return matchValueArray;
-    } else if (matchValueArray.length === 0) {
-      return "There is no such value in google sheet";
-    }
+    return sheetRowNumberTrue(data, columnNumber, valueComparing);
   } else if (addEveryValue === false) {
-    let rowNumber = 0;
-    let ifValueExist = false;
-    for (let i = 0; data.length > i; i++) {
-      //the number zero need to be change to the data representing number
-      //0 might return "Michael" for example
-      let eachId = data[i][columnNumber];
-      rowNumber++;
-      if (eachId === valueComparing) {
-        ifValueExist = true;
-        break;
-      }
-    }
-    if (ifValueExist === true) {
-      console.log(rowNumber);
-      return rowNumber;
-    } else if (ifValueExist === false) {
-      return "There is no such value in google sheet";
-    }
+    return sheetRowNumberFalse(data, columnNumber, valueComparing);
   }
 };
 
@@ -215,6 +222,50 @@ async function getUserData(sheets, spreadsheetId, range, valueComparing) {
   return Promise.resolve(newUserDataObject);
 }
 
+const findAndUpdateValue = async (
+  sheets,
+  spreadsheetId,
+  range,
+  valueOfRowThatNeedChange,
+  fromWhatYouChanging,
+  identifierOfItem,
+  inputValue
+) => {
+  const columnThingFinder = await sheetColumnAlphabetFinder(
+    sheets,
+    spreadsheetId,
+    range,
+    valueOfRowThatNeedChange
+  );
+
+  const columnIdentifierFinder = await sheetColumnAlphabetFinder(
+    sheets,
+    spreadsheetId,
+    range,
+    fromWhatYouChanging
+  );
+  console.log(identifierOfItem);
+
+  const rowUidNumber = await sheetRowNumberFinder(
+    sheets,
+    spreadsheetId,
+    range,
+    identifierOfItem,
+    columnIdentifierFinder.columnNumber,
+    false
+  );
+
+  console.log(`${columnThingFinder.alphabet}:${rowUidNumber}`);
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: range,
+    range: `userData!${columnThingFinder.alphabet}${rowUidNumber}`,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      values: [[`${inputValue}`]],
+    },
+  });
+};
+
 module.exports = {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
@@ -222,4 +273,5 @@ module.exports = {
   ifValueExist,
   addUserData,
   getUserData,
+  findAndUpdateValue,
 };

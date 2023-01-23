@@ -57,9 +57,11 @@ exports.verifyUser = async (req, res, next) => {
       return res.json("User is not log in");
     }
 
-    const uid = req.body.uid;
+    const uid = req.body.user.uid;
     const sheets = req.object.sheets;
     const range = "userData";
+
+    console.log(uid);
 
     const ifUserExist = await sheetColumnAlphabetFinder(
       sheets,
@@ -76,6 +78,8 @@ exports.verifyUser = async (req, res, next) => {
         uid
       );
     });
+
+    console.log(ifUserExist);
 
     if (ifUserExist === true) {
       console.log("User exist");

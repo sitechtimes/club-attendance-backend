@@ -11,24 +11,8 @@ const {
   ifValueExist,
   addUserData,
   getUserData,
+  findAndUpdateValue,
 } = require("../utility.js");
-
-//this function compare two values one from the google sheet
-//and another from user input
-function compareValue(spreadSheetValue, valueComparing) {
-  let suchVale = false;
-  for (let i = 0; spreadSheetValue.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = spreadSheetValue[i][0];
-
-    if (eachId === valueComparing) {
-      suchVale = true;
-      break;
-    }
-  }
-  return Promise.resolve(suchVale);
-}
 
 //this function will return the user data from the google sheet called userdata
 async function userDataExist(sheets, spreadsheetId, range) {
@@ -44,23 +28,23 @@ async function userDataExist(sheets, spreadsheetId, range) {
 //need to use this function to check if user is exist
 exports.checkUserData = async (req, res, next) => {
   try {
-    const sheetsValue = req.object.sheets;
-    console.log("student");
-    // google sheet api range
     const range = "userData";
-
-    const ifUserExist = await userDataExist(
-      sheetsValue,
+    const sheets = req.object.sheets;
+    const findUidColumn = await sheetColumnAlphabetFinder(
+      sheets,
       USER_DATA_SPREADSHEET_ID,
-      range
-    ).then((response) =>
-      compareValue(response, req.userInfo.sub).then((compareValueResponse) => {
-        return compareValueResponse;
-      })
+      range,
+      "UID"
+    );
+    const ifUserExist = await ifValueExist(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      range,
+      findUidColumn.columnNumber,
+      req.userInfo.sub
     );
 
     req.ifUserExist = ifUserExist;
-
     return next();
   } catch (error) {
     console.log(error);
@@ -72,17 +56,14 @@ exports.sendBackUserData = async (req, res, next) => {
   try {
     // google sheet api range
     const range = "userData";
-    const sheetsValue = req.object.sheets;
+    const sheets = req.object.sheets;
 
     if (req.ifUserExist) {
-      const user = await userDataExist(
-        sheetsValue,
+      const user = await getUserData(
+        sheets,
         USER_DATA_SPREADSHEET_ID,
-        range
-      ).then((response) =>
-        getUserData(response, req.userInfo.sub).then((getUserDataeResponse) => {
-          return getUserDataeResponse;
-        })
+        range,
+        req.userInfo.sub
       );
       console.log(user);
       const response = user;
@@ -193,42 +174,14 @@ exports.createNewUser = async (req, res) => {
 };
 
 //Additional Information(osis, grade, offical class)
-exports.addOsisGradeOfficalClass = async (req, res, next) => {
+exports.addOsisGradeOfficalClass = async (req, res) => {
+  console.log("addOsisGradeOfficalClass");
   try {
     console.log(req.body);
     console.log(req.body.additionalInfoType);
 
-    const sheetsValue = req.object.sheets;
-    async function findAndUpdateValue(rowAlphabet) {
-      await userDataExist(sheetsValue, USER_DATA_SPREADSHEET_ID, "userData")
-        .then(async (response) => {
-          console.log(response);
-          let rowNumber = 0;
-
-          for (let i = 0; response.length > i; i++) {
-            //the number zero need to be change to the data representing number
-            //0 might return "Michael" for example
-            let eachId = response[i][0];
-            rowNumber++;
-
-            if (eachId === req.body.user.uid) {
-              break;
-            }
-          }
-          console.log(rowNumber);
-          return rowNumber;
-        })
-        .then(async (number) => {
-          await sheetsValue.spreadsheets.values.update({
-            spreadsheetId: USER_DATA_SPREADSHEET_ID,
-            range: `userData!${rowAlphabet}${number}`,
-            valueInputOption: "USER_ENTERED",
-            resource: {
-              values: [[`${req.body.additionalInfoValue}`]],
-            },
-          });
-        });
-    }
+    const sheets = req.object.sheets;
+    const range = "userData";
 
     //do we really need function constructor?
     function ReturnResponse(status, type, value) {
@@ -237,38 +190,69 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
       this.value = value;
     }
 
-    if (req.body.additionalInfoType === "osis") {
-      findAndUpdateValue("F");
-      console.log("updated OSIS");
-      const response = new ReturnResponse(
-        "Successful",
-        "osis",
-        req.body.additionalInfoValue
-      );
-      return res.json(response);
-    } else if (req.body.additionalInfoType === "officalClass") {
-      findAndUpdateValue("H");
-      console.log("updated offical class");
-      const response = new ReturnResponse(
-        "Successful",
-        "officalClass",
-        req.body.additionalInfoValue
-      );
-      return res.json(response);
-    } else if (req.body.additionalInfoType === "grade") {
-      findAndUpdateValue("G");
-      console.log("updated grade");
-      const response = new ReturnResponse(
-        "Successful",
-        "grade",
-        req.body.additionalInfoValue
-      );
-      return res.json(response);
-    } else {
-      return res.json({
-        response: "Unsucessfull",
-      });
-    }
+    await findAndUpdateValue(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      range,
+      req.body.additionalInfoType, //osis
+      "UID",
+      req.body.user.uid,
+      req.body.additionalInfoValue
+    );
+
+    const response = new ReturnResponse(
+      "Successful",
+      req.body.additionalInfoType,
+      req.body.additionalInfoValue
+    );
+    return res.json(response);
+
+    // if (req.body.additionalInfoType === "OSIS") {
+    //   await findAndUpdateValue(
+    //     sheets,
+    //     USER_DATA_SPREADSHEET_ID,
+    //     range,
+    //     req.body.additionalInfoType,
+    //     req.body.user.uid,
+    //     inputValue
+    //   );
+    //   console.log("updated OSIS");
+    //   const response = new ReturnResponse(
+    //     "Successful",
+    //     req.body.additionalInfoType,
+    //     req.body.additionalInfoValue
+    //   );
+    //   return res.json(response);
+    // } else if (req.body.additionalInfoType === "Official Class") {
+    //   await findAndUpdateValue(
+    //     sheets,
+    //     USER_DATA_SPREADSHEET_ID,
+    //     range,
+    //     req.body.additionalInfoType,
+    //     req.body.user.uid,
+    //     inputValue
+    //   );
+    //   console.log("updated offical class");
+    //   const response = new ReturnResponse(
+    //     "Successful",
+    //     req.body.additionalInfoType,
+    //     req.body.additionalInfoValue
+    //   );
+    //   return res.json(response);
+    // } else if (req.body.additionalInfoType === "grade") {
+    //   findAndUpdateValue("G");
+    //   console.log("updated grade");
+    //   const response = new ReturnResponse(
+    //     "Successful",
+    //     "grade",
+    //     req.body.additionalInfoValue
+    //   );
+    //   return res.json(response);
+    // } else {
+    //   return res.json({
+    //     response: "Unsucessfull",
+    //   });
+    // }
   } catch (error) {
     console.log(error);
   }
