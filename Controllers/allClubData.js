@@ -11,7 +11,7 @@ exports.readCell = async (req, res) => {
     // Read rows from spreadsheet
     const getRows = await sheets.spreadsheets.values.get({
       spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
-      range: "Information",
+      range: "clubData",
     });
 
     //this holds the mainspread sheet data

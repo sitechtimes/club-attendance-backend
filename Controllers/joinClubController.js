@@ -13,7 +13,7 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
     //this specific which google spreadsheet we are acessing
     const getClubCodeArray = await sheets.spreadsheets.values.get({
       spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
-      range: "Information!K1:L5",
+      range: "clubData!K1:L5",
     });
 
     //this gets the google spreadsheet's row data
