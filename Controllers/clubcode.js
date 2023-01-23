@@ -20,13 +20,10 @@ exports.addClubCode = async (req, res, next) =>{
         console.log(req.body);
         const UserID = req.body.user.uid;
         const ClubCode = req.body.clubCode;
+        // get all UIDs
         const userDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: userDataSheetID,
             range: "userData!A2:A",
-        });
-        const userPosition = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: userDataSheetID,
-            range: "userData!J2:J",
         });
         const userIDList = (userDataSheet).data.values;
         const listLength = userIDList?.length;
@@ -40,6 +37,10 @@ exports.addClubCode = async (req, res, next) =>{
             }
         }
         console.log(rowNumber);
+        const userWhatClubs = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: userDataSheetID,
+            range: `userData!J${rowNumber}:J${rowNumber}`,
+        });
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: userDataSheetID,
             range: `userData!K${rowNumber}:K${rowNumber}`,
