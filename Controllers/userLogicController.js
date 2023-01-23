@@ -206,53 +206,6 @@ exports.addOsisGradeOfficalClass = async (req, res) => {
       req.body.additionalInfoValue
     );
     return res.json(response);
-
-    // if (req.body.additionalInfoType === "OSIS") {
-    //   await findAndUpdateValue(
-    //     sheets,
-    //     USER_DATA_SPREADSHEET_ID,
-    //     range,
-    //     req.body.additionalInfoType,
-    //     req.body.user.uid,
-    //     inputValue
-    //   );
-    //   console.log("updated OSIS");
-    //   const response = new ReturnResponse(
-    //     "Successful",
-    //     req.body.additionalInfoType,
-    //     req.body.additionalInfoValue
-    //   );
-    //   return res.json(response);
-    // } else if (req.body.additionalInfoType === "Official Class") {
-    //   await findAndUpdateValue(
-    //     sheets,
-    //     USER_DATA_SPREADSHEET_ID,
-    //     range,
-    //     req.body.additionalInfoType,
-    //     req.body.user.uid,
-    //     inputValue
-    //   );
-    //   console.log("updated offical class");
-    //   const response = new ReturnResponse(
-    //     "Successful",
-    //     req.body.additionalInfoType,
-    //     req.body.additionalInfoValue
-    //   );
-    //   return res.json(response);
-    // } else if (req.body.additionalInfoType === "grade") {
-    //   findAndUpdateValue("G");
-    //   console.log("updated grade");
-    //   const response = new ReturnResponse(
-    //     "Successful",
-    //     "grade",
-    //     req.body.additionalInfoValue
-    //   );
-    //   return res.json(response);
-    // } else {
-    //   return res.json({
-    //     response: "Unsucessfull",
-    //   });
-    // }
   } catch (error) {
     console.log(error);
   }

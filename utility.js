@@ -255,9 +255,9 @@ const findAndUpdateValue = async (
     false
   );
 
-  console.log(`${columnThingFinder.alphabet}:${rowUidNumber}`);
+  console.log(`userData!${columnThingFinder.alphabet}${rowUidNumber}`);
   await sheets.spreadsheets.values.update({
-    spreadsheetId: range,
+    spreadsheetId: spreadsheetId,
     range: `userData!${columnThingFinder.alphabet}${rowUidNumber}`,
     valueInputOption: "USER_ENTERED",
     resource: {
