@@ -81,12 +81,6 @@ router.post(
   joinClub.getAttendenceDate
 );
 
-router.post(
-  "/getUserClub",
-  sheetAuth.authSheetsMiddleware,
-  userLogic.userInClub
-);
-
-router.post("/test", sheetAuth.authSheetsMiddleware, verify.verifyUser);
+router.post("/test", sheetAuth.authSheetsMiddleware, userLogic.test);
 
 module.exports = router;

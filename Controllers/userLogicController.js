@@ -211,46 +211,19 @@ exports.addOsisGradeOfficalClass = async (req, res) => {
   }
 };
 
-exports.userInClub = async (req, res) => {
-  try {
-    const sheets = req.object.sheets;
-    const range = "userData";
-    const user = await userDataExist(
-      sheets,
-      USER_DATA_SPREADSHEET_ID,
-      range
-    ).then((response) =>
-      getUserData(response, req.body.uid).then((getUserDataeResponse) => {
-        return getUserDataeResponse;
-      })
-    );
-    console.log(user);
-
-    return res.json(user.positionOfClub);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 exports.test = async (req, res) => {
   try {
     console.log("running test");
     const sheets = req.object.sheets;
-    const range = "information";
-    const user = await sheetColumnAlphabetFinder(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      range,
-      "Name"
-    ).then((res) => {
-      console.log(res);
-      return ifValueExist(
-        sheets,
-        CLUB_DATA_SPREADSHEET_ID,
-        range,
-        res.columnNumber,
-        "Jerry Chen"
-      );
+
+    const user = await sheets.spreadsheets.values.append({
+      spreadsheetId: USER_DATA_SPREADSHEET_ID,
+      range: `userData!E2`,
+      includeValuesInResponse: true,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [["`${inputValue}`"]],
+      },
     });
 
     console.log(user);
