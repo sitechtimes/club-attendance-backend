@@ -1,7 +1,6 @@
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
-const range = "Information";
 //auth to check if the person have permisson
 
 async function clubDataExist(sheets, spreadsheetId, range) {
@@ -42,7 +41,7 @@ exports.checkDates = async (req, res, next) => {
     const ifClubExist = await clubDataExist(
       sheetsValue,
       CLUB_DATA_SPREADSHEET_ID,
-      range
+      "clubData"
     ).then((response) =>
       compareValue(response, incomingData.clubCode).then(
         (compareValueResponse) => {
