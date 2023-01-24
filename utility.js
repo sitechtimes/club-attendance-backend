@@ -34,6 +34,7 @@ const ifValueExist = async (
 
     let eachId = data[i][columnNumber];
     console.log(data[i]);
+    console.log(eachId);
     if (eachId === valueComparing) {
       suchVale = true;
       break;
@@ -107,9 +108,8 @@ function sheetRowNumberTrue(data, columnNumber, valueComparing) {
   if (matchValueArray.length !== 0) {
     console.log(matchValueArray);
     return matchValueArray;
-  } else if (matchValueArray.length === 0) {
-    return "There is no such value in google sheet";
   }
+  return "There is no such value in google sheet";
 }
 
 function sheetRowNumberFalse(data, columnNumber, valueComparing) {
@@ -182,7 +182,11 @@ const addUserData = async (sheets, spreadsheetId, value) => {
 };
 
 //this function get user data from "User Data" google sheet
-async function getUserData(sheets, spreadsheetId, range, valueComparing) {
+//sheets- represents the sheets value from  the return object from authSheetsMiddleware
+//spreadsheetId- represents the id of the spreadsheet you are looking for
+//range- represents the sheet name you want the data from in the spreadsheet
+//valueComparing- represents the item name you are looking for
+const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
   const data = await sheetData(sheets, spreadsheetId, range);
 
   const columnUidFinder = await sheetColumnAlphabetFinder(
@@ -220,8 +224,16 @@ async function getUserData(sheets, spreadsheetId, range, valueComparing) {
   };
 
   return Promise.resolve(newUserDataObject);
-}
+};
 
+//find one cell to update the value of the cell
+//sheets- represents the sheets value from  the return object from authSheetsMiddleware
+//spreadsheetId- represents the id of the spreadsheet you are looking for
+//range- represents the sheet name you want the data from in the spreadsheet
+//valueOfRowThatNeedChange- represents the item column name of the item that you are looking for to change
+//fromWhatYouChanging- find the column of identifier of that user
+//identifierOfItem- is basically the comparing value to fromWhatYouChanging's item
+//inputValue- is what the user want to put in the cell
 const findAndUpdateValue = async (
   sheets,
   spreadsheetId,

@@ -14,17 +14,6 @@ const {
   findAndUpdateValue,
 } = require("../utility.js");
 
-//this function will return the user data from the google sheet called userdata
-async function userDataExist(sheets, spreadsheetId, range) {
-  const studentData = await sheets.spreadsheets.values.get({
-    spreadsheetId: spreadsheetId,
-    range: range,
-  });
-
-  const credentialData = studentData.data.values;
-  return credentialData;
-}
-
 //need to use this function to check if user is exist
 exports.checkUserData = async (req, res, next) => {
   try {

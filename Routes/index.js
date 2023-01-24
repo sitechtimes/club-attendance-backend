@@ -1,6 +1,6 @@
 const express = require("express");
 const router = new express.Router();
-const mainValue = require("../Controllers/allClubData");
+const clubData = require("../Controllers/clubDataController");
 const sheetAuth = require("../Controllers/googleSheetAuthController");
 const markingAttendence = require("../Controllers/markAttendenceController");
 const joinClub = require("../Controllers/joinClubController");
@@ -13,7 +13,19 @@ const addAttendence = require("../Controllers/addAttendeceDateController");
 
 //read the main google spreadsheet data
 //need ti create auth
-router.get("/", sheetAuth.authSheetsMiddleware, mainValue.readCell);
+router.get(
+  "/all-club-data", // "/"
+  sheetAuth.authSheetsMiddleware,
+  clubData.allClubData
+);
+
+//read the club google spreadsheet data
+router.post(
+  "/one-club-data", //readClub
+  sheetAuth.authSheetsMiddleware,
+  clubData.compareClubCodeMiddleware,
+  clubData.readAClub
+);
 
 router.post(
   "/login",
@@ -31,13 +43,14 @@ router.post(
   userLogic.addOsisGradeOfficalClass
 );
 
-//read the club google spreadsheet data
 router.post(
-  "/readClub",
+  "/attendence-date",
   sheetAuth.authSheetsMiddleware,
   joinClub.compareClubCodeMiddleware,
-  joinClub.readCell
+  joinClub.getAttendenceDate
 );
+
+//the bottom need refactorization
 
 //create user using club code comparison
 router.post(
@@ -65,22 +78,8 @@ router.post(
   AttendeceDate.createAttendeceDate
 );
 
-router.post(
-  "/getClubAttendence",
-  sheetAuth.authSheetsMiddleware,
-  getAttendence.checkDates,
-  getAttendence.getclubAttendence
-);
-
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
-router.post(
-  "/attendence-date",
-  sheetAuth.authSheetsMiddleware,
-  joinClub.compareClubCodeMiddleware,
-  joinClub.getAttendenceDate
-);
-
-router.post("/test", sheetAuth.authSheetsMiddleware, userLogic.test);
+router.post("/test");
 
 module.exports = router;
