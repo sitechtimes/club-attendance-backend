@@ -278,6 +278,21 @@ const findAndUpdateValue = async (
   });
 };
 
+//get the sheet names of the spreadsheet
+//sheets- represents the sheets value from  the return object from authSheetsMiddleware
+//spreadsheetId- represents the id of the spreadsheet you are looking for
+const getSheetNames = async (sheets, spreadsheetId) => {
+  const result = (
+    await sheets.spreadsheets.get({
+      spreadsheetId,
+    })
+  ).data.sheets.map((sheet) => {
+    return sheet.properties.title;
+  });
+  console.log(result);
+  return result;
+};
+
 module.exports = {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
@@ -286,4 +301,5 @@ module.exports = {
   addUserData,
   getUserData,
   findAndUpdateValue,
+  getSheetNames,
 };

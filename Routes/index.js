@@ -7,9 +7,9 @@ const joinClub = require("../Controllers/joinClubController");
 const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
-const getAttendence = require("../Controllers/getAttendenceController");
 const addClub = require("../Controllers/clubcode");
 const addAttendence = require("../Controllers/addAttendeceDateController");
+const clubAttendence = require("../Controllers/clubAttendenceController");
 
 //read the main google spreadsheet data
 //need ti create auth
@@ -44,10 +44,17 @@ router.post(
 );
 
 router.post(
-  "/attendence-date",
+  "/get-club-attendence-date",
   sheetAuth.authSheetsMiddleware,
-  joinClub.compareClubCodeMiddleware,
-  joinClub.getAttendenceDate
+  clubData.compareClubCodeMiddleware,
+  clubAttendence.getClubAttendenceDate
+);
+
+router.post(
+  "/get-club-attendence-data",
+  sheetAuth.authSheetsMiddleware,
+  clubData.compareClubCodeMiddleware,
+  clubAttendence.getClubAttendenceData
 );
 
 //the bottom need refactorization

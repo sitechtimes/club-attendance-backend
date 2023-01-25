@@ -54,6 +54,8 @@ exports.allClubData = async (req, res) => {
   }
 };
 
+//this will check if club exist
+//if club exist, return spreadsheetid
 exports.compareClubCodeMiddleware = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
@@ -112,7 +114,7 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
       console.log("idOfSheet is null");
       return res.json("Backend error: compareClubCodeMiddleware ");
     }
-    req.sheetID = idOfSheet;
+    req.sheetId = idOfSheet;
     return next();
   } catch (error) {
     console.log(error);
@@ -126,7 +128,7 @@ exports.readAClub = async (req, res) => {
 
     //this specific which google spreadsheet we are acessing
 
-    const clubData = await sheetData(sheets, req.sheetID, "Information");
+    const clubData = await sheetData(sheets, req.sheetId, "Information");
 
     let sheetArray = [];
 
