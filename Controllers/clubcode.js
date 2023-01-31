@@ -27,8 +27,8 @@ exports.addClubCode = async (req, res, next) =>{
         });
         const userIDList = (userDataSheet).data.values;
         const listLength = userIDList?.length;
-        console.log(listLength);
-        console.log(userIDList);
+        console.log(`${listLength} listLength`);
+        console.log(`${userIDList} userIDList`);
         let rowNumber = 0;
         for (let i = 0; i < listLength; i++) {
             if (userIDList[i][0]=== UserID) {
@@ -37,10 +37,12 @@ exports.addClubCode = async (req, res, next) =>{
             }
         }
         console.log(rowNumber);
+        // get what clubs user is in
         const userWhatClubs = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: userDataSheetID,
             range: `userData!J${rowNumber}:J${rowNumber}`,
         });
+        console.log(`${userWhatClubs} userWhatClub`);
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: userDataSheetID,
             range: `userData!K${rowNumber}:K${rowNumber}`,
@@ -63,7 +65,7 @@ exports.addUserDataToClub = async (req, res) =>{
         // This gets the row number of the clubcode, this rownumber would "identify" the specific club
         const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
-            range: "Information!L2:L",
+            range: "clubData!L2:L",
         });
         const clubCodeList = (mainClubDataSheet).data.values;
         const clubCodesLength = clubCodeList?.length;
@@ -81,7 +83,7 @@ exports.addUserDataToClub = async (req, res) =>{
         // This uses the row number to get the club's sheetid
         const clubSheetData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
-            range: `Information!K${clubDataRowNumber}:K${clubDataRowNumber}`,
+            range: `clubData!K${clubDataRowNumber}:K${clubDataRowNumber}`,
         });
         let clubSheet = clubSheetData.data.values[0][0];
         console.log(clubSheet);
