@@ -56,7 +56,7 @@ exports.allClubData = async (req, res) => {
 
 //this will check if club exist
 //if club exist, return spreadsheetid
-exports.compareClubCodeMiddleware = async (req, res, next) => {
+exports.ifClubExist = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
     const userClubCode = req.body; //this is the data from the frontend
@@ -89,11 +89,26 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
       console.log("no such club");
       return res.json("no such club");
     }
+
     console.log(clubCodeFinder.alphabet, clubSheetIdFinder.alphabet);
+    req.clubCodeAlphabet = clubCodeFinder.alphabet;
+    req.clubSheetIdAlphabet = clubSheetIdFinder.alphabet;
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.returnSheetId = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const userClubCode = req.body;
+
+    const clubRange = "clubData";
     const clubSheetIdAndClubCode = await sheetData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `${clubRange}!${clubCodeFinder.alphabet}:${clubSheetIdFinder.alphabet}`
+      `${clubRange}!${req.clubCodeAlphabet}:${req.clubSheetIdAlphabet}`
     );
 
     console.log(clubSheetIdAndClubCode);

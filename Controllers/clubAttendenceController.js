@@ -2,7 +2,6 @@
 
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
-const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 const { sheetData, getSheetNames } = require("../utility.js");
 
 //get all the club attendence data
@@ -56,6 +55,14 @@ exports.getClubAttendenceData = async (req, res) => {
     res.json(attendenceData);
 
     console.log(attendence);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.generateQRcode = async (req, res, next) => {
+  console.log("running generateQRcode");
+  try {
   } catch (error) {
     console.log(error);
   }

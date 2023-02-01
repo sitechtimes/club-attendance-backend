@@ -23,7 +23,8 @@ router.get(
 router.post(
   "/one-club-data", //readClub
   sheetAuth.authSheetsMiddleware,
-  clubData.compareClubCodeMiddleware,
+  clubData.ifClubExist,
+  clubData.returnSheetId,
   clubData.readAClub
 );
 
@@ -46,26 +47,29 @@ router.post(
 router.post(
   "/get-club-attendence-date",
   sheetAuth.authSheetsMiddleware,
-  clubData.compareClubCodeMiddleware,
+  clubData.ifClubExist,
+  clubData.returnSheetId,
   clubAttendence.getClubAttendenceDate
 );
 
 router.post(
   "/get-club-attendence-data",
   sheetAuth.authSheetsMiddleware,
-  clubData.compareClubCodeMiddleware,
+  clubData.ifClubExist,
+  clubData.returnSheetId,
   clubAttendence.getClubAttendenceData
 );
 
 //the bottom need refactorization
 
 //create user using club code comparison
-router.post(
-  "/addMember",
-  sheetAuth.authSheetsMiddleware,
-  joinClub.compareClubCodeMiddleware,
-  joinClub.addUserToClub
-);
+// router.post(
+//   "/addMember",
+//   sheetAuth.authSheetsMiddleware,
+//   joinClub.ifClubExist,
+//   clubData.returnSheetId,
+//   joinClub.addUserToClub
+// );
 
 //log attendence using qr code comparison
 router.post(
