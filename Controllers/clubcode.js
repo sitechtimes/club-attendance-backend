@@ -37,12 +37,16 @@ exports.addClubCode = async (req, res, next) =>{
             }
         }
         console.log(rowNumber);
+
         // get what clubs user is in
         const userWhatClubs = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: userDataSheetID,
             range: `userData!J${rowNumber}:J${rowNumber}`,
         });
         console.log(`${userWhatClubs} userWhatClub`);
+        const clubObject = JSON.stringify(userWhatClubs);
+        console.log(`${clubObject}clubObject`);
+
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: userDataSheetID,
             range: `userData!K${rowNumber}:K${rowNumber}`,
