@@ -146,7 +146,7 @@ exports.createNewUser = async (req, res) => {
       req.userInfo.positionOfClub,
     ];
 
-    await addUserData(sheets, USER_DATA_SPREADSHEET_ID, value);
+    await addUserData(sheets, USER_DATA_SPREADSHEET_ID, "userData", value);
 
     const user = await getUserData(
       sheets,

@@ -8,8 +8,19 @@ const AttendeceDate = require("../Controllers/createAttendenceDateController");
 const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
-const addAttendence = require("../Controllers/addAttendeceDateController");
 const clubAttendence = require("../Controllers/clubAttendenceController");
+
+router.post(
+  "/test",
+  sheetAuth.authSheetsMiddleware,
+  clubData.ifClubExist,
+  clubData.returnSheetId,
+  clubAttendence.generateSheetData,
+  clubAttendence.userCopyToAttendence,
+  clubAttendence.totalMeeting,
+  clubAttendence.generateQrCodeOnSheet,
+  clubAttendence.generateQrCode
+);
 
 //read the main google spreadsheet data
 //need ti create auth
@@ -90,7 +101,5 @@ router.post(
 );
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
-
-router.post("/test");
 
 module.exports = router;

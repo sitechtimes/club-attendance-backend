@@ -164,7 +164,7 @@ const sheetRowNumberFinder = async (
 //verficationMiddleware
 //user data that was pass through after google auth verifcation
 //spreadsheetid is from the url id from google sheets
-const addUserData = async (sheets, spreadsheetId, value) => {
+const addUserData = async (sheets, spreadsheetId, range, value) => {
   //this is the value we are going to add to google sheets
   //value must be an array format
   let values = [value];
@@ -172,7 +172,7 @@ const addUserData = async (sheets, spreadsheetId, value) => {
   return Promise.resolve(
     await sheets.spreadsheets.values.append({
       spreadsheetId: spreadsheetId,
-      range: "userData",
+      range: range,
       valueInputOption: "USER_ENTERED",
       resource: {
         values: values,
@@ -270,7 +270,7 @@ const findAndUpdateValue = async (
   console.log(`userData!${columnThingFinder.alphabet}${rowUidNumber}`);
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
-    range: `userData!${columnThingFinder.alphabet}${rowUidNumber}`,
+    range: `${range}!${columnThingFinder.alphabet}${rowUidNumber}`,
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [[`${inputValue}`]],
@@ -293,13 +293,45 @@ const getSheetNames = async (sheets, spreadsheetId) => {
   return result;
 };
 
+const createNewSheetWithName = async (sheets, sheetId, sheetName) => {
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: sheetId,
+    resource: {
+      requests: [
+        {
+          addSheet: {
+            properties: {
+              //this is the data from the frontend for dates
+              title: sheetName,
+            },
+          },
+        },
+      ],
+    },
+  });
+};
+
+const generateRandomString = (length) => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 module.exports = {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
   sheetData,
   ifValueExist,
   addUserData,
-  getUserData,
+  getUserData, //revamp
+  //  getRowData, //revamp
   findAndUpdateValue,
   getSheetNames,
+  generateRandomString,
+  createNewSheetWithName,
 };
