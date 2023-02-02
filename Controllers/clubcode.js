@@ -25,6 +25,7 @@ exports.addClubCode = async (req, res, next) =>{
             spreadsheetId: userDataSheetID,
             range: "userData!A2:A",
         });
+        // idk why but we need do this
         const userIDList = (userDataSheet).data.values;
         const listLength = userIDList?.length;
         console.log(`${listLength} listLength`);
@@ -43,10 +44,15 @@ exports.addClubCode = async (req, res, next) =>{
             spreadsheetId: userDataSheetID,
             range: `userData!J${rowNumber}:J${rowNumber}`,
         });
-        console.log(`${userWhatClubs} userWhatClub`);
-        const clubObject = JSON.stringify(userWhatClubs);
+        // this is needed, these are the console logs and the turn into oject
+        const userClubList = (userWhatClubs).data.values;
+        console.log(`${userClubList} userWhatClub`);
+        const clubObject = JSON.parse(userClubList);
         console.log(`${clubObject}clubObject`);
+        // const hellome = JSON.stringify(clubObject);
+        // console.log(hellome);
 
+        
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: userDataSheetID,
             range: `userData!K${rowNumber}:K${rowNumber}`,
