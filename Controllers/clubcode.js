@@ -39,20 +39,6 @@ exports.addClubCode = async (req, res, next) =>{
         }
         console.log(rowNumber);
 
-        // get what clubs user is in
-        const userWhatClubs = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
-            spreadsheetId: userDataSheetID,
-            range: `userData!J${rowNumber}:J${rowNumber}`,
-        });
-        // this is needed, these are the console logs and the turn into oject
-        const userClubList = (userWhatClubs).data.values;
-        console.log(`${userClubList} userWhatClub`);
-        const clubObject = JSON.parse(userClubList);
-        console.log(`${clubObject}clubObject`);
-        // const hellome = JSON.stringify(clubObject);
-        // console.log(hellome);
-
-        
         google.sheets({ version: "v4", auth }).spreadsheets.values.update({
             spreadsheetId: userDataSheetID,
             range: `userData!K${rowNumber}:K${rowNumber}`,
@@ -72,7 +58,7 @@ exports.addUserDataToClub = async (req, res) =>{
     try {
         const UserID = req.body.user.uid;
         const ClubCode = req.body.clubCode;
-        // This gets the row number of the clubcode, this rownumber would "identify" the specific club
+        // This gets the row number of the clubcode, this rownumber would "identify" the specific club, MainClubdata row#
         const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
             range: "clubData!L2:L",
@@ -114,7 +100,7 @@ exports.addUserDataToClub = async (req, res) =>{
                 break;
             }
         }
-        console.log(userRowNumber2);
+        console.log(`${userRowNumber2} userRowNumber2`);
 
         // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
         const clubData = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
@@ -146,8 +132,69 @@ exports.addUserDataToClub = async (req, res) =>{
             values: [[firstName, lastName, UID, OSIS, `member`, grade, email, offClass]]
           },
         });
+
+        // This is used to get the row number of the user's data in their specific club
+        const clubNameSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: clubSheet,
+            range: "Information!C2:C",
+        });
+        const nameIDList = (clubNameSheet).data.values;
+        const nameListLength = nameIDList?.length;
+        console.log(`${nameIDList} nameIDList`);
+        console.log(`${nameListLength} nameListLength`);
+        let specificClubRowNumber = 0;
+        for (let i = 0; i < nameListLength; i++) {
+            if (nameIDList[i][0]=== UserID) {
+                specificClubRowNumber = i + 2;
+                break;
+            }
+        }
+        console.log(`${specificClubRowNumber} specificClubRowNumber`);
+
+        // get what clubs user is in
+        const userWhatClubs = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: userDataSheetID,
+            range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+        });
+        // this is needed, these are the console logs and the turn into oject
+        const userClubList = (userWhatClubs).data.values;
+        console.log(`${userClubList} userWhatClub`);
+        const clubObject = JSON.parse(userClubList);
+        console.log(`${clubObject} clubObject`);
+        // const hellome = JSON.stringify(clubObject);
+        // console.log(hellome);
+
+        // this gets the user's club's name
+        const clubName = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: MainClubData,
+            range: `A${clubDataRowNumber}:A${clubDataRowNumber}`,
+        });
+        let userClubName = clubName.data.values[0]
+        console.log(userClubName);
+
+        // this gets the user's club posiiton in that specific club.
+        const clubPosition = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+            spreadsheetId: clubSheet,
+            range: `E${specificClubRowNumber}:E${specificClubRowNumber}`,
+        });
+        let userClubPosition = clubPosition.data.values[0]
+        console.log(userClubPosition);
+        console.log(ClubCode);
+
+        let newPosition = `{"clubCode":"${ClubCode}","position":"${userClubPosition}","clubName":"${userClubName}"}`
+        console.log(`${newPosition} newPosition`);
+
+        const defaultClub = `[{"clubStatus":"User have not join any club yet."}]`;
+
+        if ( userWhatClubs === defaultClub) {
+            clubResponse = `[${newPosition}]`;
+            console.log(`${clubResponse} clubResponse`);
+        };
+
+        console.log(`${clubResponse} clubResponse`);
+        
     } catch (error) {
-        console.log(error);
+    console.log(error);     
     }
 };
 
