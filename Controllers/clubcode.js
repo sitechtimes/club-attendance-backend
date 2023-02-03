@@ -185,9 +185,14 @@ exports.addUserDataToClub = async (req, res) =>{
         console.log(`${newPosition} newPosition`);
 
         const defaultClub = `[{"clubStatus":"User have not join any club yet."}]`;
+        const defaultObj = JSON.parse(defaultClub);
+        console.log(defaultObj);
 
         let clubResponse = `hey`;
-        if ( userWhatClubs === defaultClub) {
+        console.log(clubObject === `[ ${defaultObj} ]`);
+        console.log(userClubList);
+        console.log(defaultClub);
+        if ( userClubList === defaultClub) {
             clubResponse = `[${newPosition}]`;
             console.log(`${clubResponse} clubResponse`);
         };
