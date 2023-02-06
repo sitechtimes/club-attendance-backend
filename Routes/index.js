@@ -11,7 +11,7 @@ const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
 
 router.post(
-  "/test",
+  "/get-qrcode",
   sheetAuth.authSheetsMiddleware,
   clubData.ifClubExist,
   clubData.returnSheetId,
@@ -101,5 +101,7 @@ router.post(
 );
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
+
+router.get("/test", sheetAuth.authSheetsMiddleware, verify.verifyUser);
 
 module.exports = router;

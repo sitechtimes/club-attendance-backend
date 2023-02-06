@@ -4,7 +4,11 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 //google spreadsheet id for "Main-Club-Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
-const { sheetColumnAlphabetFinder, ifValueExist } = require("../utility.js");
+const {
+  sheetColumnAlphabetFinder,
+  ifValueExist,
+  ifValueExistUsingUid,
+} = require("../utility.js");
 
 exports.verifyByGmailMiddleware = async (req, res, next) => {
   try {
@@ -52,6 +56,7 @@ exports.verifyByGmailMiddleware = async (req, res, next) => {
 exports.verifyUser = async (req, res, next) => {
   try {
     console.log("running verifyingUser");
+
     console.log(req.body);
     if (req.body.user === null) {
       return res.json("User is not log in");
@@ -59,25 +64,15 @@ exports.verifyUser = async (req, res, next) => {
 
     const uid = req.body.user.uid;
     const sheets = req.object.sheets;
-    const range = "userData";
 
     console.log(uid);
 
-    const ifUserExist = await sheetColumnAlphabetFinder(
+    const ifUserExist = await ifValueExistUsingUid(
       sheets,
       USER_DATA_SPREADSHEET_ID,
-      range,
-      "UID",
+      "userData!A:A",
       uid
-    ).then((res) => {
-      return ifValueExist(
-        sheets,
-        USER_DATA_SPREADSHEET_ID,
-        range,
-        res.columnNumber,
-        uid
-      );
-    });
+    );
 
     console.log(ifUserExist);
 

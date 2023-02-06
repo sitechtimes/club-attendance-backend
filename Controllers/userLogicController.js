@@ -15,7 +15,7 @@ const {
 } = require("../utility.js");
 
 //need to use this function to check if user is exist
-exports.checkUserData = async (req, res, next) => {
+exports.checkUserData = async (req, next) => {
   try {
     const range = "userData";
     const sheets = req.object.sheets;

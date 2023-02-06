@@ -25,13 +25,10 @@ const ifValueExist = async (
   columnNumber,
   valueComparing
 ) => {
-  console.log("running ifValueExist");
   const data = await sheetData(sheets, spreadsheetId, range);
   let suchVale = false;
+  //binary search
   for (let i = 0; data.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-
     let eachId = data[i][columnNumber];
     console.log(data[i]);
     console.log(eachId);
@@ -41,6 +38,33 @@ const ifValueExist = async (
     }
   }
   return Promise.resolve(suchVale);
+};
+
+function binarySearch(array, valueComparing) {
+  let start = 0;
+  let end = array.length - 1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    if (array[mid] === valueComparing) {
+      return true;
+    } else if (array[mid] < valueComparing) {
+      start = mid + 1;
+    } else end = mid - 1;
+  }
+  return false;
+}
+
+const ifValueExistUsingUid = async (
+  sheets,
+  spreadsheetId,
+  range,
+  valueComparing
+) => {
+  const datas = await sheetData(sheets, spreadsheetId, range);
+  const newData = datas.flat().sort((a, b) => {
+    return a - b;
+  });
+  return binarySearch(newData, valueComparing);
 };
 
 //find item row number from a spreadsheet's sheet
@@ -322,6 +346,23 @@ const generateRandomString = (length) => {
   return result;
 };
 
+const updateKnownRowAndColumn = async (
+  spreadsheetId,
+  range,
+  columnAlphabet,
+  rowNumber,
+  inputValue
+) => {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: spreadsheetId,
+    range: `${range}!${columnAlphabet}${rowNumber}`,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      values: [[inputValue]],
+    },
+  });
+};
+
 module.exports = {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
@@ -334,4 +375,6 @@ module.exports = {
   getSheetNames,
   generateRandomString,
   createNewSheetWithName,
+  updateKnownRowAndColumn,
+  ifValueExistUsingUid,
 };
