@@ -190,8 +190,9 @@ exports.addUserDataToClub = async (req, res) =>{
         console.log(`${userClubList}` === `${defaultClub}`);
         console.log(`${userClubList} userClubList`);
         console.log(`${defaultClub} defaultClub`);
-        console.log(`${clubResponse.includes(newPosition)} If clubResponse includes newPosition`);
+        console.log(`${`${userClubList}`.includes(`${newPosition}`)} If userClubList includes newPosition`);
         if (`${userClubList}` === `${defaultClub}`) {
+            console.log("Step 1")
             clubResponse = `[${newPosition}]`;
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
                 spreadsheetId: userDataSheetID,
@@ -202,8 +203,9 @@ exports.addUserDataToClub = async (req, res) =>{
                 },
               });
             console.log(`${clubResponse} clubResponse`);
-        } else if(console.log(clubResponse.includes(newPosition)) === true){
-            let clubResponse = userClubList
+        } else if(`${userClubList}`.includes(`${newPosition}`) === true){
+            console.log("Step 2");
+            let clubResponse = `${userClubList}`
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
                 spreadsheetId: userDataSheetID,
                 range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
