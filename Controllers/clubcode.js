@@ -158,9 +158,9 @@ exports.addUserDataToClub = async (req, res) =>{
         });
         // this is needed, these are the console logs and the turn into oject
         const userClubList = (userWhatClubs).data.values;
-        console.log(`${userClubList} userWhatClub`);
-        const clubObject = JSON.parse(userClubList);
-        console.log(`${clubObject} clubObject`);
+        console.log(`${userClubList} userClubList`);
+        const clubString = JSON.stringify(userClubList);
+        console.log(`${clubString} clubString`);
         // const hellome = JSON.stringify(clubObject);
         // console.log(hellome);
 
@@ -185,19 +185,47 @@ exports.addUserDataToClub = async (req, res) =>{
         console.log(`${newPosition} newPosition`);
 
         const defaultClub = `[{"clubStatus":"User have not join any club yet."}]`;
-        const defaultObj = JSON.parse(defaultClub);
-        console.log(defaultObj);
 
-        let clubResponse = `hey`;
-        console.log(clubObject === `[ ${defaultObj} ]`);
-        console.log(userClubList);
-        console.log(defaultClub);
-        if ( userClubList === defaultClub) {
+        let clubResponse = `[${newPosition}]`;
+        console.log(`${userClubList}` === `${defaultClub}`);
+        console.log(`${userClubList} userClubList`);
+        console.log(`${defaultClub} defaultClub`);
+        console.log(`${clubResponse.includes(newPosition)} If clubResponse includes newPosition`);
+        if (`${userClubList}` === `${defaultClub}`) {
             clubResponse = `[${newPosition}]`;
+            google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+                spreadsheetId: userDataSheetID,
+                range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+                valueInputOption: "USER_ENTERED",
+                resource:{
+                  values: [[clubResponse]]
+                },
+              });
             console.log(`${clubResponse} clubResponse`);
-        };
-
-        console.log(`${clubResponse} clubResponse`);
+        } else if(console.log(clubResponse.includes(newPosition)) === true){
+            let clubResponse = userClubList
+            google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+                spreadsheetId: userDataSheetID,
+                range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+                valueInputOption: "USER_ENTERED",
+                resource:{
+                  values: [[clubResponse]]
+                },
+            });
+        } else {
+            const userClubListString = `${userClubList}`
+            let clubResponse = userClubListString.replace("]", `,${newPosition}]`)
+            console.log(`${clubResponse} clubresponse step 3`);
+            console.log(clubResponse.includes(newPosition));
+            google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+                spreadsheetId: userDataSheetID,
+                range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+                valueInputOption: "USER_ENTERED",
+                resource:{
+                  values: [[clubResponse]]
+                },
+            });
+        }
         
     } catch (error) {
     console.log(error);     
