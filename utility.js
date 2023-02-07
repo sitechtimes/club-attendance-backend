@@ -25,6 +25,7 @@ const ifValueExist = async (
   columnNumber,
   valueComparing
 ) => {
+  console.log(valueComparing);
   const data = await sheetData(sheets, spreadsheetId, range);
   let suchVale = false;
   //binary search
