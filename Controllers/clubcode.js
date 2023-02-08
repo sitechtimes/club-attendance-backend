@@ -30,6 +30,7 @@ exports.addClubCode = async (req, res, next) =>{
         const listLength = userIDList?.length;
         console.log(`${listLength} listLength`);
         console.log(`${userIDList} userIDList`);
+        // This gets the row number of the user in the User Data Sheet
         let rowNumber = 0;
         for (let i = 0; i < listLength; i++) {
             if (userIDList[i][0]=== UserID) {
@@ -181,6 +182,7 @@ exports.addUserDataToClub = async (req, res) =>{
         console.log(userClubPosition);
         console.log(ClubCode);
 
+        // This is the user's new club
         let newPosition = `{"clubCode":"${ClubCode}","position":"${userClubPosition}","clubName":"${userClubName}"}`
         console.log(`${newPosition} newPosition`);
 
@@ -198,6 +200,7 @@ exports.addUserDataToClub = async (req, res) =>{
         console.log(`${defaultClub} defaultClub`);
         console.log(`${`${userClubList}`.includes(`${newPosition}`)} If userClubList includes newPosition`);
         if (`${userClubList}` === `${defaultClub}`) {
+            // This is to change the "user got no club" to a real club. 
             console.log("Step 1")
             clubResponse = `[${newPosition}]`;
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
@@ -210,6 +213,7 @@ exports.addUserDataToClub = async (req, res) =>{
               });
             console.log(`${clubResponse} clubResponse`);
         } else if(`${userClubList}`.includes(`${newPosition}`) === true){
+            // This prevent users from adding the same club twice. 
             console.log("Step 2");
             let clubResponse = `${userClubList}`
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
@@ -220,7 +224,8 @@ exports.addUserDataToClub = async (req, res) =>{
                   values: [[clubResponse]]
                 },
             });
-        } else {
+        } else { 
+            // This is to add a new club to the list of clubs. 
             const userClubListString = `${userClubList}`
             let clubResponse = userClubListString.replace("]", `,${newPosition}]`)
             console.log(`${clubResponse} clubresponse step 3`);
