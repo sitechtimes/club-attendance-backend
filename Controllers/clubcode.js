@@ -184,6 +184,12 @@ exports.addUserDataToClub = async (req, res) =>{
         let newPosition = `{"clubCode":"${ClubCode}","position":"${userClubPosition}","clubName":"${userClubName}"}`
         console.log(`${newPosition} newPosition`);
 
+        if(`${userClubList}`.includes(`${newPosition}`) === true){
+            res.json(`club already exists`);
+        } else {
+            res.json(newPosition);
+        }
+
         const defaultClub = `[{"clubStatus":"User have not join any club yet."}]`;
 
         let clubResponse = `[${newPosition}]`;
@@ -228,7 +234,6 @@ exports.addUserDataToClub = async (req, res) =>{
                 },
             });
         }
-        
     } catch (error) {
     console.log(error);     
     }
