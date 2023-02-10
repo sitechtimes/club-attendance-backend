@@ -16,26 +16,66 @@ const auth = new google.auth.GoogleAuth({
 exports.newMeeting = async (req, res, next) =>{
     try {
         console.log(req.body);
-        const UserID = req.body.user.uid;
-        const ClubCode = req.body.clubCode;
+        const clubName = tempClub;
 
         // This gets the row number of the clubname, this rownumber would "identify" the specific club, MainClubdata row#
         const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: MainClubData,
-            range: "clubData!L2:L",
+            range: "clubData!A2:A",
         });
-        const clubCodeList = (mainClubDataSheet).data.values;
-        const clubCodesLength = clubCodeList?.length;
-        console.log(clubCodeList);
-        console.log(clubCodesLength);
+        const clubNameList = (mainClubDataSheet).data.values;
+        const clubNamesLength = clubNameList?.length;
+        console.log(clubNameList);
+        console.log(clubNamesLength);
         let clubDataRowNumber = 0;
-        for (let i = 0; i < clubCodesLength; i++) {
-            if (clubCodeList[i][0] === ClubCode) {
+        for (let i = 0; i < clubNamesLength; i++) {
+            if (clubNameList[i][0] === clubName) {
                 clubDataRowNumber = i + 2;
                 break;
             }
         }
         console.log(clubDataRowNumber);
+
+        if (`${userClubList}` === `${defaultClub}`) {
+            // This is to change the "user got no club" to a real club. 
+            console.log("Step 1")
+            clubResponse = `[${newPosition}]`;
+            google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+                spreadsheetId: userDataSheetID,
+                range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+                valueInputOption: "USER_ENTERED",
+                resource:{
+                  values: [[clubResponse]]
+                },
+              });
+            console.log(`${clubResponse} clubResponse`);
+        } else if(`${userClubList}`.includes(`${newPosition}`) === true){
+            // This prevent users from adding the same club twice. 
+            console.log("Step 2");
+            let clubResponse = `${userClubList}`
+            google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+                spreadsheetId: userDataSheetID,
+                range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+                valueInputOption: "USER_ENTERED",
+                resource:{
+                  values: [[clubResponse]]
+                },
+            });
+        } else { 
+            // This is to add a new club to the list of clubs. 
+            const userClubListString = `${userClubList}`
+            let clubResponse = userClubListString.replace("]", `,${newPosition}]`)
+            console.log(`${clubResponse} clubresponse step 3`);
+            console.log(clubResponse.includes(newPosition));
+            google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+                spreadsheetId: userDataSheetID,
+                range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+                valueInputOption: "USER_ENTERED",
+                resource:{
+                  values: [[clubResponse]]
+                },
+            });
+        }
 
     } catch (error) {
         console.log(error);
