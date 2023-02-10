@@ -5,7 +5,7 @@ const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 
 //This middleware compare the incoming club code from frontend
 //to the club code in the google spreadsheet.
-exports.compareClubCodeMiddleware = async (req, res, next) => {
+exports.compareClubCodeMiddleware = async (req, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
     const userClubCode = req.body; //this is the data from the frontend

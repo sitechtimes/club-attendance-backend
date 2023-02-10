@@ -41,20 +41,6 @@ const ifValueExist = async (
   return Promise.resolve(suchVale);
 };
 
-function binarySearch(array, valueComparing) {
-  let start = 0;
-  let end = array.length - 1;
-  while (start <= end) {
-    let mid = Math.floor((start + end) / 2);
-    if (array[mid] === valueComparing) {
-      return true;
-    } else if (array[mid] < valueComparing) {
-      start = mid + 1;
-    } else end = mid - 1;
-  }
-  return false;
-}
-
 const ifValueExistUsingUid = async (
   sheets,
   spreadsheetId,
@@ -65,7 +51,18 @@ const ifValueExistUsingUid = async (
   const newData = datas.flat().sort((a, b) => {
     return a - b;
   });
-  return binarySearch(newData, valueComparing);
+
+  let start = 0;
+  let end = newData.length - 1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    if (newData[mid] === valueComparing) {
+      return true;
+    } else if (newData[mid] < valueComparing) {
+      start = mid + 1;
+    } else end = mid - 1;
+  }
+  return false;
 };
 
 //find item row number from a spreadsheet's sheet
@@ -240,12 +237,12 @@ const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
     firstName: user[1],
     lastName: user[2],
     email: user[3],
-    type: user[4],
+    clientAuthority: user[4],
     osis: user[5],
     grade: user[6],
     officalClass: user[7],
     emailDomain: user[8],
-    positionOfClub: JSON.parse(user[9]),
+    clubData: JSON.parse(user[9]),
   };
 
   return Promise.resolve(newUserDataObject);
