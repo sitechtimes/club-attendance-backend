@@ -9,7 +9,12 @@ const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const getAttendence = require("../Controllers/getAttendenceController");
 const addClub = require("../Controllers/clubcode");
+const addMeeting = require("../Controllers/newMeeting");
 
+router.post(
+  "/addMeeting",
+  addMeeting.newMeeting,
+);
 
 router.post(
   "/addclub",
