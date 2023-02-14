@@ -9,6 +9,18 @@ const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
+const addMeeting = require("../Controllers/newMeeting");
+
+router.post(
+  "/addMeeting",
+  addMeeting.newMeeting,
+);
+
+router.post(
+  "/addclub",
+  addClub.addClubCode,
+  addClub.addUserDataToClub,
+);
 
 router.post(
   "/get-qrcode",
