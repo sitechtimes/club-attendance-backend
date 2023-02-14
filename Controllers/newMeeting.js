@@ -42,6 +42,11 @@ exports.newMeeting = async (req, res, next) =>{
         });
         let meetingList = clubmeeting.data.values[0]
 
+        if(`${meetingList}`.includes(`${newMeeting}`) === true){
+            res.json(`Meeting already exist`);
+        } else {
+            res.json(newMeeting);
+        }
 
         const meetingDefault = `No Meetings`;
         if (`${meetingList}` === `${meetingDefault}`) {
