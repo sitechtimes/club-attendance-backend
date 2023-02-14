@@ -23,6 +23,11 @@ router.post(
 );
 
 router.post(
+  "/newMeeting",
+  newMeeting.newMeeting,
+);
+
+router.post(
   "/login",
   verify.verifyByGmailMiddleware,
   sheetAuth.authSheetsMiddleware,
