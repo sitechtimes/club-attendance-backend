@@ -17,9 +17,9 @@ router.post(
   clubData.returnSheetId,
   clubAttendence.generateSheetData,
   clubAttendence.userCopyToAttendence,
-  clubAttendence.totalMeeting,
   clubAttendence.generateQrCodeOnSheet,
-  clubAttendence.generateQrCode
+  clubAttendence.generateQrCode,
+  clubAttendence.totalMeeting
 );
 
 //read the main google spreadsheet data

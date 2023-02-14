@@ -1,5 +1,4 @@
 "use strict";
-
 require("dotenv").config({ path: "variables.env" });
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
@@ -101,19 +100,33 @@ exports.userCopyToAttendence = async (req, res, next) => {
     const clubData = await sheetData(sheets, sheetId, clubRange);
 
     let copyUserValueForAttenence = [];
-    clubData.forEach((user) => {
+    for (let i = 0; clubData.length > i; i++) {
+      if (i === 0) {
+        copyUserValueForAttenence.push([
+          clubData[i][0],
+          clubData[i][1],
+          clubData[i][2],
+          clubData[i][3],
+          clubData[i][4],
+          clubData[i][5],
+          clubData[i][6],
+          clubData[i][7],
+          "Status",
+        ]);
+        continue;
+      }
       copyUserValueForAttenence.push([
-        user[0],
-        user[1],
-        user[2],
-        user[3],
-        user[4],
-        user[5],
-        user[6],
-        user[7],
+        clubData[i][0],
+        clubData[i][1],
+        clubData[i][2],
+        clubData[i][3],
+        clubData[i][4],
+        clubData[i][5],
+        clubData[i][6],
+        clubData[i][7],
         "absent",
       ]);
-    });
+    }
 
     //maybe chnage addUserData to be name
     for (let i = 0; copyUserValueForAttenence.length >= i; i++) {
@@ -174,7 +187,6 @@ exports.totalMeeting = async (req, res, next) => {
         values: [[totalMeetingString]],
       },
     });
-    return next();
   } catch (error) {
     console.log(error);
   }
@@ -208,7 +220,7 @@ exports.generateQrCodeOnSheet = async (req, res, next) => {
 };
 
 //second
-exports.generateQrCode = async (req, res) => {
+exports.generateQrCode = async (req, res, next) => {
   try {
     QRCode.toDataURL(
       req.randomString,
@@ -222,5 +234,16 @@ exports.generateQrCode = async (req, res) => {
         res.json(url);
       }
     );
-  } catch (error) {}
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getQrcode = async (req, next) => {
+  try {
+    const qrCode = req.body.qrCode;
+  } catch (error) {
+    console.log(error);
+  }
 };
