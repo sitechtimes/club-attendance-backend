@@ -23,8 +23,8 @@ router.post(
 );
 
 router.post(
-  "/newMeeting",
-  newMeeting.newMeeting,
+  "/addMeeting",
+  addMeeting.newMeeting,
 );
 
 router.post(
