@@ -5,7 +5,7 @@ const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 
 //This middleware compare the incoming club code from frontend
 //to the club code in the google spreadsheet.
-exports.compareClubCodeMiddleware = async (req, res, next) => {
+exports.compareClubCodeMiddleware = async (req, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
     const userClubCode = req.body; //this is the data from the frontend
@@ -13,12 +13,13 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
     //this specific which google spreadsheet we are acessing
     const getClubCodeArray = await sheets.spreadsheets.values.get({
       spreadsheetId: CLUB_DATA_SPREADSHEET_ID,
-      range: "Information!H1:I5",
+      range: "clubData!K1:L5",
     });
 
     //this gets the google spreadsheet's row data
     const qrValue = getClubCodeArray.data.values;
 
+    console.log(qrValue);
     //this variable will be needed to access the specific club google spreadsheet id
     let idOfSheet = null;
 
@@ -26,6 +27,7 @@ exports.compareClubCodeMiddleware = async (req, res, next) => {
     function googleIDCode() {
       for (let i = 0; qrValue.length > i; i++) {
         let eachClubCode = qrValue[i][1];
+        console.log(eachClubCode);
         if (eachClubCode === userClubCode.clubCode) {
           idOfSheet = qrValue[i][0];
         }
@@ -87,6 +89,18 @@ exports.addUserToClub = async (req, res) => {
   }
 };
 
+const getSheets = async (sheets, spreadsheetId) => {
+  const result = (
+    await sheets.spreadsheets.get({
+      spreadsheetId,
+    })
+  ).data.sheets.map((sheet) => {
+    return sheet.properties.title;
+  });
+  console.log(result);
+  return result;
+};
+
 //this will read all the spreadsheet data
 exports.readCell = async (req, res) => {
   try {
@@ -98,7 +112,37 @@ exports.readCell = async (req, res) => {
       range: "Information",
     });
 
-    res.send(getRows.data);
+    const sheetValues = getRows.data.values;
+
+    let sheetArray = [];
+
+    //this is what change the array into object
+    sheetValues.forEach((element) => {
+      const turnArrayToObject = Object.assign({}, element);
+      sheetArray.push(turnArrayToObject);
+    });
+
+    //this will have a new array that rearrange the data into better
+    //formatting
+
+    const sheetObject = sheetArray.map((value) => ({
+      firstName: value[0],
+      lastName: value[1],
+      uid: value[2],
+      osis: value[3],
+      position: value[4],
+      grade: value[5],
+      email: value[6],
+      officalClass: value[7],
+      numbOfAttendence: value[8],
+      numbOfAbsent: value[9],
+    }));
+
+    sheetObject.shift();
+
+    console.log(sheetObject);
+
+    res.json(sheetObject);
   } catch (error) {
     // need better error handling
     // https://expressjs.com/en/guide/error-handling.html
@@ -109,5 +153,22 @@ exports.readCell = async (req, res) => {
     ) {
       res.json("Invaild Club Code");
     }
+  }
+};
+
+exports.getAttendenceDate = async (req, res) => {
+  try {
+    const sheets = req.object.sheets;
+    const attendeceDate = await getSheets(sheets, req.sheetID).then(
+      (response) => {
+        response.shift();
+        return response;
+      }
+    );
+
+    console.log(attendeceDate);
+    res.json(attendeceDate);
+  } catch (error) {
+    console.log(error);
   }
 };

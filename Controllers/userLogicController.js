@@ -4,119 +4,35 @@ require("dotenv").config({ path: "variables.env" });
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
+const {
+  sheetColumnAlphabetFinder,
+  sheetRowNumberFinder,
+  sheetData,
+  ifValueExist,
+  addUserData,
+  getUserData,
+  findAndUpdateValue,
+} = require("../utility.js");
 
-//this function add user to google, which takes three
-// parameter: sheet, which is sheet id from req.obect from
-//verficationMiddleware
-//user data that was pass through after google auth verifcation
-//spreadsheetid is from the url id from google sheets
-async function addUserData(sheet, userData, spreadsheetId) {
-  //this is the value we are going to add to google sheets
-  let values = [
-    [
-      userData.sub,
-      userData.given_name,
-      userData.family_name,
-      userData.email,
-      userData.type,
-      userData.osis,
-      userData.grade,
-      userData.officalClass,
-      userData.hd,
-      userData.positionOfClub,
-    ],
-  ];
-
-  return Promise.resolve(
-    await sheet.spreadsheets.values.append({
-      spreadsheetId: spreadsheetId,
-      range: "userData",
-      valueInputOption: "USER_ENTERED",
-      resource: {
-        values: values,
-      },
-    })
-  );
-}
-
-//this function compare two values one from the google sheet
-//and another from user input
-function compareValue(spreadSheetValue, valueComparing) {
-  let suchVale = false;
-  for (let i = 0; spreadSheetValue.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = spreadSheetValue[i][0];
-
-    if (eachId === valueComparing) {
-      suchVale = true;
-      break;
-    }
-  }
-  return Promise.resolve(suchVale);
-}
-
-//this function will return the user data from the google sheet called userdata
-async function userDataExist(sheets, spreadsheetId, range) {
-  const studentData = await sheets.spreadsheets.values.get({
-    spreadsheetId: spreadsheetId,
-    range: range,
-  });
-
-  const credentialData = studentData.data.values;
-  return credentialData;
-}
-
-//this function get user data from "User Data" google sheet
-function getUserData(spreadSheetValue, valueComparing) {
-  let user = null;
-  for (let i = 0; spreadSheetValue.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = spreadSheetValue[i][0];
-
-    if (eachId === valueComparing) {
-      user = spreadSheetValue[i];
-      break;
-    }
-  }
-
-  const newUserDataObject = {
-    uid: user[0],
-    firstName: user[1],
-    lastName: user[2],
-    email: user[3],
-    type: user[4],
-    osis: user[5],
-    grade: user[6],
-    officalClass: user[7],
-    emailDomain: user[8],
-    positionOfClub: JSON.parse(user[9]),
-  };
-
-  return Promise.resolve(newUserDataObject);
-}
-
-//need to use this function to check if user is exist
 exports.checkUserData = async (req, res, next) => {
   try {
-    const sheetsValue = req.object.sheets;
-    console.log("student");
-    // google sheet api range
     const range = "userData";
-
-    const ifUserExist = await userDataExist(
-      sheetsValue,
+    const sheets = req.object.sheets;
+    const findUidColumn = await sheetColumnAlphabetFinder(
+      sheets,
       USER_DATA_SPREADSHEET_ID,
-      range
-    ).then((response) =>
-      compareValue(response, req.userInfo.sub).then((compareValueResponse) => {
-        return compareValueResponse;
-      })
+      range,
+      "UID"
+    );
+    const ifUserExist = await ifValueExist(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      range,
+      findUidColumn.columnNumber,
+      req.userInfo.sub
     );
 
     req.ifUserExist = ifUserExist;
-
     return next();
   } catch (error) {
     console.log(error);
@@ -128,17 +44,14 @@ exports.sendBackUserData = async (req, res, next) => {
   try {
     // google sheet api range
     const range = "userData";
-    const sheetsValue = req.object.sheets;
+    const sheets = req.object.sheets;
 
     if (req.ifUserExist) {
-      const user = await userDataExist(
-        sheetsValue,
+      const user = await getUserData(
+        sheets,
         USER_DATA_SPREADSHEET_ID,
-        range
-      ).then((response) =>
-        getUserData(response, req.userInfo.sub).then((getUserDataeResponse) => {
-          return getUserDataeResponse;
-        })
+        range,
+        req.userInfo.sub
       );
       console.log(user);
       const response = user;
@@ -151,37 +64,9 @@ exports.sendBackUserData = async (req, res, next) => {
   }
 };
 
-function getEveryValue(spreadSheetValue, valueComparing) {
-  let eachClubPostion = [];
-  for (let i = 0; spreadSheetValue.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = spreadSheetValue[i][5];
-
-    if (eachId === valueComparing) {
-      eachClubPostion.push(spreadSheetValue[i]);
-    }
-  }
-  return Promise.resolve(eachClubPostion);
-}
-
-async function checkIfPresident(sheets, spreadsheetId, valueComparing, range) {
-  const response = await userDataExist(sheets, spreadsheetId, range).then(
-    async (userDataExistResponse) => {
-      const compareValueResponse = await getEveryValue(
-        userDataExistResponse,
-        valueComparing
-      );
-      return compareValueResponse;
-    }
-  );
-
-  return response;
-}
-
 exports.createNewUser = async (req, res) => {
-  const sheetsValue = req.object.sheets;
   try {
+    const sheets = req.object.sheets;
     console.log("user data did not exist");
 
     req.userInfo.type = "student";
@@ -189,27 +74,52 @@ exports.createNewUser = async (req, res) => {
     req.userInfo.grade = "none";
     req.userInfo.officalClass = "none";
 
-    const ifPresident = await checkIfPresident(
-      sheetsValue,
+    const columnUidFinder = await sheetColumnAlphabetFinder(
+      sheets,
       CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      "President's UID"
+    );
+    const rowUidNumber = await sheetRowNumberFinder(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
       req.userInfo.sub,
-      "Information"
-    ).then((response) => {
-      return response;
-    });
+      columnUidFinder.columnNumber,
+      true
+    );
+    const presidentArray = [];
+    for (let i = 0; i < rowUidNumber.length; i++) {
+      const data = await sheetData(
+        sheets,
+        CLUB_DATA_SPREADSHEET_ID,
+        `clubData!${rowUidNumber[i]}:${rowUidNumber[i]}`
+      );
+      presidentArray.push(data[0]);
+    }
+    const clubCodeColumnNumber = await sheetColumnAlphabetFinder(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      "Club Code"
+    );
+    const clubNameColumnNumber = await sheetColumnAlphabetFinder(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      "Club Name"
+    );
 
-    if (ifPresident.length !== 0) {
+    if (presidentArray.length !== 0) {
       const presidentObject = [];
-
-      ifPresident.forEach((array) => {
-        console.log(array[8]);
+      presidentArray.forEach((array) => {
         const object = {
-          clubCode: array[11],
-          postion: "president",
+          clubCode: array[clubCodeColumnNumber.columnNumber],
+          position: "president",
+          clubName: array[clubNameColumnNumber.columnNumber],
         };
         presidentObject.push(object);
       });
-
       console.log(presidentObject);
       req.userInfo.positionOfClub = JSON.stringify(presidentObject);
     } else {
@@ -219,106 +129,47 @@ exports.createNewUser = async (req, res) => {
         },
       ]);
     }
+
     console.log(req.userInfo);
 
-    const response = await addUserData(
-      sheetsValue,
-      req.userInfo,
-      USER_DATA_SPREADSHEET_ID
-    ).then(async () => {
-      return await userDataExist(
-        sheetsValue,
-        USER_DATA_SPREADSHEET_ID,
-        "userData"
-      ).then((response) =>
-        getUserData(response, req.userInfo.sub).then((getUserDataeResponse) => {
-          return getUserDataeResponse;
-        })
-      );
-    });
+    const value = [
+      req.userInfo.sub,
+      req.userInfo.given_name,
+      req.userInfo.family_name,
+      req.userInfo.email,
+      req.userInfo.type,
+      req.userInfo.osis,
+      req.userInfo.grade,
+      req.userInfo.officalClass,
+      req.userInfo.hd,
+      req.userInfo.positionOfClub,
+    ];
+
+    await addUserData(sheets, USER_DATA_SPREADSHEET_ID, "userData", value);
+
+    const user = await getUserData(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      "userData",
+      req.userInfo.sub
+    );
 
     console.log("user created");
-    return res.json(response);
+    return res.json(user);
   } catch (error) {
     console.log(error);
   }
 };
 
 //Additional Information(osis, grade, offical class)
-exports.aaaaa = async (res, req) => {
-  console.log(req.user);
-  if (req.user.additionalInfoType === "osis") {
-    const sheetsValue = req.object.sheets;
-    const range = "userData";
-
-    await userDataExist(sheetsValue, USER_DATA_SPREADSHEET_ID, range).then(
-      async (response) => {
-        console.log("test");
-        console.log(response);
-        console.log("test");
-
-        for (let i = 0; response.length > i; i++) {
-          //the number zero need to be change to the data representing number
-          //0 might return "Michael" for example
-          let eachId = spreadSheetValue[i][0];
-
-          if (eachId === valueComparing) {
-            suchVale = true;
-            break;
-          }
-        }
-
-        await sheets.spreadsheets.values.update({
-          spreadsheetId: id,
-          range: range,
-          valueInputOption: "USER_ENTERED",
-          resource: {
-            values: [["2. Sophomore"]],
-          },
-        });
-      }
-    );
-  } else if (req.body.additionalInfoType === "officalClass") {
-  } else if (req.body.additionalInfoType === "grade") {
-  }
-};
-
-exports.addOsisGradeOfficalClass = async (req, res, next) => {
+exports.addOsisGradeOfficalClass = async (req, res) => {
+  console.log("addOsisGradeOfficalClass");
   try {
     console.log(req.body);
     console.log(req.body.additionalInfoType);
 
-    const sheetsValue = req.object.sheets;
-    async function findAndUpdateValue(rowAlphabet) {
-      await userDataExist(sheetsValue, USER_DATA_SPREADSHEET_ID, "userData")
-        .then(async (response) => {
-          console.log(response);
-          let rowNumber = 0;
-
-          for (let i = 0; response.length > i; i++) {
-            //the number zero need to be change to the data representing number
-            //0 might return "Michael" for example
-            let eachId = response[i][0];
-            rowNumber++;
-
-            if (eachId === req.body.user.uid) {
-              break;
-            }
-          }
-          console.log(rowNumber);
-          return rowNumber;
-        })
-        .then(async (number) => {
-          await sheetsValue.spreadsheets.values.update({
-            spreadsheetId: USER_DATA_SPREADSHEET_ID,
-            range: `userData!${rowAlphabet}${number}`,
-            valueInputOption: "USER_ENTERED",
-            resource: {
-              values: [[`${req.body.additionalInfoValue}`]],
-            },
-          });
-        });
-    }
+    const sheets = req.object.sheets;
+    const range = "userData";
 
     //do we really need function constructor?
     function ReturnResponse(status, type, value) {
@@ -327,38 +178,45 @@ exports.addOsisGradeOfficalClass = async (req, res, next) => {
       this.value = value;
     }
 
-    if (req.body.additionalInfoType === "osis") {
-      findAndUpdateValue("F");
-      console.log("updated OSIS");
-      const response = new ReturnResponse(
-        "Successful",
-        "osis",
-        req.body.additionalInfoValue
-      );
-      return res.json(response);
-    } else if (req.body.additionalInfoType === "officalClass") {
-      findAndUpdateValue("H");
-      console.log("updated offical class");
-      const response = new ReturnResponse(
-        "Successful",
-        "officalClass",
-        req.body.additionalInfoValue
-      );
-      return res.json(response);
-    } else if (req.body.additionalInfoType === "grade") {
-      findAndUpdateValue("G");
-      console.log("updated grade");
-      const response = new ReturnResponse(
-        "Successful",
-        "grade",
-        req.body.additionalInfoValue
-      );
-      return res.json(response);
-    } else {
-      return res.json({
-        response: "Unsucessfull",
-      });
-    }
+    await findAndUpdateValue(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      range,
+      req.body.additionalInfoType, //osis
+      "UID",
+      req.body.user.uid,
+      req.body.additionalInfoValue
+    );
+
+    const response = new ReturnResponse(
+      "Successful",
+      req.body.additionalInfoType,
+      req.body.additionalInfoValue
+    );
+    return res.json(response);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.test = async (req, res) => {
+  try {
+    console.log("running test");
+    const sheets = req.object.sheets;
+
+    const user = await sheets.spreadsheets.values.append({
+      spreadsheetId: USER_DATA_SPREADSHEET_ID,
+      range: `userData!E2`,
+      includeValuesInResponse: true,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [["`${inputValue}`"]],
+      },
+    });
+
+    console.log(user);
+
+    return res.json("hehhe");
   } catch (error) {
     console.log(error);
   }
