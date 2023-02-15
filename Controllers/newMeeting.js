@@ -15,8 +15,10 @@ const auth = new google.auth.GoogleAuth({
 exports.newMeeting = async (req, res, next) =>{
     try {
         console.log(req.body);
-        const clubName = "Chinese Culture Club";
-        const newMeeting = "9/2/2023"
+        const clubName = req.body.clubName;
+        const newMeeting = req.body.newMeeting;
+        const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
+        const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
         // This gets the row number of the clubname, this rownumber would "identify" the specific club, MainClubdata row#
         const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
@@ -40,7 +42,8 @@ exports.newMeeting = async (req, res, next) =>{
             spreadsheetId: MainClubData,
             range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
         });
-        let meetingList = clubmeeting.data.values[0]
+        let thisMeetingList = clubmeeting.data.values[0]
+        let meetingList = `${thisMeetingList}`
 
         if(`${meetingList}`.includes(`${newMeeting}`) === true){
             res.json(`Meeting already exist`);
@@ -53,6 +56,7 @@ exports.newMeeting = async (req, res, next) =>{
             // This is to change the "user got no club" to a real club. 
             console.log("Step 1")
             meetingResponse = newMeeting;
+            console.log(meetingResponse);
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
                 spreadsheetId: MainClubData,
                 range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
@@ -65,10 +69,11 @@ exports.newMeeting = async (req, res, next) =>{
         } else if(`${meetingList}`.includes(`${newMeeting}`) === true){
             // This prevent users from adding the same club twice. 
             console.log("Step 2");
-            let meetingResponse = `${meetingList}`
+            let meetingResponse = meetingList;
+            console.log(meetingResponse);
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
                 spreadsheetId: mainClubDataSheet,
-                range: `clubData!J${clubDataRowNumber}:J${clubDataRowNumber}`,
+                range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
                 valueInputOption: "USER_ENTERED",
                 resource:{
                   values: [[meetingResponse]]
@@ -77,12 +82,12 @@ exports.newMeeting = async (req, res, next) =>{
         } else { 
             // This is to add a new club to the list of clubs. 
             const meetingListString = `${meetingList}`
-            let meetingResponse = meetingListString.concat(`, ${newPosition}]`)
+            let meetingResponse = meetingListString.concat(`, ${newMeeting}`)
             console.log(`${meetingResponse} meetingresponse step 3`);
             console.log(meetingResponse.includes(newMeeting));
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
                 spreadsheetId: userDataSheetID,
-                range: `userData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
+                range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
                 valueInputOption: "USER_ENTERED",
                 resource:{
                   values: [[meetingResponse]]
