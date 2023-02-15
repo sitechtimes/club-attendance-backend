@@ -56,11 +56,13 @@ exports.getClubAttendenceData = async (req, res) => {
     const attendenceData = sheetArray.map((value) => ({
       firstName: value[0],
       lastName: value[1],
-      osis: value[2],
-      grade: value[3],
-      officalClass: value[4],
-      uid: value[5],
-      status: value[6],
+      uid: value[2],
+      osis: value[3],
+      position: value[4],
+      grade: value[5],
+      email: value[6],
+      officalClass: value[7],
+      status: value[7],
     }));
     attendenceData.shift();
 
