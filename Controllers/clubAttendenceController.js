@@ -62,7 +62,7 @@ exports.getClubAttendenceData = async (req, res) => {
       grade: value[5],
       email: value[6],
       officalClass: value[7],
-      status: value[7],
+      status: value[8],
     }));
     attendenceData.shift();
 
