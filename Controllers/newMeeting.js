@@ -72,7 +72,7 @@ exports.newMeeting = async (req, res, next) =>{
             let meetingResponse = meetingList;
             console.log(meetingResponse);
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-                spreadsheetId: mainClubDataSheet,
+                spreadsheetId: MainClubData,
                 range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
                 valueInputOption: "USER_ENTERED",
                 resource:{
@@ -86,7 +86,7 @@ exports.newMeeting = async (req, res, next) =>{
             console.log(`${meetingResponse} meetingresponse step 3`);
             console.log(meetingResponse.includes(newMeeting));
             google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-                spreadsheetId: userDataSheetID,
+                spreadsheetId: MainClubData,
                 range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
                 valueInputOption: "USER_ENTERED",
                 resource:{
