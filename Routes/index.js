@@ -11,6 +11,13 @@ const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
 
 router.post(
+  "/mark-attendence",
+  clubData.ifClubExist,
+  clubAttendence.getQrcode,
+  clubData.returnSheetId
+);
+
+router.post(
   "/get-qrcode",
   sheetAuth.authSheetsMiddleware,
   clubData.ifClubExist,

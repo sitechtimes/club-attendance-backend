@@ -76,7 +76,6 @@ exports.getClubAttendenceData = async (req, res) => {
 };
 
 exports.generateSheetData = async (req, res, next) => {
-  console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
     const incomingData = req.body;
@@ -85,7 +84,7 @@ exports.generateSheetData = async (req, res, next) => {
     await createNewSheetWithName(sheets, sheetId, incomingData.dateOfToday);
 
     console.log(`You added date of ${incomingData.dateOfToday} to club sheet`);
-
+    console.log("testing");
     return next();
   } catch (error) {
     console.log(error);
@@ -93,7 +92,6 @@ exports.generateSheetData = async (req, res, next) => {
 };
 
 exports.userCopyToAttendence = async (req, res, next) => {
-  console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
     const clubRange = "Information";
@@ -242,9 +240,42 @@ exports.generateQrCode = async (req, res, next) => {
   }
 };
 
-exports.getQrcode = async (req, next) => {
+exports.getQrcode = async (req, res, next) => {
   try {
+    const sheets = req.object.sheets;
+
     const qrCode = req.body.qrCode;
+    const qrCodeFinder = await sheetColumnAlphabetFinder(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      "QR Code"
+    );
+    const ifequal = await ifValueExistUsingUid(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      `clubData!${qrCodeFinder.alphabet}`,
+      qrCode
+    );
+
+    if (ifequal) {
+      return next();
+    }
+
+    return res.json("Wrong QR code!");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.markAttendence = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const attendenceOfTodayData = await sheetData(
+      sheets,
+      req.sheetId,
+      req.dateOfToday
+    );
   } catch (error) {
     console.log(error);
   }
