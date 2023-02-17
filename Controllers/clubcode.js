@@ -150,6 +150,15 @@ exports.addUserDataToClub = async (req, res) =>{
         }
         console.log(`${specificClubRowNumber} specificClubRowNumber`);
 
+        google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+            spreadsheetId: clubSheet,
+            range: `K${specificClubRowNumber}:K${specificClubRowNumber}`,
+            valueInputOption: "USER_ENTERED",
+            resource:{
+              values: [[specificClubRowNumber]]
+            },
+          });
+
         // get what clubs user is in
         const userWhatClubs = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
             spreadsheetId: userDataSheetID,
