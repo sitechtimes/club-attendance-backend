@@ -10,6 +10,12 @@ const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
 
+router.get(
+  "/get-all-user-data",
+  sheetAuth.authSheetsMiddleware,
+  userLogic.allUserData
+);
+
 router.post(
   "/get-qrcode",
   sheetAuth.authSheetsMiddleware,
