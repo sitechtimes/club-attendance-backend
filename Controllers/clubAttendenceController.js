@@ -56,11 +56,13 @@ exports.getClubAttendenceData = async (req, res) => {
     const attendenceData = sheetArray.map((value) => ({
       firstName: value[0],
       lastName: value[1],
-      osis: value[2],
-      grade: value[3],
-      officalClass: value[4],
-      uid: value[5],
-      status: value[6],
+      uid: value[2],
+      osis: value[3],
+      position: value[4],
+      grade: value[5],
+      email: value[6],
+      officalClass: value[7],
+      status: value[8],
     }));
     attendenceData.shift();
 
@@ -74,7 +76,6 @@ exports.getClubAttendenceData = async (req, res) => {
 };
 
 exports.generateSheetData = async (req, res, next) => {
-  console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
     const incomingData = req.body;
@@ -83,7 +84,7 @@ exports.generateSheetData = async (req, res, next) => {
     await createNewSheetWithName(sheets, sheetId, incomingData.dateOfToday);
 
     console.log(`You added date of ${incomingData.dateOfToday} to club sheet`);
-
+    console.log("testing");
     return next();
   } catch (error) {
     console.log(error);
@@ -91,7 +92,6 @@ exports.generateSheetData = async (req, res, next) => {
 };
 
 exports.userCopyToAttendence = async (req, res, next) => {
-  console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
     const clubRange = "Information";
@@ -240,9 +240,42 @@ exports.generateQrCode = async (req, res, next) => {
   }
 };
 
-exports.getQrcode = async (req, next) => {
+exports.getQrcode = async (req, res, next) => {
   try {
+    const sheets = req.object.sheets;
+
     const qrCode = req.body.qrCode;
+    const qrCodeFinder = await sheetColumnAlphabetFinder(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      "QR Code"
+    );
+    const ifequal = await ifValueExistUsingUid(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      `clubData!${qrCodeFinder.alphabet}`,
+      qrCode
+    );
+
+    if (ifequal) {
+      return next();
+    }
+
+    return res.json("Wrong QR code!");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.markAttendence = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const attendenceOfTodayData = await sheetData(
+      sheets,
+      req.sheetId,
+      req.dateOfToday
+    );
   } catch (error) {
     console.log(error);
   }

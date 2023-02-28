@@ -9,6 +9,7 @@ const sheetData = async (sheets, spreadsheetId, range) => {
   const sheet = await sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetId,
     range: range,
+    includeGridData: true,
   });
 
   const sheetDataValues = sheet.data.values;

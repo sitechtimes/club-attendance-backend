@@ -17,6 +17,13 @@ router.get(
 );
 
 router.post(
+  "/mark-attendence",
+  clubData.ifClubExist,
+  clubAttendence.getQrcode,
+  clubData.returnSheetId
+);
+
+router.post(
   "/get-qrcode",
   sheetAuth.authSheetsMiddleware,
   clubData.ifClubExist,

@@ -19,6 +19,8 @@ exports.allClubData = async (req, res) => {
       "clubData"
     );
 
+    console.log(allClubData);
+
     //this array will store the object from
     //changing arrays in sheetValue into object
     let sheetArray = [];
