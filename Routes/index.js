@@ -22,6 +22,12 @@ router.post(
   addClub.addUserDataToClub,
 );
 
+router.get(
+  "/get-all-user-data",
+  sheetAuth.authSheetsMiddleware,
+  userLogic.allUserData
+);
+
 router.post(
   "/get-qrcode",
   sheetAuth.authSheetsMiddleware,
