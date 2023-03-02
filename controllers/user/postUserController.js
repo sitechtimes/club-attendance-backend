@@ -1,5 +1,6 @@
+"use strict";
 //this file require the env package to get env variable
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
@@ -12,23 +13,18 @@ const {
   addUserData,
   getUserData,
   findAndUpdateValue,
-} = require("../utility.js");
+  ifValueExistBinary,
+} = require("../../utility.js");
 
-exports.checkUserData = async (req, res, next) => {
+exports.ifUserExist = async (req, res, next) => {
   try {
-    const range = "userData";
+    const userUidRange = "userData!A:A";
     const sheets = req.object.sheets;
-    const findUidColumn = await sheetColumnAlphabetFinder(
+
+    const ifUserExist = await ifValueExistBinary(
       sheets,
       USER_DATA_SPREADSHEET_ID,
-      range,
-      "UID"
-    );
-    const ifUserExist = await ifValueExist(
-      sheets,
-      USER_DATA_SPREADSHEET_ID,
-      range,
-      findUidColumn.columnNumber,
+      userUidRange,
       req.userInfo.sub
     );
 
@@ -40,9 +36,8 @@ exports.checkUserData = async (req, res, next) => {
 };
 
 //need to use this function to check if user is exist
-exports.sendBackUserData = async (req, res, next) => {
+exports.sendUserData = async (req, res, next) => {
   try {
-    // google sheet api range
     const range = "userData";
     const sheets = req.object.sheets;
 
@@ -58,13 +53,14 @@ exports.sendBackUserData = async (req, res, next) => {
       console.log("user data exist");
       return res.json(response);
     }
+
     return next();
   } catch (error) {
     console.log(error);
   }
 };
 
-exports.createNewUser = async (req, res) => {
+exports.createNewUser = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
     console.log("user data did not exist");
@@ -73,21 +69,55 @@ exports.createNewUser = async (req, res) => {
     req.userInfo.osis = "none";
     req.userInfo.grade = "none";
     req.userInfo.officalClass = "none";
+    req.userInfo.positionOfClub = "none";
 
-    const columnUidFinder = await sheetColumnAlphabetFinder(
+    const getPreviousRowNumber = await sheetData(
       sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      "clubData",
-      "President's UID"
+      USER_DATA_SPREADSHEET_ID,
+      "userData!K:K"
     );
+
+    let previousRowNumber = getPreviousRowNumber.flat().pop();
+
+    req.userInfo.rowNumber = ++previousRowNumber;
+
+    req.user.values = [
+      req.userInfo.sub,
+      req.userInfo.given_name,
+      req.userInfo.family_name,
+      req.userInfo.email,
+      req.userInfo.type,
+      req.userInfo.osis,
+      req.userInfo.grade,
+      req.userInfo.officalClass,
+      req.userInfo.hd,
+      req.userInfo.positionOfClub,
+      req.userInfo.rowNumber,
+    ];
+
+    await addUserData(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      "userData",
+      req.user.values
+    );
+
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.ifPresident = async (req, res) => {
+  try {
     const rowUidNumber = await sheetRowNumberFinder(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      "clubData",
+      "clubData!F:F",
       req.userInfo.sub,
-      columnUidFinder.columnNumber,
       true
     );
+
     const presidentArray = [];
     for (let i = 0; i < rowUidNumber.length; i++) {
       const data = await sheetData(
@@ -97,12 +127,14 @@ exports.createNewUser = async (req, res) => {
       );
       presidentArray.push(data[0]);
     }
+
     const clubCodeColumnNumber = await sheetColumnAlphabetFinder(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
       "Club Code"
     );
+
     const clubNameColumnNumber = await sheetColumnAlphabetFinder(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
@@ -129,23 +161,6 @@ exports.createNewUser = async (req, res) => {
         },
       ]);
     }
-
-    console.log(req.userInfo);
-
-    const value = [
-      req.userInfo.sub,
-      req.userInfo.given_name,
-      req.userInfo.family_name,
-      req.userInfo.email,
-      req.userInfo.type,
-      req.userInfo.osis,
-      req.userInfo.grade,
-      req.userInfo.officalClass,
-      req.userInfo.hd,
-      req.userInfo.positionOfClub,
-    ];
-
-    await addUserData(sheets, USER_DATA_SPREADSHEET_ID, "userData", value);
 
     const user = await getUserData(
       sheets,

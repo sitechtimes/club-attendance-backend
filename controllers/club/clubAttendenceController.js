@@ -1,5 +1,5 @@
 "use strict";
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
 //google spreadsheet id for "Main-Club-Data"
@@ -15,7 +15,8 @@ const {
   addUserData,
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
-} = require("../utility.js");
+  ifValueExistBinary,
+} = require("../../utility.js");
 
 //get all the club attendence data
 exports.getClubAttendenceDate = async (req, res) => {
@@ -251,7 +252,7 @@ exports.getQrcode = async (req, res, next) => {
       "clubData",
       "QR Code"
     );
-    const ifequal = await ifValueExistUsingUid(
+    const ifequal = await ifValueExistBinary(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       `clubData!${qrCodeFinder.alphabet}`,

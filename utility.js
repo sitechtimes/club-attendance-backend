@@ -1,15 +1,13 @@
+"use strict";
 //One spreadsheet can contains multiple sheets
-
 //return all the data from the spreadsheet's sheet you specify
 //sheets- represents the sheets value from  the return object from authSheetsMiddleware
 //spreadsheetId- represents the id of the spreadsheet you are looking for
 //range- represents the sheet name you want the data from in the spreadsheet
 const sheetData = async (sheets, spreadsheetId, range) => {
-  console.log("running sheetData");
   const sheet = await sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetId,
     range: range,
-    includeGridData: true,
   });
 
   const sheetDataValues = sheet.data.values;
@@ -42,7 +40,7 @@ const ifValueExist = async (
   return Promise.resolve(suchVale);
 };
 
-const ifValueExistUsingUid = async (
+const ifValueExistBinary = async (
   sheets,
   spreadsheetId,
   range,
@@ -114,34 +112,44 @@ const sheetColumnAlphabetFinder = async (
   }
 };
 
-function sheetRowNumberTrue(data, columnNumber, valueComparing) {
+function sheetRowNumberTrue(data, valueComparing) {
+  console.log();
   const matchValueArray = [];
   let rowNumber = 0;
 
-  for (let i = 0; data.length > i; i++) {
+  let flatData = data.flat();
+
+  for (let i = 0; flatData.length > i; i++) {
     //the number zero need to be change to the data representing number
     //0 might return "Michael" for example
-    let eachId = data[i][columnNumber];
+    let eachId = flatData[i];
     rowNumber++;
     if (eachId === valueComparing) {
       matchValueArray.push(rowNumber);
     }
   }
+  console.log("array", matchValueArray);
 
   if (matchValueArray.length !== 0) {
     console.log(matchValueArray);
     return matchValueArray;
   }
-  return "There is no such value in google sheet";
+
+  return console.log(
+    "sheetRowNumberFinder: There is no such value in google sheet"
+  );
 }
 
-function sheetRowNumberFalse(data, columnNumber, valueComparing) {
+function sheetRowNumberFalse(data, valueComparing) {
   let rowNumber = 0;
   let ifValueExist = false;
-  for (let i = 0; data.length > i; i++) {
+
+  let flatData = data.flat();
+
+  for (let i = 0; flatData.length > i; i++) {
     //the number zero need to be change to the data representing number
     //0 might return "Michael" for example
-    let eachId = data[i][columnNumber];
+    let eachId = flatData[i];
     rowNumber++;
     if (eachId === valueComparing) {
       ifValueExist = true;
@@ -170,15 +178,14 @@ const sheetRowNumberFinder = async (
   spreadsheetId,
   range,
   valueComparing,
-  columnNumber,
   addEveryValue
 ) => {
-  console.log("running sheetRowNumberFinder");
   const data = await sheetData(sheets, spreadsheetId, range);
+
   if (addEveryValue) {
-    return sheetRowNumberTrue(data, columnNumber, valueComparing);
+    return sheetRowNumberTrue(data, valueComparing);
   } else if (addEveryValue === false) {
-    return sheetRowNumberFalse(data, columnNumber, valueComparing);
+    return sheetRowNumberFalse(data, valueComparing);
   }
 };
 
@@ -375,5 +382,5 @@ module.exports = {
   generateRandomString,
   createNewSheetWithName,
   updateKnownRowAndColumn,
-  ifValueExistUsingUid,
+  ifValueExistBinary,
 };

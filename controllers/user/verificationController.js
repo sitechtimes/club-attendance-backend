@@ -1,10 +1,10 @@
+"use strict";
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
-
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
-const { ifValueExistUsingUid } = require("../utility.js");
+const { ifValueExistBinary } = require("../../utility.js");
 
 exports.verifyByGmailMiddleware = async (req, res, next) => {
   try {
@@ -64,7 +64,7 @@ exports.verifyUser = async (req, res, next) => {
     console.log(uid);
 
     //userData!A:A refers to uid
-    const ifUserExist = await ifValueExistUsingUid(
+    const ifUserExist = await ifValueExistBinary(
       sheets,
       USER_DATA_SPREADSHEET_ID,
       `userData!A:A`,

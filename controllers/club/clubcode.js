@@ -1,8 +1,9 @@
+"use strict";
 const express = require("express");
 const { google } = require("googleapis");
 const { OAuth2Client, AuthClient } = require("google-auth-library");
 const client = new OAuth2Client();
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
 const UserData = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 const ClubCode = "3TzWJPg";

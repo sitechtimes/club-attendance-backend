@@ -1,3 +1,4 @@
+"use strict";
 //adds attendence date to club sheet
 exports.createAttendeceDate = async (req, res) => {
   try {
