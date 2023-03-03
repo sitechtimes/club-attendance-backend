@@ -14,6 +14,18 @@ const sheetData = async (sheets, spreadsheetId, range) => {
   return sheetDataValues;
 };
 
+const addItemToRow = async (
+  sheets,
+  spreadsheetId,
+  range,
+  itemRowNumber,
+  itemAdd
+) => {
+  const data = await sheetData(sheets, spreadsheetId, range);
+  const item = [];
+  item.push(data[itemRowNumber]);
+};
+
 //returns a boolean if the value you are searching for exist
 //sheetDataValues-  represent the sheet's data
 //valueComparing- represents the item name you are looking for
@@ -112,20 +124,20 @@ const sheetColumnAlphabetFinder = async (
   }
 };
 
-function sheetRowNumberTrue(data, valueComparing) {
-  console.log();
+function sheetRowNumberTrue(data, specificRangeNumber, valueComparing) {
   const matchValueArray = [];
-  let rowNumber = 0;
 
-  let flatData = data.flat();
-
-  for (let i = 0; flatData.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = flatData[i];
-    rowNumber++;
-    if (eachId === valueComparing) {
-      matchValueArray.push(rowNumber);
+  let start = 0;
+  let end = data.length - 1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    console.log(mid, data[mid][specificRangeNumber]);
+    if (data[mid][specificRangeNumber] === valueComparing) {
+      matchValueArray.push(data[mid]);
+    } else if (data[mid][specificRangeNumber] < valueComparing) {
+      start = mid + 1;
+    } else {
+      end = mid - 1;
     }
   }
   console.log("array", matchValueArray);
@@ -140,12 +152,11 @@ function sheetRowNumberTrue(data, valueComparing) {
   );
 }
 
-function sheetRowNumberFalse(data, valueComparing) {
+function sheetRowNumberFalse(data, specificRangeNumber, valueComparing) {
   let rowNumber = 0;
   let ifValueExist = false;
 
-  let flatData = data.flat();
-
+  let flatData = data[specificRangeNumber].flat();
   for (let i = 0; flatData.length > i; i++) {
     //the number zero need to be change to the data representing number
     //0 might return "Michael" for example
@@ -177,15 +188,16 @@ const sheetRowNumberFinder = async (
   sheets,
   spreadsheetId,
   range,
+  specificRangeNumber,
   valueComparing,
   addEveryValue
 ) => {
   const data = await sheetData(sheets, spreadsheetId, range);
 
   if (addEveryValue) {
-    return sheetRowNumberTrue(data, valueComparing);
+    return sheetRowNumberTrue(data, specificRangeNumber, valueComparing);
   } else if (addEveryValue === false) {
-    return sheetRowNumberFalse(data, valueComparing);
+    return sheetRowNumberFalse(data, specificRangeNumber, valueComparing);
   }
 };
 
@@ -194,7 +206,7 @@ const sheetRowNumberFinder = async (
 //verficationMiddleware
 //user data that was pass through after google auth verifcation
 //spreadsheetid is from the url id from google sheets
-const addUserData = async (sheets, spreadsheetId, range, value) => {
+const addData = async (sheets, spreadsheetId, range, value) => {
   //this is the value we are going to add to google sheets
   //value must be an array format
   let values = [value];
@@ -323,9 +335,9 @@ const getSheetNames = async (sheets, spreadsheetId) => {
   return result;
 };
 
-const createNewSheetWithName = async (sheets, sheetId, sheetName) => {
+const createNewSheetWithName = async (sheets, spreadsheetId, sheetName) => {
   await sheets.spreadsheets.batchUpdate({
-    spreadsheetId: sheetId,
+    spreadsheetId: spreadsheetId,
     resource: {
       requests: [
         {
@@ -334,6 +346,33 @@ const createNewSheetWithName = async (sheets, sheetId, sheetName) => {
               //this is the data from the frontend for dates
               title: sheetName,
             },
+          },
+        },
+      ],
+    },
+  });
+};
+
+const sortColumn = async (sheets, spreadsheetId) => {
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: spreadsheetId,
+    resource: {
+      requests: [
+        {
+          sortRange: {
+            range: {
+              sheetId: 0,
+              start_row_index: 0,
+              end_row_index: 7,
+              start_column_index: 0,
+              end_column_index: 1,
+            },
+            sortSpecs: [
+              {
+                sortOrder: "ASCENDING",
+                dimensionIndex: 1,
+              },
+            ],
           },
         },
       ],
@@ -374,7 +413,7 @@ module.exports = {
   sheetRowNumberFinder,
   sheetData,
   ifValueExist,
-  addUserData,
+  addData,
   getUserData, //revamp
   //  getRowData, //revamp
   findAndUpdateValue,
@@ -383,4 +422,5 @@ module.exports = {
   createNewSheetWithName,
   updateKnownRowAndColumn,
   ifValueExistBinary,
+  sortColumn,
 };

@@ -6,7 +6,7 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 const { ifValueExistBinary } = require("../../utility.js");
 
-exports.verifyByGmailMiddleware = async (req, res, next) => {
+exports.gmailVerification = async (req, res, next) => {
   try {
     //this is the google crediental that is being sent over
     const incomingUserData = req.body.userCredential;
@@ -49,11 +49,12 @@ exports.verifyByGmailMiddleware = async (req, res, next) => {
   }
 };
 
-exports.verifyUser = async (req, res, next) => {
+//use this verfication for actions they do
+exports.verifyUserInDb = async (req, res, next) => {
   try {
     console.log("running verifyingUser");
-
     console.log(req.body);
+
     if (req.body.user === null) {
       return res.json("User is not log in");
     }

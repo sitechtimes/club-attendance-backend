@@ -51,17 +51,18 @@ router.post(
 
 router.post(
   "/login",
-  verify.verifyByGmailMiddleware,
+  verify.gmailVerification,
   sheetAuth.authSheets,
   userLogic.ifUserExist,
   userLogic.sendUserData,
-  userLogic.createNewUser
+  userLogic.createNewUser,
+  userLogic.ifPresident
 );
 
 router.post(
   "/addOsisGradeOfficalClass",
   sheetAuth.authSheets,
-  verify.verifyUser,
+  verify.verifyUserInDb,
   userLogic.addOsisGradeOfficalClass
 );
 
@@ -112,6 +113,6 @@ router.post(
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
-router.get("/test", sheetAuth.authSheets, verify.verifyUser);
+router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
 
 module.exports = router;

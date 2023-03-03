@@ -5,6 +5,7 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
+const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
@@ -14,8 +15,10 @@ const {
   getUserData,
   findAndUpdateValue,
   ifValueExistBinary,
+  sortColumn,
 } = require("../../utility.js");
 
+//use this verfication for signing/loggin in
 exports.ifUserExist = async (req, res, next) => {
   try {
     const userUidRange = "userData!A:A";
@@ -79,9 +82,14 @@ exports.createNewUser = async (req, res, next) => {
 
     let previousRowNumber = getPreviousRowNumber.flat().pop();
 
-    req.userInfo.rowNumber = ++previousRowNumber;
+    //this might  introduce bug because of else
+    if (previousRowNumber === "Row Number") {
+      req.userInfo.rowNumber = 1;
+    } else {
+      req.userInfo.rowNumber = ++previousRowNumber;
+    }
 
-    req.user.values = [
+    req.userValues = [
       req.userInfo.sub,
       req.userInfo.given_name,
       req.userInfo.family_name,
@@ -99,7 +107,7 @@ exports.createNewUser = async (req, res, next) => {
       sheets,
       USER_DATA_SPREADSHEET_ID,
       "userData",
-      req.user.values
+      req.userValues
     );
 
     return next();
@@ -110,10 +118,15 @@ exports.createNewUser = async (req, res, next) => {
 
 exports.ifPresident = async (req, res) => {
   try {
+    const sheets = req.object.sheets;
+
+    // await sortColumn(sheets, CLUB_DATA_SPREADSHEET_ID);
+
     const rowUidNumber = await sheetRowNumberFinder(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      "clubData!F:F",
+      "clubData",
+      5,
       req.userInfo.sub,
       true
     );
