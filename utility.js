@@ -19,11 +19,12 @@ const addItemToRow = async (
   spreadsheetId,
   range,
   itemRowNumber,
-  itemAdd
+  addItem
 ) => {
   const data = await sheetData(sheets, spreadsheetId, range);
   const item = [];
-  item.push(data[itemRowNumber]);
+  item.push(data[itemRowNumber], item);
+  console.log(item);
 };
 
 //returns a boolean if the value you are searching for exist
