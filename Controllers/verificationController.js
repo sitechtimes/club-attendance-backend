@@ -1,7 +1,7 @@
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
 
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 const { ifValueExistUsingUid } = require("../utility.js");

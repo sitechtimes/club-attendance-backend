@@ -1,5 +1,5 @@
 "use strict";
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
 //google spreadsheet id for "Main-Club-Data"

@@ -1,5 +1,5 @@
 //this file require the env package to get env variable
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 //google spreadsheet id for "User Data"
