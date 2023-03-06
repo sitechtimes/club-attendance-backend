@@ -23,8 +23,10 @@ const addItemToRow = async (
 ) => {
   const data = await sheetData(sheets, spreadsheetId, range);
   const item = [];
-  item.push(data[itemRowNumber], item);
-  console.log(item);
+  item.push(data[itemRowNumber], addItem);
+
+  await addData(sheets, spreadsheetId, range, ...item.flat());
+  console.log("addData");
 };
 
 //returns a boolean if the value you are searching for exist
@@ -211,7 +213,6 @@ const addData = async (sheets, spreadsheetId, range, value) => {
   //this is the value we are going to add to google sheets
   //value must be an array format
   let values = [value];
-
   return Promise.resolve(
     await sheets.spreadsheets.values.append({
       spreadsheetId: spreadsheetId,
@@ -424,4 +425,5 @@ module.exports = {
   updateKnownRowAndColumn,
   ifValueExistBinary,
   sortColumn,
+  addItemToRow,
 };

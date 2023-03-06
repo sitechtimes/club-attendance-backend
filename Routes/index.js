@@ -10,6 +10,13 @@ const verify = require("../controllers/user/verificationController");
 const userLogic = require("../controllers/user/postUserController");
 const addClub = require("../controllers/club/clubcode");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
+const updateClubData = require("../controllers/club/clubDataOriginController");
+
+router.get(
+  "/update-club-data",
+  sheetAuth.authSheets,
+  updateClubData.generateNewItem
+);
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
 
