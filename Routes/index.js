@@ -15,7 +15,8 @@ const updateClubData = require("../controllers/club/clubDataOriginController");
 router.get(
   "/update-club-data",
   sheetAuth.authSheets,
-  updateClubData.generateNewItem
+  updateClubData.generateNewItem,
+  updateClubData.generateRowNumber
 );
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);

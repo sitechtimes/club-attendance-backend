@@ -25,7 +25,17 @@ const addItemToRow = async (
   const item = [];
   item.push(data[itemRowNumber], addItem);
 
-  await addData(sheets, spreadsheetId, range, ...item.flat());
+  console.log(...item.flat());
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: spreadsheetId,
+    range: `${range}`,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      values: [[...item.flat()]],
+    },
+  });
+
   console.log("addData");
 };
 
@@ -394,6 +404,7 @@ const generateRandomString = (length) => {
 };
 
 const updateKnownRowAndColumn = async (
+  sheets,
   spreadsheetId,
   range,
   columnAlphabet,
@@ -406,6 +417,25 @@ const updateKnownRowAndColumn = async (
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [[inputValue]],
+    },
+  });
+};
+
+//inputValue should be in array
+const appendNewItemToColumnOrRow = async (
+  sheets,
+  spreadsheetId,
+  range,
+  inputValue,
+  columnOrRow
+) => {
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: spreadsheetId,
+    range: range,
+    resource: {
+      valueInputOption: "USER_ENTERED",
+      majorDimension: "COLUMNS",
+      data: [inputValue],
     },
   });
 };
@@ -426,4 +456,5 @@ module.exports = {
   ifValueExistBinary,
   sortColumn,
   addItemToRow,
+  appendNewItemToColumnOrRow,
 };
