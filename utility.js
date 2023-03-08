@@ -429,13 +429,13 @@ const appendNewItemToColumnOrRow = async (
   inputValue,
   columnOrRow
 ) => {
-  await sheets.spreadsheets.values.batchUpdate({
+  await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
     range: range,
+    valueInputOption: "USER_ENTERED",
     resource: {
-      valueInputOption: "USER_ENTERED",
       majorDimension: "COLUMNS",
-      data: [inputValue],
+      values: [inputValue],
     },
   });
 };
