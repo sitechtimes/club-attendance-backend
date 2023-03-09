@@ -4,7 +4,7 @@ const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`
 const {
   sheetData,
   addItemToRow,
-  appendNewItemToColumnOrRow,
+  appendNewItemToColumn,
 } = require("../../utility.js");
 
 //a bug on keep adding
@@ -34,8 +34,11 @@ exports.generateRowNumber = async (req, res, next) => {
     );
     const clubNameDataLength = clubNameData.flat().length;
     console.log(clubNameDataLength);
-    const numberArray = [1, 2, 3, 4, 5, 6, 7, 8];
-    await appendNewItemToColumnOrRow(
+    const numberArray = [];
+    for (let i = 0; clubNameDataLength >= i; i++) {
+      numberArray.push(i);
+    }
+    await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
       "userData!O1:O",

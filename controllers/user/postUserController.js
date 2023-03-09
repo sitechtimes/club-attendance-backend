@@ -120,8 +120,6 @@ exports.ifPresident = async (req, res) => {
   try {
     const sheets = req.object.sheets;
 
-    // await sortColumn(sheets, CLUB_DATA_SPREADSHEET_ID);
-
     const rowUidNumber = await sheetRowNumberFinder(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
@@ -269,6 +267,8 @@ exports.allUserData = async (req, res) => {
 
     //this will have a new array that rearrange the data into better
     //formatting
+    sheetArray.shift();
+
     const sheetObject = sheetArray.map((value) => ({
       uid: value[0],
       firstName: value[1],
@@ -277,11 +277,11 @@ exports.allUserData = async (req, res) => {
       type: value[4],
       osis: value[5],
       grade: value[6],
-      officalClass: value[7],
+      officialClass: value[7],
       emailDomain: value[8],
-      clubData: value[9],
+      clubData: JSON.parse(value[9]),
+      presentLocation: JSON.parse(value[10]),
     }));
-    sheetObject.shift();
 
     console.log(sheetObject);
     res.send(sheetObject);

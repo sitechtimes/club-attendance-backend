@@ -422,12 +422,11 @@ const updateKnownRowAndColumn = async (
 };
 
 //inputValue should be in array
-const appendNewItemToColumnOrRow = async (
+const appendNewItemToColumn = async (
   sheets,
   spreadsheetId,
   range,
-  inputValue,
-  columnOrRow
+  inputValue
 ) => {
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
@@ -435,6 +434,18 @@ const appendNewItemToColumnOrRow = async (
     valueInputOption: "USER_ENTERED",
     resource: {
       majorDimension: "COLUMNS",
+      values: [inputValue],
+    },
+  });
+};
+
+const appendNewItemToRow = async (sheets, spreadsheetId, range, inputValue) => {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: spreadsheetId,
+    range: range,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      majorDimension: "ROWS",
       values: [inputValue],
     },
   });
@@ -456,5 +467,6 @@ module.exports = {
   ifValueExistBinary,
   sortColumn,
   addItemToRow,
-  appendNewItemToColumnOrRow,
+  appendNewItemToColumn,
+  appendNewItemToRow,
 };
