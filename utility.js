@@ -365,6 +365,18 @@ const createNewSheetWithName = async (sheets, spreadsheetId, sheetName) => {
   });
 };
 
+const createNewSpreadSheet = async (sheets, title) => {
+  const spreadsheet = await sheets.spreadsheets.create({
+    resource: {
+      properties: {
+        title,
+      },
+    },
+    fields: "spreadsheetId",
+  });
+  return spreadsheet.data.spreadsheetId;
+};
+
 const sortColumn = async (sheets, spreadsheetId) => {
   await sheets.spreadsheets.batchUpdate({
     spreadsheetId: spreadsheetId,
@@ -469,4 +481,5 @@ module.exports = {
   addItemToRow,
   appendNewItemToColumn,
   appendNewItemToRow,
+  createNewSpreadSheet,
 };

@@ -16,7 +16,8 @@ router.get(
   "/update-club-data",
   sheetAuth.authSheets,
   updateClubData.generateNewItem,
-  updateClubData.generateRowNumber
+  updateClubData.generateRowItem,
+  updateClubData.generateClubSpreadsheet
 );
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
