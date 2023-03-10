@@ -361,7 +361,24 @@ const updateKnownRowAndColumn = async (
   });
 };
 
+const uploadSingleFile = async (fileName, filePath) => {
+  const folderId = 'DRIVE_FOLDER_ID';
+  const { data: { id, name } = {} } = await drive.files.create({
+    resource: {
+      name: fileName,
+      parents: [folderId],
+    },
+    media: {
+      mimeType: 'application/pdf',
+      body: fs.createReadStream(filePath),
+    },
+    fields: 'id,name',
+  });
+  console.log('File Uploaded', name, id);
+};
+
 module.exports = {
+  uploadSingleFile,
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
   sheetData,
