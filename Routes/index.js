@@ -9,6 +9,12 @@ const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
+const driveAuth = require("../Controllers/driveService");
+
+router.post(
+  "/upload-photo",
+  driveAuth.getDriveService,
+);
 
 router.post(
   "/get-qrcode",
