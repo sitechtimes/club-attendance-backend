@@ -10,10 +10,12 @@ const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
 const driveAuth = require("../Controllers/driveServiceController");
+const uploadFile = require("../Controllers/uploadDriveController");
 
 router.post(
   "/upload-photo",
   driveAuth.getDriveService,
+  uploadFile.scanAndUpload,
 );
 
 router.post(
