@@ -9,7 +9,7 @@ const verify = require("../Controllers/verificationController");
 const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
-const driveAuth = require("../Controllers/driveService");
+const driveAuth = require("../Controllers/driveServiceController");
 
 router.post(
   "/upload-photo",
