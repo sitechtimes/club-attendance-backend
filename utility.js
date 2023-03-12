@@ -485,7 +485,7 @@ const uploadToFolder = async (drive, parentFolderId, folderName) => {
   }
 };
 
-const createSheetinFolder = async (drive, childFolderId, spreadsheetName) => {
+const createSheetInFolder = async (drive, childFolderId, spreadsheetName) => {
   const fileMetadata = {
     name: spreadsheetName,
     parents: [childFolderId],
@@ -497,6 +497,7 @@ const createSheetinFolder = async (drive, childFolderId, spreadsheetName) => {
       resource: fileMetadata,
       fields: "id",
     });
+
     const spreadsheetId = file.data.id;
     console.log("Spreadsheet Id:", spreadsheetId);
     return spreadsheetId;
@@ -525,5 +526,5 @@ module.exports = {
   appendNewItemToRow,
   createNewSpreadSheet,
   uploadToFolder,
-  createSheetinFolder,
+  createSheetInFolder,
 };

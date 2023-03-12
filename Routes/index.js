@@ -20,7 +20,8 @@ router.get(
   updateClubData.generateRowItem,
   driveAuth.getDriveService,
   updateClubData.generateAcdemicYearDriveFolder,
-  updateClubData.generateClubSpreadsheetFolder
+  updateClubData.generateClubSheetAndFolder,
+  updateClubData.uploadIdToClubData
 );
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);

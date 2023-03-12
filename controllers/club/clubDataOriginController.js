@@ -3,14 +3,14 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 require("dotenv").config({ path: "./env/driveId.env" });
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
-const OWNER_EMAIL = `${process.env.OWNER_EMAIL}`;
+
 const {
   sheetData,
   addItemToRow,
   appendNewItemToColumn,
   generateRandomString,
   uploadToFolder,
-  createSheetinFolder,
+  createSheetInFolder,
 } = require("../../utility.js");
 
 //a bug on keep adding
@@ -21,7 +21,9 @@ exports.generateNewItem = async (req, res, next) => {
     await addItemToRow(sheets, NEW_CLUB_DATA_SPREADSHEETID, "userData", 0, [
       "Next Meeting",
       "QR Code",
-      "Club SpreadsheetId",
+      "Club Folder Id", //m
+      "Club Spreadsheet Id", //n
+      "Club Attendence Folder Id", //o
       "Club Code",
       "Row Number",
     ]);
@@ -59,13 +61,14 @@ exports.generateRowItem = async (req, res, next) => {
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!O2:O",
+      "userData!Q2:Q",
       rowNumber
     );
+
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!N2:N",
+      "userData!P2:P",
       clubCode
     );
 
@@ -93,22 +96,74 @@ exports.generateAcdemicYearDriveFolder = async (req, res, next) => {
   }
 };
 
-exports.generateClubSpreadsheetFolder = async (req, res, next) => {
+exports.generateClubSheetAndFolder = async (req, res, next) => {
   try {
     let drive = req.driveService;
 
     const childFolderId = req.acdemicYearFolderId;
     const spreadsheetName = req.clubNameData;
 
-    const spreadsheetId = [];
+    const folderClubId = [];
+    const folderAttendenceId = [];
+    const idSpreadsheet = [];
 
     //replace 2 with spreadsheetName.length
-    for (let i = 0; 2 >= i; i++) {
-      const id = await uploadToFolder(drive, childFolderId, spreadsheetName[i]);
+    for (let i = 0; spreadsheetName.length - 1 >= i; i++) {
+      const clubFolderId = await uploadToFolder(
+        drive,
+        childFolderId,
+        spreadsheetName[i]
+      );
 
-      spreadsheetId.push({ spreadsheetName: spreadsheetName[i], id: id });
+      const attendenceFolderId = await uploadToFolder(
+        drive,
+        clubFolderId,
+        "Club Attendence Photo"
+      );
+
+      const spreadsheetId = await createSheetInFolder(
+        drive,
+        clubFolderId,
+        spreadsheetName[i]
+      );
+
+      folderClubId.push(clubFolderId);
+      folderAttendenceId.push(attendenceFolderId);
+      idSpreadsheet.push(spreadsheetId);
     }
 
+    console.log(folderClubId, folderAttendenceId, idSpreadsheet);
+    req.folderClubId = folderClubId;
+    req.folderAttendenceId = folderAttendenceId;
+    req.idSpreadsheet = idSpreadsheet;
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.uploadIdToClubData = async (req, res) => {
+  try {
+    const sheets = req.object.sheets;
+
+    await appendNewItemToColumn(
+      sheets,
+      NEW_CLUB_DATA_SPREADSHEETID,
+      "userData!M2:M",
+      req.folderClubId
+    );
+    await appendNewItemToColumn(
+      sheets,
+      NEW_CLUB_DATA_SPREADSHEETID,
+      "userData!N2:N",
+      req.folderAttendenceId
+    );
+    await appendNewItemToColumn(
+      sheets,
+      NEW_CLUB_DATA_SPREADSHEETID,
+      "userData!O2:O",
+      req.idSpreadsheet
+    );
     return res.json("done");
   } catch (error) {
     console.log(error);
