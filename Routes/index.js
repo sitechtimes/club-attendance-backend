@@ -3,6 +3,7 @@ const express = require("express");
 const router = new express.Router();
 const clubData = require("../controllers/club/clubDataController");
 const sheetAuth = require("../controllers/services/sheetAuthController");
+const driveAuth = require("../controllers/services/driveAuthController");
 const markingAttendence = require("../controllers/club/markAttendenceController");
 const joinClub = require("../controllers/club/joinClubController");
 const AttendeceDate = require("../controllers/club/createAttendenceDateController");
@@ -17,7 +18,9 @@ router.get(
   sheetAuth.authSheets,
   updateClubData.generateNewItem,
   updateClubData.generateRowItem,
-  updateClubData.generateClubSpreadsheet
+  driveAuth.getDriveService,
+  updateClubData.generateAcdemicYearDriveFolder,
+  updateClubData.generateClubSpreadsheetFolder
 );
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);

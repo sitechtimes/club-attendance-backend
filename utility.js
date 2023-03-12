@@ -463,6 +463,48 @@ const appendNewItemToRow = async (sheets, spreadsheetId, range, inputValue) => {
   });
 };
 
+//google drive functions
+const uploadToFolder = async (drive, parentFolderId, folderName) => {
+  const fileMetadata = {
+    name: folderName,
+    mimeType: "application/vnd.google-apps.folder",
+    parents: [parentFolderId],
+  };
+
+  try {
+    const file = await drive.files.create({
+      resource: fileMetadata,
+      fields: "id",
+    });
+    const childFolderId = file.data.id;
+    console.log("Folder Id:", childFolderId);
+
+    return childFolderId;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const createSheetinFolder = async (drive, childFolderId, spreadsheetName) => {
+  const fileMetadata = {
+    name: spreadsheetName,
+    parents: [childFolderId],
+    mimeType: "application/vnd.google-apps.spreadsheet",
+  };
+
+  try {
+    const file = await drive.files.create({
+      resource: fileMetadata,
+      fields: "id",
+    });
+    const spreadsheetId = file.data.id;
+    console.log("Spreadsheet Id:", spreadsheetId);
+    return spreadsheetId;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
@@ -482,4 +524,6 @@ module.exports = {
   appendNewItemToColumn,
   appendNewItemToRow,
   createNewSpreadSheet,
+  uploadToFolder,
+  createSheetinFolder,
 };
