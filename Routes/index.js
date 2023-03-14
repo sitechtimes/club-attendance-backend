@@ -11,16 +11,9 @@ const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
 const addMeeting = require("../Controllers/newMeeting");
 
-router.post(
-  "/addMeeting",
-  addMeeting.newMeeting,
-);
+router.post("/newMeeting", addMeeting.newMeeting);
 
-router.post(
-  "/addclub",
-  addClub.addClubCode,
-  addClub.addUserDataToClub,
-);
+router.post("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
 router.get(
   "/get-all-user-data",
@@ -57,10 +50,7 @@ router.post(
   clubData.readAClub
 );
 
-router.post(
-  "/addMeeting",
-  addMeeting.newMeeting,
-);
+router.post("/addMeeting", addMeeting.newMeeting);
 
 router.post(
   "/login",
