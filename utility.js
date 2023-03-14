@@ -362,7 +362,6 @@ const updateKnownRowAndColumn = async (
 };
 
 module.exports = {
-  uploadSingleFile,
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
   sheetData,
