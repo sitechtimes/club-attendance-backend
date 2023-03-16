@@ -14,10 +14,10 @@ const auth = new google.auth.GoogleAuth({
 
 exports.newMeeting = async (req, res, next) => {
   try {
-    console.log(req.body);
+    console.log(req.body, "body");
+    console.log(req.body.clubName);
     const clubName = req.body.clubName;
     const newMeeting = req.body.newMeeting;
-    console.log(req.newMeeting);
     const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
