@@ -12,6 +12,13 @@ const auth = new google.auth.GoogleAuth({
   scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
 
+exports.allUserMeeting = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.newMeeting = async (req, res, next) => {
   try {
     console.log(req.body, "body");
