@@ -68,8 +68,7 @@ router.post(
   sheetAuth.authSheets,
   userLogic.ifUserExist,
   userLogic.sendUserData,
-  userLogic.createNewUser,
-  userLogic.ifPresident
+  userLogic.createNewUser
 );
 
 router.post(

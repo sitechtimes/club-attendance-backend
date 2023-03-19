@@ -10,12 +10,10 @@ const {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
   sheetData,
-  ifValueExist,
-  addUserData,
+  addData,
   getUserData,
   findAndUpdateValue,
   ifValueExistBinary,
-  sortColumn,
 } = require("../../utility.js");
 
 //use this verfication for signing/loggin in
@@ -63,125 +61,58 @@ exports.sendUserData = async (req, res, next) => {
   }
 };
 
-exports.createNewUser = async (req, res, next) => {
+exports.createNewUser = async (req, res) => {
   try {
     const sheets = req.object.sheets;
     console.log("user data did not exist");
 
-    req.userInfo.type = "student";
-    req.userInfo.osis = "none";
-    req.userInfo.grade = "none";
-    req.userInfo.officalClass = "none";
-    req.userInfo.positionOfClub = "none";
+    req.userInfo.clientAuthority = "student";
+    req.userInfo.osis = null;
+    req.userInfo.grade = null;
+    req.userInfo.officialClass = null;
+    req.userInfo.clubData = null;
+    req.userInfo.presentLocation = {
+      inClubToday: false,
+      club: null,
+      roomNumber: null,
+    };
 
-    const getPreviousRowNumber = await sheetData(
-      sheets,
-      USER_DATA_SPREADSHEET_ID,
-      "userData!K:K"
-    );
-
-    let previousRowNumber = getPreviousRowNumber.flat().pop();
-
-    //this might  introduce bug because of else
-    if (previousRowNumber === "Row Number") {
-      req.userInfo.rowNumber = 1;
-    } else {
-      req.userInfo.rowNumber = ++previousRowNumber;
-    }
+    const userValuesObject = {
+      uid: req.userInfo.sub,
+      firstName: req.userInfo.given_name,
+      lastName: req.userInfo.family_name,
+      email: req.userInfo.email,
+      clientAuthority: req.userInfo.clientAuthority,
+      osis: req.userInfo.osis,
+      grade: req.userInfo.grade,
+      officialClass: req.userInfo.officialClass,
+      emailDomain: req.userInfo.hd,
+      clubData: req.userInfo.clubData,
+      presentLocation: req.userInfo.presentLocation,
+    };
+    console.log(userValuesObject);
+    res.json(userValuesObject);
 
     req.userValues = [
       req.userInfo.sub,
       req.userInfo.given_name,
       req.userInfo.family_name,
       req.userInfo.email,
-      req.userInfo.type,
-      req.userInfo.osis,
-      req.userInfo.grade,
-      req.userInfo.officalClass,
+      req.userInfo.clientAuthority,
+      JSON.stringify(req.userInfo.osis),
+      JSON.stringify(req.userInfo.grade),
+      JSON.stringify(req.userInfo.officialClass),
       req.userInfo.hd,
-      req.userInfo.positionOfClub,
-      req.userInfo.rowNumber,
+      JSON.stringify(req.userInfo.clubData),
+      JSON.stringify(req.userInfo.presentLocation),
     ];
 
-    await addUserData(
+    return await addData(
       sheets,
       USER_DATA_SPREADSHEET_ID,
       "userData",
       req.userValues
     );
-
-    return next();
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.ifPresident = async (req, res) => {
-  try {
-    const sheets = req.object.sheets;
-
-    const rowUidNumber = await sheetRowNumberFinder(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      "clubData",
-      5,
-      req.userInfo.sub,
-      true
-    );
-
-    const presidentArray = [];
-    for (let i = 0; i < rowUidNumber.length; i++) {
-      const data = await sheetData(
-        sheets,
-        CLUB_DATA_SPREADSHEET_ID,
-        `clubData!${rowUidNumber[i]}:${rowUidNumber[i]}`
-      );
-      presidentArray.push(data[0]);
-    }
-
-    const clubCodeColumnNumber = await sheetColumnAlphabetFinder(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      "clubData",
-      "Club Code"
-    );
-
-    const clubNameColumnNumber = await sheetColumnAlphabetFinder(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      "clubData",
-      "Club Name"
-    );
-
-    if (presidentArray.length !== 0) {
-      const presidentObject = [];
-      presidentArray.forEach((array) => {
-        const object = {
-          clubCode: array[clubCodeColumnNumber.columnNumber],
-          position: "president",
-          clubName: array[clubNameColumnNumber.columnNumber],
-        };
-        presidentObject.push(object);
-      });
-      console.log(presidentObject);
-      req.userInfo.positionOfClub = JSON.stringify(presidentObject);
-    } else {
-      req.userInfo.positionOfClub = JSON.stringify([
-        {
-          clubStatus: "User have not join any club yet.",
-        },
-      ]);
-    }
-
-    const user = await getUserData(
-      sheets,
-      USER_DATA_SPREADSHEET_ID,
-      "userData",
-      req.userInfo.sub
-    );
-
-    console.log("user created");
-    return res.json(user);
   } catch (error) {
     console.log(error);
   }

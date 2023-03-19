@@ -377,33 +377,6 @@ const createNewSpreadSheet = async (sheets, title) => {
   return spreadsheet.data.spreadsheetId;
 };
 
-const sortColumn = async (sheets, spreadsheetId) => {
-  await sheets.spreadsheets.batchUpdate({
-    spreadsheetId: spreadsheetId,
-    resource: {
-      requests: [
-        {
-          sortRange: {
-            range: {
-              sheetId: 0,
-              start_row_index: 0,
-              end_row_index: 7,
-              start_column_index: 0,
-              end_column_index: 1,
-            },
-            sortSpecs: [
-              {
-                sortOrder: "ASCENDING",
-                dimensionIndex: 1,
-              },
-            ],
-          },
-        },
-      ],
-    },
-  });
-};
-
 const generateRandomString = (length) => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -520,7 +493,6 @@ module.exports = {
   createNewSheetWithName,
   updateKnownRowAndColumn,
   ifValueExistBinary,
-  sortColumn,
   addItemToRow,
   appendNewItemToColumn,
   appendNewItemToRow,
