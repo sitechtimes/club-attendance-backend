@@ -10,8 +10,13 @@ const userLogic = require("../Controllers/userLogicController");
 const addClub = require("../Controllers/clubcode");
 const clubAttendence = require("../Controllers/clubAttendenceController");
 const addMeeting = require("../Controllers/newMeeting");
+const removeMeeting = require("../Controllers/deleteMeeting");
+
+router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 
 router.post("/newMeeting", addMeeting.newMeeting);
+
+router.get("/getMeeting");
 
 router.post("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 

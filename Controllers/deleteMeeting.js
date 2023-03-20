@@ -16,12 +16,10 @@ exports.deleteMeeting = async (req, res) => {
   try {
     console.log(req.body, "body");
     console.log(req.body.clubName);
-    // const clubName = req.body.clubName;
-    const newMeeting = req.body.newMeeting;
+    const clubName = req.body.clubName;
+    const dateToDelete = req.body.newMeeting;
     const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-    const clubName = "Chess Club";
-    const dateToDelete = "04/29/2023";
 
     // This gets the rownumber of the Club
     const mainClubDataSheet = await google
@@ -52,20 +50,21 @@ exports.deleteMeeting = async (req, res) => {
       });
     let thisMeetingList = clubmeeting.data.values[0];
     let meetingList = `${thisMeetingList}`;
-    console.log(meetingList);
+    console.log(`${meetingList} meetingList`);
+    console.log(dateToDelete);
 
     // This replaces the part in the meetingList that should be deleted with ""
-    let newMeetingList = meetingList.replace(`${dateToDelete},`, "");
+    let newMeetingList = meetingList.replace(`${dateToDelete}, `, "");
+    console.log(newMeetingList);
 
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-        spreadsheetId: MainClubData,
-        range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          values: [[newMeetingList]],
-        },
-      });
-
+      spreadsheetId: MainClubData,
+      range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [[newMeetingList]],
+      },
+    });
   } catch (error) {
     console.log(error);
   }

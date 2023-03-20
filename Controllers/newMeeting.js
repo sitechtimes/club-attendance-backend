@@ -57,10 +57,15 @@ exports.newMeeting = async (req, res, next) => {
     let thisMeetingList = clubmeeting.data.values[0];
     let meetingList = `${thisMeetingList}`;
 
+    // This is the res.json aprt that sends data back to frontend
     if (`${meetingList}`.includes(`${newMeeting}`) === true) {
       res.json(`Meeting already exist`);
     } else {
-      res.json(newMeeting, clubName);
+      let responseBack = {
+        newMeeting: `${newMeeting}`,
+        clubName: `${clubName}`,
+      };
+      res.json(responseBack);
     }
 
     const meetingDefault = `No Meetings`;
