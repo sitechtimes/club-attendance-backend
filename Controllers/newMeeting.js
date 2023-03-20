@@ -60,7 +60,7 @@ exports.newMeeting = async (req, res, next) => {
     if (`${meetingList}`.includes(`${newMeeting}`) === true) {
       res.json(`Meeting already exist`);
     } else {
-      res.json(newMeeting);
+      res.json(newMeeting, clubName);
     }
 
     const meetingDefault = `No Meetings`;
