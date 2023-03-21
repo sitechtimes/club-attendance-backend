@@ -2,6 +2,7 @@ const express = require("express");
 const { google } = require("googleapis");
 const { OAuth2Client, AuthClient } = require("google-auth-library");
 const { osconfig } = require("googleapis/build/src/apis/osconfig");
+const { parse } = require("dotenv");
 const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
@@ -28,18 +29,44 @@ exports.deleteMeeting = async (req, res) => {
         spreadsheetId: MainClubData,
         range: "clubData!A2:A",
       });
-    const clubNameList = mainClubDataSheet.data.values;
-    const clubNamesLength = clubNameList?.length;
+    const clubNameList = mainClubDataSheet.data.values.flat();
+    const clubNamesLength = clubNameList.length;
+    const clubSorted = clubNameList.sort();
     console.log(clubNameList);
     console.log(clubNamesLength);
-    let clubDataRowNumber = 0;
-    for (let i = 0; i < clubNamesLength; i++) {
-      if (clubNameList[i][0] === clubName) {
-        clubDataRowNumber = i + 2;
-        break;
+
+    function binarySearch(clubSorted, x) {
+      let l = 0,
+        r = clubSorted.length - 1;
+      while (l <= r) {
+        let m = l + Math.floor((r - l) / 2);
+
+        let res = x.localeCompare(clubSorted[m]);
+
+        // Check if x is present at mid
+        if (res == 0) return m;
+
+        // If x greater, ignore left half
+        if (res > 0) l = m + 1;
+        // If x is smaller, ignore right half
+        else r = m - 1;
       }
+      return -1;
     }
-    console.log(clubDataRowNumber);
+    let x = clubName;
+    let result = binarySearch(clubSorted, x);
+    let clubDataRowNumber = 0;
+    if (result == -1) console.log("Element not present<br>");
+    else let clubDataRowNumber = result + 1;
+
+    // let clubDataRowNumber = 0;
+    // for (let i = 0; i < clubNamesLength; i++) {
+    //   if (clubNameList[i][0] === clubName) {
+    //     clubDataRowNumber = i + 2;
+    //     break;
+    //   }
+    // }
+    // console.log(clubDataRowNumber);
 
     // This gets the list of meeting from the club
     const clubmeeting = await google
