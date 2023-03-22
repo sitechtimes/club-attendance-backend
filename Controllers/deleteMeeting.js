@@ -5,8 +5,6 @@ const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const { parse } = require("dotenv");
 const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
-const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
-const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -22,19 +20,19 @@ exports.deleteMeeting = async (req, res) => {
     const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
-    // This gets the rownumber of the Club
+    // This gets the list of every club's name
     const mainClubDataSheet = await google
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: MainClubData,
         range: "clubData!A2:A",
       });
+    // clubNameList is the list of club names
     const clubNameList = mainClubDataSheet.data.values.flat();
-    const clubNamesLength = clubNameList.length;
     const clubSorted = clubNameList.sort();
-    console.log(clubNameList);
-    console.log(clubNamesLength);
+    console.log(clubSorted);
 
+    // This gets the row number of the club with a binary search, x is the club name
     function binarySearch(clubSorted, x) {
       let l = 0,
         r = clubSorted.length - 1;
@@ -54,21 +52,13 @@ exports.deleteMeeting = async (req, res) => {
       return -1;
     }
     let x = clubName;
+    // result would be the number in the array
     let result = binarySearch(clubSorted, x);
-    let clubDataRowNumber = 0;
-    if (result == -1) console.log("Element not present<br>");
-    else let clubDataRowNumber = result + 1;
+    // add 1 to get row number (google sheets don't start with 0)
+    let clubDataRowNumber = result + 2;
+    console.log(clubDataRowNumber);
 
-    // let clubDataRowNumber = 0;
-    // for (let i = 0; i < clubNamesLength; i++) {
-    //   if (clubNameList[i][0] === clubName) {
-    //     clubDataRowNumber = i + 2;
-    //     break;
-    //   }
-    // }
-    // console.log(clubDataRowNumber);
-
-    // This gets the list of meeting from the club
+    // This gets the list of meetings of that specific club
     const clubmeeting = await google
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
@@ -80,10 +70,11 @@ exports.deleteMeeting = async (req, res) => {
     console.log(`${meetingList} meetingList`);
     console.log(dateToDelete);
 
-    // This replaces the part in the meetingList that should be deleted with ""
-    let newMeetingList = meetingList.replace(`${dateToDelete}, `, "");
-    console.log(newMeetingList);
+    // This replaces the part in the meetingList that should be deleted with "" (nothing)
+    let newMeetingList = meetingList.replace(`${dateToDelete}`, "");
+    console.log(`${newMeetingList} newMeetingList`);
 
+    // Updates the sheet with the next list of meeting dates
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
       spreadsheetId: MainClubData,
       range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
