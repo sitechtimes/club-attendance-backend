@@ -7,8 +7,6 @@ const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const {
-  sheetColumnAlphabetFinder,
-  sheetRowNumberFinder,
   sheetData,
   addData,
   getUserData,
@@ -90,6 +88,7 @@ exports.createNewUser = async (req, res) => {
       clubData: req.userInfo.clubData,
       presentLocation: req.userInfo.presentLocation,
     };
+
     console.log(userValuesObject);
     res.json(userValuesObject);
 
@@ -128,13 +127,6 @@ exports.addOsisGradeOfficalClass = async (req, res) => {
     const sheets = req.object.sheets;
     const range = "userData";
 
-    //do we really need function constructor?
-    function ReturnResponse(status, type, value) {
-      this.status = status;
-      this.type = type;
-      this.value = value;
-    }
-
     await findAndUpdateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,
@@ -145,11 +137,11 @@ exports.addOsisGradeOfficalClass = async (req, res) => {
       req.body.additionalInfoValue
     );
 
-    const response = new ReturnResponse(
-      "Successful",
-      req.body.additionalInfoType,
-      req.body.additionalInfoValue
-    );
+    const response = {
+      status: "Successful",
+      type: req.body.additionalInfoType,
+      value: req.body.additionalInfoValue,
+    };
     return res.json(response);
   } catch (error) {
     console.log(error);

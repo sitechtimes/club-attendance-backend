@@ -288,39 +288,7 @@ const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
 //fromWhatYouChanging- find the column of identifier of that user
 //identifierOfItem- is basically the comparing value to fromWhatYouChanging's item
 //inputValue- is what the user want to put in the cell
-const findAndUpdateValue = async (
-  sheets,
-  spreadsheetId,
-  range,
-  valueOfRowThatNeedChange,
-  fromWhatYouChanging,
-  identifierOfItem,
-  inputValue
-) => {
-  const columnThingFinder = await sheetColumnAlphabetFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    valueOfRowThatNeedChange
-  );
-
-  const columnIdentifierFinder = await sheetColumnAlphabetFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    fromWhatYouChanging
-  );
-  console.log(identifierOfItem);
-
-  const rowUidNumber = await sheetRowNumberFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    identifierOfItem,
-    columnIdentifierFinder.columnNumber,
-    false
-  );
-
+const findAndUpdateValue = async (sheets, spreadsheetId, range, inputValue) => {
   console.log(`userData!${columnThingFinder.alphabet}${rowUidNumber}`);
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,

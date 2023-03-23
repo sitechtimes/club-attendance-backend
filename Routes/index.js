@@ -13,6 +13,7 @@ const addClub = require("../controllers/club/clubcode");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
 const updateClubData = require("../controllers/club/clubDataOriginController");
 
+//make sure user has authorize power: need route!
 router.get(
   "/update-club-data",
   sheetAuth.authSheets,
@@ -22,6 +23,22 @@ router.get(
   updateClubData.generateAcdemicYearDriveFolder,
   updateClubData.generateClubSheetAndFolder,
   updateClubData.uploadIdToClubData
+);
+
+router.post(
+  "/login",
+  verify.gmailVerification,
+  sheetAuth.authSheets,
+  userLogic.ifUserExist,
+  userLogic.sendUserData,
+  userLogic.createNewUser
+);
+
+router.post(
+  "/addOsisGradeOfficalClass",
+  sheetAuth.authSheets,
+  verify.verifyUserInDb,
+  userLogic.addOsisGradeOfficalClass
 );
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
@@ -60,22 +77,6 @@ router.post(
   clubData.ifClubExist,
   clubData.returnSheetId,
   clubData.readAClub
-);
-
-router.post(
-  "/login",
-  verify.gmailVerification,
-  sheetAuth.authSheets,
-  userLogic.ifUserExist,
-  userLogic.sendUserData,
-  userLogic.createNewUser
-);
-
-router.post(
-  "/addOsisGradeOfficalClass",
-  sheetAuth.authSheets,
-  verify.verifyUserInDb,
-  userLogic.addOsisGradeOfficalClass
 );
 
 router.post(
