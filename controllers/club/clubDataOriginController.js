@@ -25,6 +25,7 @@ exports.generateNewItem = async (req, res, next) => {
       "Club Spreadsheet Id", //n
       "Club Attendence Folder Id", //o
       "Club Code",
+      "Club Code",
     ]);
     return next();
   } catch (error) {
@@ -47,10 +48,22 @@ exports.generateRowItem = async (req, res, next) => {
 
     console.log(clubNameDataLength);
 
+    const rowNumber = [];
+    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
+      rowNumber.push(i);
+    }
+
     const clubCode = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       clubCode.push(generateRandomString(6));
     }
+
+    await appendNewItemToColumn(
+      sheets,
+      NEW_CLUB_DATA_SPREADSHEETID,
+      "userData!Q2:Q",
+      rowNumber
+    );
 
     await appendNewItemToColumn(
       sheets,

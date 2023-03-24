@@ -240,44 +240,45 @@ const addData = async (sheets, spreadsheetId, range, value) => {
 //spreadsheetId- represents the id of the spreadsheet you are looking for
 //range- represents the sheet name you want the data from in the spreadsheet
 //valueComparing- represents the item name you are looking for
-const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
+const getUserData = async (
+  sheets,
+  spreadsheetId,
+  range,
+  valueComparing,
+  column
+) => {
   const data = await sheetData(sheets, spreadsheetId, range);
 
-  const columnUidFinder = await sheetColumnAlphabetFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    "UID"
-  );
+  const newData = data.sort((a, b) => {
+    return a[column] - b[column];
+  });
 
-  console.log(columnUidFinder);
-
-  let user = null;
-  for (let i = 0; data.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = data[i][columnUidFinder.columnNumber];
-
-    if (eachId === valueComparing) {
-      user = data[i];
-      break;
-    }
+  let start = 0;
+  let end = newData.length - 1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    if (newData[mid][column] === valueComparing) {
+      const newUserDataObject = {
+        uid: newData[mid][0],
+        firstName: newData[mid][1],
+        lastName: newData[mid][2],
+        email: newData[mid][3],
+        clientAuthority: newData[mid][4],
+        osis: JSON.parse(newData[mid][5]),
+        grade: JSON.parse(newData[mid][6]),
+        officalClass: JSON.parse(newData[mid][7]),
+        emailDomain: newData[mid][8],
+        clubData: JSON.parse(newData[mid][9]),
+        presentLocation: JSON.parse(newData[mid][10]),
+        rowNumber: JSON.parse(newData[mid][11]),
+      };
+      return newUserDataObject;
+    } else if (newData[mid][column] < valueComparing) {
+      start = mid + 1;
+    } else end = mid - 1;
   }
 
-  const newUserDataObject = {
-    uid: user[0],
-    firstName: user[1],
-    lastName: user[2],
-    email: user[3],
-    clientAuthority: user[4],
-    osis: user[5],
-    grade: user[6],
-    officalClass: user[7],
-    emailDomain: user[8],
-    clubData: JSON.parse(user[9]),
-  };
-
-  return Promise.resolve(newUserDataObject);
+  return console.log("backend error");
 };
 
 //find one cell to update the value of the cell
@@ -288,11 +289,17 @@ const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
 //fromWhatYouChanging- find the column of identifier of that user
 //identifierOfItem- is basically the comparing value to fromWhatYouChanging's item
 //inputValue- is what the user want to put in the cell
-const findAndUpdateValue = async (sheets, spreadsheetId, range, inputValue) => {
-  console.log(`userData!${columnThingFinder.alphabet}${rowUidNumber}`);
+const findAndUpdateValue = async (
+  sheets,
+  spreadsheetId,
+  range,
+  rowNumber,
+  columnAlphabet,
+  inputValue
+) => {
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
-    range: `${range}!${columnThingFinder.alphabet}${rowUidNumber}`,
+    range: `${range}!${columnAlphabet}${rowNumber}`,
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [[`${inputValue}`]],

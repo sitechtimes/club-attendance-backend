@@ -37,17 +37,17 @@ exports.ifUserExist = async (req, res, next) => {
 //need to use this function to check if user is exist
 exports.sendUserData = async (req, res, next) => {
   try {
-    const range = "userData";
     const sheets = req.object.sheets;
 
     if (req.ifUserExist) {
       const user = await getUserData(
         sheets,
         USER_DATA_SPREADSHEET_ID,
-        range,
-        req.userInfo.sub
+        "userData",
+        req.userInfo.sub,
+        0
       );
-      console.log(user);
+      console.log(user, "user");
       const response = user;
       console.log("user data exist");
       return res.json(response);
@@ -92,6 +92,22 @@ exports.createNewUser = async (req, res) => {
     console.log(userValuesObject);
     res.json(userValuesObject);
 
+    const rowNumber = await sheetData(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      "userData!L:L"
+    ).then((row) => {
+      let flatData = row.flat();
+
+      if (flatData[flatData.length - 1] === "Row Number") {
+        return 2;
+      } else {
+        let number = +flatData[flatData.length - 1] + 1;
+        console.log(number);
+        return number;
+      }
+    });
+
     req.userValues = [
       req.userInfo.sub,
       req.userInfo.given_name,
@@ -104,6 +120,7 @@ exports.createNewUser = async (req, res) => {
       req.userInfo.hd,
       JSON.stringify(req.userInfo.clubData),
       JSON.stringify(req.userInfo.presentLocation),
+      rowNumber,
     ];
 
     return await addData(
@@ -118,7 +135,7 @@ exports.createNewUser = async (req, res) => {
 };
 
 //Additional Information(osis, grade, offical class)
-exports.addOsisGradeOfficalClass = async (req, res) => {
+exports.addOsisGradeOfficialClass = async (req, res) => {
   console.log("addOsisGradeOfficalClass");
   try {
     console.log(req.body);
@@ -127,13 +144,29 @@ exports.addOsisGradeOfficalClass = async (req, res) => {
     const sheets = req.object.sheets;
     const range = "userData";
 
+    const user = await getUserData(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      "userData",
+      req.body.user.uid,
+      0
+    );
+
+    let columnAlphabet = null;
+    if (req.body.additionalInfoType === "OSIS") {
+      columnAlphabet = "F";
+    } else if (req.body.additionalInfoType === "Grade") {
+      columnAlphabet = "G";
+    } else if (req.body.additionalInfoType === "Official Class") {
+      columnAlphabet = "H";
+    }
+
     await findAndUpdateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,
       range,
-      req.body.additionalInfoType, //osis
-      "UID",
-      req.body.user.uid,
+      user.rowNumber,
+      columnAlphabet,
       req.body.additionalInfoValue
     );
 

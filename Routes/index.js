@@ -35,10 +35,10 @@ router.post(
 );
 
 router.post(
-  "/addOsisGradeOfficalClass",
+  "/addOsisGradeOfficialClass",
   sheetAuth.authSheets,
   verify.verifyUserInDb,
-  userLogic.addOsisGradeOfficalClass
+  userLogic.addOsisGradeOfficialClass
 );
 
 router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
