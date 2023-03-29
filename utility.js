@@ -240,7 +240,7 @@ const addData = async (sheets, spreadsheetId, range, value) => {
 //spreadsheetId- represents the id of the spreadsheet you are looking for
 //range- represents the sheet name you want the data from in the spreadsheet
 //valueComparing- represents the item name you are looking for
-const getUserData = async (
+const getOneData = async (
   sheets,
   spreadsheetId,
   range,
@@ -460,7 +460,7 @@ module.exports = {
   sheetData,
   ifValueExist,
   addData,
-  getUserData, //revamp
+  getOneData, //revamp
   //  getRowData, //revamp
   findAndUpdateValue,
   getSheetNames,

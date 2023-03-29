@@ -144,7 +144,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
     const sheets = req.object.sheets;
     const range = "userData";
 
-    const user = await getUserData(
+    const user = await getOneData(
       sheets,
       USER_DATA_SPREADSHEET_ID,
       "userData",
