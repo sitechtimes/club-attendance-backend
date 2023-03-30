@@ -17,7 +17,7 @@ exports.deleteMeeting = async (req, res) => {
     console.log(req.body.clubName);
     const clubName = req.body.clubName;
     const dateToDelete = req.body.newMeeting;
-    const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
+    const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
     // This gets the list of every club's name
@@ -63,7 +63,7 @@ exports.deleteMeeting = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: MainClubData,
-        range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
+        range: `clubData!K${clubDataRowNumber}:K${clubDataRowNumber}`,
       });
     let thisMeetingList = clubmeeting.data.values[0];
     let meetingList = `${thisMeetingList}`;
