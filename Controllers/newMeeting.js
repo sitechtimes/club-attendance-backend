@@ -72,7 +72,7 @@ exports.newMeeting = async (req, res, next) => {
         spreadsheetId: MainClubData,
         range: `clubData!K${clubDataRowNumber}:K${clubDataRowNumber}`,
       });
-    let thisMeetingList = clubmeeting.data.values[0];
+    let thisMeetingList = clubmeeting.data.values;
     let meetingList = `${thisMeetingList}`;
 
     // This is the res.json aprt that sends data back to frontend
@@ -115,7 +115,7 @@ exports.newMeeting = async (req, res, next) => {
         },
       });
     } else {
-      // This is to add a new club to the list of clubs.
+      // This is to add a new meeting to the list of meetings.
       const meetingListString = `${meetingList}`;
       let meetingResponse = meetingListString.concat(`, ${newMeeting}`);
       console.log(`${meetingResponse} meetingresponse step 3`);

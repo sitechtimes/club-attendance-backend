@@ -71,13 +71,20 @@ exports.deleteMeeting = async (req, res) => {
     console.log(dateToDelete);
 
     // This replaces the part in the meetingList that should be deleted with "" (nothing)
-    let newMeetingList = meetingList.replace(`${dateToDelete}`, "");
+    let deleteLength = dateToDelete.length - 1;
+    let newMeetingList;
+    console.log(meetingList.substring(0, `${deleteLength}`));
+    if ((dateToDelete = meetingList.substring(0, `${deleteLength}`))) {
+      newMeetingList = meetingList.replace(`${dateToDelete}, `, "");
+    } else {
+      newMeetingList = meetingList.replace(`, ${dateToDelete}`, "");
+    }
     console.log(`${newMeetingList} newMeetingList`);
 
     // Updates the sheet with the next list of meeting dates
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
       spreadsheetId: MainClubData,
-      range: `clubData!I${clubDataRowNumber}:I${clubDataRowNumber}`,
+      range: `clubData!K${clubDataRowNumber}:K${clubDataRowNumber}`,
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [[newMeetingList]],
