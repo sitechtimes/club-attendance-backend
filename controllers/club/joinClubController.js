@@ -135,7 +135,6 @@ exports.readCell = async (req, res) => {
       email: value[6],
       officalClass: value[7],
       numbOfAttendence: value[8],
-      numbOfAbsent: value[9],
     }));
 
     sheetObject.shift();

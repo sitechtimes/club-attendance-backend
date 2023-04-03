@@ -9,7 +9,7 @@ const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`
 const {
   sheetData,
   addData,
-  getUserData,
+  getOneData,
   findAndUpdateValue,
   ifValueExistBinary,
 } = require("../../utility.js");
@@ -40,15 +40,29 @@ exports.sendUserData = async (req, res, next) => {
     const sheets = req.object.sheets;
 
     if (req.ifUserExist) {
-      const user = await getUserData(
+      const userArray = await getOneData(
         sheets,
         USER_DATA_SPREADSHEET_ID,
         "userData",
         req.userInfo.sub,
         0
       );
-      console.log(user, "user");
-      const response = user;
+      const userObject = {
+        uid: userArray[0],
+        firstName: userArray[1],
+        lastName: userArray[2],
+        email: userArray[3],
+        clientAuthority: userArray[4],
+        osis: userArray[5],
+        grade: userArray[6],
+        officalClass: userArray[7],
+        emailDomain: userArray[8],
+        clubData: JSON.parse(userArray[9]),
+        presentLocation: JSON.parse(userArray[10]),
+        rowNumber: userArray[11],
+      };
+      console.log(userObject, "user");
+      const response = userObject;
       console.log("user data exist");
       return res.json(response);
     }
@@ -144,13 +158,16 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
     const sheets = req.object.sheets;
     const range = "userData";
 
-    const user = await getOneData(
+    const userArray = await getOneData(
       sheets,
       USER_DATA_SPREADSHEET_ID,
       "userData",
       req.body.user.uid,
       0
     );
+    const userObject = {
+      rowNumber: userArray[11],
+    };
 
     let columnAlphabet = null;
     if (req.body.additionalInfoType === "OSIS") {
@@ -165,7 +182,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       sheets,
       USER_DATA_SPREADSHEET_ID,
       range,
-      user.rowNumber,
+      userObject.rowNumber,
       columnAlphabet,
       req.body.additionalInfoValue
     );
@@ -176,71 +193,6 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       value: req.body.additionalInfoValue,
     };
     return res.json(response);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.test = async (req, res) => {
-  try {
-    console.log("running test");
-    const sheets = req.object.sheets;
-
-    const user = await sheets.spreadsheets.values.append({
-      spreadsheetId: USER_DATA_SPREADSHEET_ID,
-      range: `userData!E2`,
-      includeValuesInResponse: true,
-      valueInputOption: "USER_ENTERED",
-      resource: {
-        values: [["`${inputValue}`"]],
-      },
-    });
-
-    console.log(user);
-
-    return res.json("hehhe");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.allUserData = async (req, res) => {
-  try {
-    const sheets = req.object.sheets;
-    const allUserData = await sheetData(
-      sheets,
-      USER_DATA_SPREADSHEET_ID,
-      "userData"
-    );
-
-    let sheetArray = [];
-
-    //this is what change the array into object
-    allUserData.forEach((element) => {
-      const turnArrayToObject = Object.assign({}, element);
-      sheetArray.push(turnArrayToObject);
-    });
-
-    //this will have a new array that rearrange the data into better
-    //formatting
-    sheetArray.shift();
-
-    const sheetObject = sheetArray.map((value) => ({
-      uid: value[0],
-      firstName: value[1],
-      lastName: value[2],
-      email: value[3],
-      type: value[4],
-      osis: value[5],
-      grade: value[6],
-      officialClass: value[7],
-      emailDomain: value[8],
-      clubData: JSON.parse(value[9]),
-      presentLocation: JSON.parse(value[10]),
-    }));
-
-    console.log(sheetObject);
-    res.send(sheetObject);
   } catch (error) {
     console.log(error);
   }

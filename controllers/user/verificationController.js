@@ -20,7 +20,7 @@ exports.gmailVerification = async (req, res, next) => {
       return userinfo.data;
     }
 
-    verifyToken(incomingUserData.access_token).then((userInfo) => {
+    await verifyToken(incomingUserData.access_token).then((userInfo) => {
       // console.log(userInfo);
       //set put userInfo into request called req.userInfo
 

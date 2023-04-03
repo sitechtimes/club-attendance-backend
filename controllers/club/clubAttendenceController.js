@@ -3,7 +3,7 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
 //google spreadsheet id for "Main-Club-Data"
-const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 const {

@@ -3,7 +3,6 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 require("dotenv").config({ path: "./env/driveId.env" });
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
-
 const {
   sheetData,
   addItemToRow,
@@ -11,6 +10,7 @@ const {
   generateRandomString,
   uploadToFolder,
   createSheetInFolder,
+  addData,
 } = require("../../utility.js");
 
 //a bug on keep adding
@@ -18,14 +18,14 @@ exports.generateNewItem = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
 
-    await addItemToRow(sheets, NEW_CLUB_DATA_SPREADSHEETID, "userData", 0, [
+    await addItemToRow(sheets, NEW_CLUB_DATA_SPREADSHEETID, "clubData", 0, [
       "Next Meeting",
       "QR Code",
       "Club Folder Id", //m
       "Club Spreadsheet Id", //n
       "Club Attendence Folder Id", //o
       "Club Code",
-      "Club Code",
+      "Row Number",
     ]);
     return next();
   } catch (error) {
@@ -40,18 +40,33 @@ exports.generateRowItem = async (req, res, next) => {
     const clubNameData = await sheetData(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!A:A"
+      "clubData!A:A"
     );
     clubNameData.shift();
 
+    // now change
     const clubNameDataLength = clubNameData.flat().length;
 
     console.log(clubNameDataLength);
 
-    const rowNumber = [];
+    const totalNull = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
-      rowNumber.push(i);
+      totalNull.push("null");
     }
+
+    await appendNewItemToColumn(
+      sheets,
+      NEW_CLUB_DATA_SPREADSHEETID,
+      "clubData!K2:K",
+      totalNull
+    );
+
+    await appendNewItemToColumn(
+      sheets,
+      NEW_CLUB_DATA_SPREADSHEETID,
+      "clubData!L2:L",
+      totalNull
+    );
 
     const clubCode = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
@@ -61,15 +76,20 @@ exports.generateRowItem = async (req, res, next) => {
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!Q2:Q",
-      rowNumber
+      "clubData!P2:P",
+      clubCode
     );
+
+    const rowNumber = [];
+    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
+      rowNumber.push(i);
+    }
 
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!P2:P",
-      clubCode
+      "clubData!Q2:Q",
+      rowNumber
     );
 
     req.clubNameData = clubNameData.flat();
@@ -108,7 +128,7 @@ exports.generateClubSheetAndFolder = async (req, res, next) => {
     const idSpreadsheet = [];
 
     //replace 2 with spreadsheetName.length
-    for (let i = 0; spreadsheetName.length - 1 >= i; i++) {
+    for (let i = 0; spreadsheetName.length + 1 >= i; i++) {
       const clubFolderId = await uploadToFolder(
         drive,
         childFolderId,
@@ -142,6 +162,33 @@ exports.generateClubSheetAndFolder = async (req, res, next) => {
   }
 };
 
+exports.generaterRowForClub = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    for (let i = 0; req.idSpreadsheet.length >= i; i++) {
+      await addData(sheets, req.idSpreadsheet[i], "Sheet1", [
+        "UID",
+        "First Name",
+        "Last Name",
+        "OSIS",
+        "Posisiton",
+        "Grade",
+        "Email",
+        "Offical Class",
+        "# of Attendence",
+        "Total Meeting",
+      ]);
+      await appendNewItemToColumn(sheets, req.idSpreadsheet[i], "Sheet1!J2:J", [
+        '{"totalMeeting":0}',
+      ]);
+      console.log(i);
+    }
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.uploadIdToClubData = async (req, res) => {
   try {
     const sheets = req.object.sheets;
@@ -149,19 +196,19 @@ exports.uploadIdToClubData = async (req, res) => {
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!M2:M",
+      "clubData!M2:M",
       req.folderClubId
     );
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!N2:N",
+      "clubData!N2:N",
       req.folderAttendenceId
     );
     await appendNewItemToColumn(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!O2:O",
+      "clubData!O2:O",
       req.idSpreadsheet
     );
     return res.json("done");

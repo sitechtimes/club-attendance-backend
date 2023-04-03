@@ -258,21 +258,7 @@ const getOneData = async (
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     if (newData[mid][column] === valueComparing) {
-      const newUserDataObject = {
-        uid: newData[mid][0],
-        firstName: newData[mid][1],
-        lastName: newData[mid][2],
-        email: newData[mid][3],
-        clientAuthority: newData[mid][4],
-        osis: JSON.parse(newData[mid][5]),
-        grade: JSON.parse(newData[mid][6]),
-        officalClass: JSON.parse(newData[mid][7]),
-        emailDomain: newData[mid][8],
-        clubData: JSON.parse(newData[mid][9]),
-        presentLocation: JSON.parse(newData[mid][10]),
-        rowNumber: JSON.parse(newData[mid][11]),
-      };
-      return newUserDataObject;
+      return newData[mid];
     } else if (newData[mid][column] < valueComparing) {
       start = mid + 1;
     } else end = mid - 1;
@@ -379,6 +365,15 @@ const updateKnownRowAndColumn = async (
       values: [[inputValue]],
     },
   });
+};
+
+const appendNewItemToColumnBatch = async (
+  sheets,
+  spreadsheetId,
+  range,
+  inputValue
+) => {
+  await sheets.spreadsheets.batchUpdate({});
 };
 
 //inputValue should be in array

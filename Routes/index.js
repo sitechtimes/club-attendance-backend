@@ -8,7 +8,8 @@ const markingAttendence = require("../controllers/club/markAttendenceController"
 const joinClub = require("../controllers/club/joinClubController");
 const AttendeceDate = require("../controllers/club/createAttendenceDateController");
 const verify = require("../controllers/user/verificationController");
-const userLogic = require("../controllers/user/postUserController");
+const postUser = require("../controllers/user/postUserController");
+const getAllUser = require("../controllers/user/getAllUserController");
 const addClub = require("../controllers/club/clubcode");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
 const updateClubData = require("../controllers/club/clubDataOriginController");
@@ -22,6 +23,7 @@ router.get(
   driveAuth.getDriveService,
   updateClubData.generateAcdemicYearDriveFolder,
   updateClubData.generateClubSheetAndFolder,
+  updateClubData.generaterRowForClub,
   updateClubData.uploadIdToClubData
 );
 
@@ -29,19 +31,19 @@ router.post(
   "/login",
   verify.gmailVerification,
   sheetAuth.authSheets,
-  userLogic.ifUserExist,
-  userLogic.sendUserData,
-  userLogic.createNewUser
+  postUser.ifUserExist,
+  postUser.sendUserData,
+  postUser.createNewUser
 );
 
 router.post(
   "/addOsisGradeOfficialClass",
   sheetAuth.authSheets,
   verify.verifyUserInDb,
-  userLogic.addOsisGradeOfficialClass
+  postUser.addOsisGradeOfficialClass
 );
 
-router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
+router.get("/get-all-user-data", sheetAuth.authSheets, getAllUser.allUserData);
 
 router.post(
   "/mark-attendence",
