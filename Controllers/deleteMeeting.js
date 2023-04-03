@@ -71,10 +71,11 @@ exports.deleteMeeting = async (req, res) => {
     console.log(dateToDelete);
 
     // This replaces the part in the meetingList that should be deleted with "" (nothing)
-    let deleteLength = dateToDelete.length - 1;
+    let deleteLength = dateToDelete.length;
+    console.log(deleteLength);
     let newMeetingList;
     console.log(meetingList.substring(0, `${deleteLength}`));
-    if ((dateToDelete = meetingList.substring(0, `${deleteLength}`))) {
+    if (dateToDelete === meetingList.substring(0, `${deleteLength}`)) {
       newMeetingList = meetingList.replace(`${dateToDelete}, `, "");
     } else {
       newMeetingList = meetingList.replace(`, ${dateToDelete}`, "");
