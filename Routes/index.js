@@ -12,6 +12,11 @@ const userLogic = require("../controllers/user/postUserController");
 const addClub = require("../controllers/club/clubcode");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
 const updateClubData = require("../controllers/club/clubDataOriginController");
+const uploadPhoto = require("../controllers/club/uploadPhotoController");
+
+router.post(
+  
+)
 
 router.get(
   "/update-club-data",
