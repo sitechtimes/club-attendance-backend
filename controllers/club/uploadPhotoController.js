@@ -29,7 +29,7 @@ exports.uploadPhoto = async (req, res, next) => {
 
 
     // This gets the list of every club's name
-    const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+    const mainClubDataSheet = await google.sheets({ version: "v4", sheetAuth }).spreadsheets.values.get({
          spreadsheetId: MainClubData,
          range: "clubData!A2:A",
     });
@@ -66,12 +66,41 @@ exports.uploadPhoto = async (req, res, next) => {
       console.log(clubDataRowNumber);
 
     // This gets the folder ID for drive (where we upload the pictures to)
-    const clubFolderID = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+    const clubFolderID = await google.sheets({ version: "v4", sheetAuth }).spreadsheets.values.get({
         spreadsheetId: MainClubData,
         range: `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`,
     });
     const folderID = clubFolderID.data.values;
     console.log(folderID);
+
+
+    const driveService = google.drive({version: 'v3', auth});
+
+    let fileMetadata = {
+      'name': 'icon.png',
+      'parents':  [  `${folderID}`  ]
+    };
+
+    let media = {
+      mimeType: 'image/jpeg',
+      body: fs.createReadStream('icon.png')
+    };
+
+    let response = await driveService.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: 'id'
+    });
+
+    switch(response.status){
+      case 200:
+          let file = response.result;
+          console.log('Created File Id: ', response.data.id);
+          break;
+      default:
+          console.error('Error creating the file, ' + response.errors);
+          break;
+    }
       
       } catch (error) {
         console.log(error);
