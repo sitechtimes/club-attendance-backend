@@ -32,7 +32,7 @@ exports.uploadPhoto = async (req, res, next) => {
     const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
          spreadsheetId: MainClubData,
          range: "clubData!A2:A",
-        });
+    });
       // clubNameList is the list of club names
       const clubNameList = mainClubDataSheet.data.values.flat();
       const clubSorted = clubNameList.sort();
@@ -65,6 +65,13 @@ exports.uploadPhoto = async (req, res, next) => {
       let clubDataRowNumber = result + 2;
       console.log(clubDataRowNumber);
 
+    // This gets the folder ID for drive (where we upload the pictures to)
+    const clubFolderID = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+        spreadsheetId: MainClubData,
+        range: `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`,
+    });
+    const folderID = clubFolderID.data.values;
+    console.log(folderID);
       
       } catch (error) {
         console.log(error);
