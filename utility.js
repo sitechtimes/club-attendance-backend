@@ -367,13 +367,19 @@ const updateKnownRowAndColumn = async (
   });
 };
 
-const appendNewItemToColumnBatch = async (
-  sheets,
-  spreadsheetId,
-  range,
-  inputValue
-) => {
-  await sheets.spreadsheets.batchUpdate({});
+const appendNewItemBatch = async (sheets, spreadsheetId, payloadObject) => {
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: spreadsheetId,
+    resource: {
+      data: payloadObject, // array of objects
+      // {
+      // majorDimension: "COLUMNS" || "ROWS",
+      // values: [inputValue]
+      // range: range
+      // }
+      valueInputOption: "USER_ENTERED",
+    },
+  });
 };
 
 //inputValue should be in array
@@ -469,4 +475,5 @@ module.exports = {
   createNewSpreadSheet,
   uploadToFolder,
   createSheetInFolder,
+  appendNewItemBatch,
 };

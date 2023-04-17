@@ -1,7 +1,7 @@
 "use strict";
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
-const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 
 //This middleware compare the incoming club code from frontend
 //to the club code in the google spreadsheet.
