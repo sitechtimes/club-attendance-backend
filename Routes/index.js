@@ -15,8 +15,9 @@ const updateClubData = require("../controllers/club/clubDataOriginController");
 const uploadPhoto = require("../controllers/club/uploadPhotoController");
 
 router.post(
-  
-)
+  "/upload-attendance",
+  uploadPhoto.uploadPhoto,
+);
 
 router.get(
   "/update-club-data",
