@@ -16,7 +16,9 @@ const uploadPhoto = require("../controllers/club/uploadPhotoController");
 
 router.post(
   "/upload-attendance",
-  uploadPhoto.uploadPhoto,
+  driveAuth.getDriveService,
+  sheetAuth.authSheets,
+  uploadPhoto.uploadPhoto
 );
 
 router.get(
