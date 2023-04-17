@@ -1,30 +1,72 @@
+require("dotenv").config({ path: "./env/spreadsheetId.env" });
+require("dotenv").config({ path: "./env/driveId.env" });
+const fs = require('fs');
+const {GoogleAuth} = require('google-auth-library');
+const {google} = require('googleapis');
+const { OAuth2Client, AuthClient } = require("google-auth-library");
+const { parse } = require("dotenv");
+const client = new OAuth2Client();
+const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
+const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
+
+const sheetAuth = new google.auth.GoogleAuth({
+  keyFile: "keys.json",
+  scopes: "https://www.googleapis.com/auth/spreadsheets",
+});
+
+const driveAuth = new google.auth.GoogleAuth({
+  keyFile: "keys.json",
+  scopes: "https://www.googleapis.com/auth/drive",
+});
+
 exports.uploadPhoto = async (req, res, next) => {
-    try {
-      const fs = require('fs');
-      const {GoogleAuth} = require('google-auth-library');
-      const {google} = require('googleapis');
-  
-      // Get credentials and build service
-      // TODO (developer) - Use appropriate auth mechanism for your app
-      const auth = new GoogleAuth({
-        scopes: 'https://www.googleapis.com/auth/drive',
-      });
-      const service = google.drive({version: 'v3', auth});
-      const requestBody = {
-        name: 'photo.jpg',
-        fields: 'id',
-      };
-      const media = {
-        mimeType: 'image/jpeg',
-        body: fs.createReadStream('files/photo.jpg'),
-      };
-      const file = await service.files.create({
-        requestBody,
-        media: media,
-      });
-      console.log('File Id:', file.data.id);
-      return file.data.id;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  try {
+    console.log(req.body, "body");
+    console.log(req.body.clubName);
+    const clubName = req.body.clubName;
+    const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
+    const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
+
+
+    // This gets the list of every club's name
+    const mainClubDataSheet = await google.sheets({ version: "v4", auth }).spreadsheets.values.get({
+         spreadsheetId: MainClubData,
+         range: "clubData!A2:A",
+        });
+      // clubNameList is the list of club names
+      const clubNameList = mainClubDataSheet.data.values.flat();
+      const clubSorted = clubNameList.sort();
+      console.log(clubSorted);
+
+
+    // This gets the row number of the club with a binary search, x is the club name
+    function binarySearch(clubSorted, x) {
+      let l = 0,
+        r = clubSorted.length - 1;
+        while (l <= r) {
+          let m = l + Math.floor((r - l) / 2);
+
+          let res = x.localeCompare(clubSorted[m]);
+
+          // Check if x is present at mid
+          if (res == 0) return m;
+
+          // If x greater, ignore left half
+          if (res > 0) l = m + 1;
+          // If x is smaller, ignore right half
+          else r = m - 1;
+        }
+        return -1;
+      }
+      let x = clubName;
+      // result would be the number in the array
+      let result = binarySearch(clubSorted, x);
+      // add 1 to get row number (google sheets don't start with 0)
+      let clubDataRowNumber = result + 2;
+      console.log(clubDataRowNumber);
+
+      
+      } catch (error) {
+        console.log(error);
+      }
+   };
