@@ -11,6 +11,8 @@ const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
 
+const KEYFILEPATH = "keys.json";
+
 const sheetAuth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
   scopes: "https://www.googleapis.com/auth/spreadsheets",
