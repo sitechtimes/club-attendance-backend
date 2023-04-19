@@ -10,6 +10,7 @@ const express = require("express");
 const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
+const { sheetData } = require("../../utility.js");
 
 const KEYFILEPATH = "keys.json";
 
@@ -27,20 +28,19 @@ exports.uploadPhoto = async (req, res, next) => {
   try {
     console.log(req.body, "body");
     console.log(req.body.clubName);
-
+    let sheets = req.object.sheets;
     const clubName = req.body.clubName;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
     // This gets the list of every club's name
-    const mainClubDataSheet = await google
-      .sheets({ version: "v4", sheetAuth })
-      .spreadsheets.values.get({
-        spreadsheetId: MainClubData,
-        range: "clubData!A2:A",
-      });
+    const mainClubDataSheet = await sheetData(
+      sheets,
+      MainClubData,
+      "clubData!A2:A"
+    );
     // clubNameList is the list of club names
-    const clubNameList = mainClubDataSheet.data.values.flat();
+    const clubNameList = mainClubDataSheet.flat();
     const clubSorted = clubNameList.sort();
     console.log(clubSorted);
 
@@ -71,16 +71,15 @@ exports.uploadPhoto = async (req, res, next) => {
     console.log(clubDataRowNumber);
 
     // This gets the folder ID for drive (where we upload the pictures to)
-    const clubFolderID = await google
-      .sheets({ version: "v4", sheetAuth })
-      .spreadsheets.values.get({
-        spreadsheetId: MainClubData,
-        range: `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`,
-      });
-    const folderID = clubFolderID.data.values;
+    const clubFolderID = await sheetData(
+      sheets,
+      MainClubData,
+      `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`
+    );
+    const folderID = clubFolderID;
     console.log(folderID);
 
-    const driveService = google.drive({ version: "v3", auth });
+    const driveService = google.drive({ version: "v3", driveAuth });
 
     let fileMetadata = {
       name: "icon.png",
