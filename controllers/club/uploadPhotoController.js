@@ -26,10 +26,11 @@ const driveAuth = new google.auth.GoogleAuth({
 
 exports.uploadPhoto = async (req, res, next) => {
   try {
+    const body = req.body;
+    const clubName = req.body.clubName;
     console.log(req.body, "body");
     console.log(req.body.clubName, "clubName");
     let sheets = req.object.sheets;
-    const clubName = req.body.clubName;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
@@ -87,8 +88,8 @@ exports.uploadPhoto = async (req, res, next) => {
     };
 
     let media = {
-      mimeType: "image/png",
-      body: fs.createReadStream("icon.png"),
+      mimeType: "image/jpg",
+      body: fs.createReadStream("files/bridge.jpg"),
     };
 
     let response = await driveService.files.create({
