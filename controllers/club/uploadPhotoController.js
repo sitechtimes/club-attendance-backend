@@ -87,7 +87,7 @@ exports.uploadPhoto = async (req, res, next) => {
     };
 
     let media = {
-      mimeType: "image/jpeg",
+      mimeType: "image/png",
       body: fs.createReadStream("icon.png"),
     };
 
