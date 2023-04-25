@@ -156,12 +156,12 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
     console.log(req.body.additionalInfoType);
 
     const sheets = req.object.sheets;
-    const range = "userData";
+    const userData = "userData";
 
     const userArray = await getOneData(
       sheets,
       USER_DATA_SPREADSHEET_ID,
-      "userData",
+      userData,
       req.body.user.uid,
       0
     );
@@ -181,7 +181,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
     await findAndUpdateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,
-      range,
+      userData,
       userObject.rowNumber,
       columnAlphabet,
       req.body.additionalInfoValue

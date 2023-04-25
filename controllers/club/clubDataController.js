@@ -93,19 +93,16 @@ exports.returnSheetId = async (req, res, next) => {
 
     const clubRange = "clubData";
 
-    const sheetId = await getOneData(
+    const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       clubRange,
       userClub.clubName,
       0
-    ).then((array) => {
-      return array[14];
-    });
+    );
 
-    console.log(sheetId);
-
-    req.sheetId = sheetId;
+    req.clubData = clubData;
+    req.sheetId = clubData[14];
     return next();
   } catch (error) {
     console.log(error);

@@ -245,7 +245,7 @@ const getOneData = async (
   spreadsheetId,
   range,
   valueComparing,
-  column
+  column // where the item you looking  for are located
 ) => {
   const data = await sheetData(sheets, spreadsheetId, range);
 
@@ -263,8 +263,6 @@ const getOneData = async (
       start = mid + 1;
     } else end = mid - 1;
   }
-
-  return console.log("backend error");
 };
 
 //find one cell to update the value of the cell
@@ -275,17 +273,10 @@ const getOneData = async (
 //fromWhatYouChanging- find the column of identifier of that user
 //identifierOfItem- is basically the comparing value to fromWhatYouChanging's item
 //inputValue- is what the user want to put in the cell
-const findAndUpdateValue = async (
-  sheets,
-  spreadsheetId,
-  range,
-  rowNumber,
-  columnAlphabet,
-  inputValue
-) => {
+const updateValue = async (sheets, spreadsheetId, range, inputValue) => {
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
-    range: `${range}!${columnAlphabet}${rowNumber}`,
+    range: range,
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [[`${inputValue}`]],
@@ -395,7 +386,7 @@ const appendNewItemToColumn = async (
     valueInputOption: "USER_ENTERED",
     resource: {
       majorDimension: "COLUMNS",
-      values: [inputValue],
+      values: inputValue, //double array
     },
   });
 };
@@ -407,7 +398,7 @@ const appendNewItemToRow = async (sheets, spreadsheetId, range, inputValue) => {
     valueInputOption: "USER_ENTERED",
     resource: {
       majorDimension: "ROWS",
-      values: [inputValue],
+      values: inputValue, //double array
     },
   });
 };
@@ -463,7 +454,7 @@ module.exports = {
   addData,
   getOneData, //revamp
   //  getRowData, //revamp
-  findAndUpdateValue,
+  updateValue,
   getSheetNames,
   generateRandomString,
   createNewSheetWithName,

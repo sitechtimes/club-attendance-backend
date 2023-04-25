@@ -45,11 +45,12 @@ router.post(
 
 router.get("/get-all-user-data", sheetAuth.authSheets, getAllUser.allUserData);
 
+//dont know what this route does
 router.post(
   "/mark-attendence",
-  clubData.ifClubExist,
+  sheetAuth.authSheets,
   clubAttendence.getQrcode,
-  clubData.returnSheetId
+  clubAttendence.markAttendence
 );
 
 router.post(
@@ -60,8 +61,8 @@ router.post(
   clubAttendence.generateSheetData,
   clubAttendence.userCopyToAttendence,
   clubAttendence.generateQrCodeOnSheet,
-  clubAttendence.generateQrCode,
-  clubAttendence.totalMeeting
+  clubAttendence.totalMeeting,
+  clubAttendence.generateQrCode
 );
 
 //read the main google spreadsheet data

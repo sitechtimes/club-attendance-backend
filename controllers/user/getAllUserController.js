@@ -1,3 +1,6 @@
+const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
+const { sheetData } = require("../../utility.js");
+
 exports.allUserData = async (req, res) => {
   try {
     const sheets = req.object.sheets;

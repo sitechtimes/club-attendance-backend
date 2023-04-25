@@ -6,11 +6,9 @@ const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
 const {
   sheetData,
   addItemToRow,
-  appendNewItemToColumn,
   generateRandomString,
   uploadToFolder,
   createSheetInFolder,
-  addData,
   appendNewItemBatch,
 } = require("../../utility.js");
 
