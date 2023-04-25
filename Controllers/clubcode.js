@@ -133,13 +133,13 @@ exports.addUserDataToClub = async (req, res) => {
     console.log(offClass);
 
     // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
-    google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+    google.sheets({ version: "v4", auth }).spreadsheets.values.append({
       spreadsheetId: clubSheet,
-      range: "Information!A2:H2",
+      range: "Sheet1!A2:H2",
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [
-          [firstName, lastName, UID, OSIS, `member`, grade, email, offClass],
+          [UID, firstName, lastName, OSIS, `member`, grade, email, offClass],
         ],
       },
     });
@@ -149,7 +149,7 @@ exports.addUserDataToClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: clubSheet,
-        range: "Information!C2:C",
+        range: "Sheet1!C2:C",
       });
     const nameIDList = clubNameSheet.data.values;
     const nameListLength = nameIDList?.length;
