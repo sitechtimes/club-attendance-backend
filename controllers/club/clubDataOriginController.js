@@ -204,6 +204,7 @@ exports.generaterRowForClub = async (req, res, next) => {
                 "Email",
                 "Offical Class",
                 "# of Attendence",
+                "Row Number",
                 "Total Meeting",
               ],
             ],

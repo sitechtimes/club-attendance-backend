@@ -210,19 +210,21 @@ exports.generateQrCode = async (req, res, next) => {
 exports.getQrcode = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const qrCode = req.body.qrCode;
+    const qrCode = req.body.club.qrCode;
+    const clubName = req.body.club.clubName;
 
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      qrCode,
-      11
+      clubName,
+      0
     );
 
-    if (clubData === "DNE") {
+    if (clubData[11] !== qrCode) {
       return res.json("Club qr code is wrong");
     }
+
     console.log(clubData[14]);
     req.spreadId = clubData[14];
     return next();
@@ -237,7 +239,14 @@ exports.markAttendence = async (req, res, next) => {
     const sheetID = req.spreadId;
     const dateOfToday = req.body.dateOfToday;
     const userUid = req.body.user.uid;
-    const userData = await getOneData(sheets, sheetID, dateOfToday, userUid, 0);
+
+    const userData = await getOneData(
+      sheets,
+      sheetID,
+      `${dateOfToday}!A2:K`,
+      userUid,
+      0
+    );
 
     console.log(dateOfToday, userUid, userData);
 
