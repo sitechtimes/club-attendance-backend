@@ -3,7 +3,6 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const {
-  sheetColumnAlphabetFinder,
   getOneData,
   sheetData,
   ifValueExistBinary,
@@ -116,7 +115,7 @@ exports.readAClub = async (req, res) => {
 
     //this specific which google spreadsheet we are acessing
 
-    const clubData = await sheetData(sheets, req.sheetId, "Information");
+    const clubData = await sheetData(sheets, req.sheetId, "Sheet1");
 
     let sheetArray = [];
 

@@ -212,7 +212,7 @@ exports.generaterRowForClub = async (req, res, next) => {
           {
             range: "Sheet1!J2:J",
             majorDimension: "COLUMNS",
-            values: [['{"totalMeeting":0}']],
+            values: [["0"]],
           },
         ]);
         console.log(i);
