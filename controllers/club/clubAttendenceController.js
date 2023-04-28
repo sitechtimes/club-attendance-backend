@@ -262,3 +262,55 @@ exports.markAttendence = async (req, res, next) => {
     console.log(error);
   }
 };
+
+// send back all meeting date
+// able to create meeting for that date or manually select present or absent
+
+exports.manuallyPresentAbsent = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const clubName = req.body.clubName;
+
+    const clubData = await getOneData(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      clubName,
+      0
+    );
+
+    req.spreadId = clubData[14];
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.manuallyPresentAbsent2 = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const sheetID = req.spreadId;
+    const dateOfToday = req.body.dateOfToday;
+    const userUid = req.body.user.uid;
+
+    const userData = await getOneData(
+      sheets,
+      sheetID,
+      `${dateOfToday}!A2:K`,
+      userUid,
+      0
+    );
+
+    console.log(dateOfToday, userUid, userData);
+
+    await updateValue(
+      sheets,
+      sheetID,
+      `${dateOfToday}!I${userData[9]}`,
+      `${req.body.status}`
+    );
+    return res.json("Recorded attendence");
+  } catch (error) {
+    console.log(error);
+  }
+};

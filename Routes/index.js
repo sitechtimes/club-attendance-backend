@@ -6,7 +6,6 @@ const sheetAuth = require("../controllers/services/sheetAuthController");
 const driveAuth = require("../controllers/services/driveAuthController");
 const markingAttendence = require("../controllers/club/markAttendenceController");
 const joinClub = require("../controllers/club/joinClubController");
-const AttendeceDate = require("../controllers/club/createAttendenceDateController");
 const verify = require("../controllers/user/verificationController");
 const postUser = require("../controllers/user/postUserController");
 const getAllUser = require("../controllers/user/getAllUserController");
@@ -51,6 +50,13 @@ router.post(
   sheetAuth.authSheets,
   clubAttendence.getQrcode,
   clubAttendence.markAttendence
+);
+
+router.post(
+  "/manually-mark-attendence",
+  sheetAuth.authSheets,
+  clubAttendence.manuallyPresentAbsent,
+  clubAttendence.manuallyPresentAbsent2
 );
 
 router.post(
@@ -117,14 +123,6 @@ router.post(
   sheetAuth.authSheets,
   markingAttendence.compareQRCodeMiddleware,
   markingAttendence.markAttendence
-);
-
-//adds attendence date to club spreadsheet
-router.post(
-  "/createAttendenceDate",
-  sheetAuth.authSheets,
-  joinClub.compareClubCodeMiddleware,
-  AttendeceDate.createAttendeceDate
 );
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
