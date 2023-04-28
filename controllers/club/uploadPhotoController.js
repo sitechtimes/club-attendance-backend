@@ -35,7 +35,8 @@ exports.uploadPhoto = async (req, res, next) => {
     console.log(req.body.clubName, "clubName");
     const body = req.body;
     const clubName = req.body.clubName;
-    const file = req.file;
+    const files = req.photo;
+    console.log(files , "file");
     let sheets = req.object.sheets;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
@@ -86,16 +87,16 @@ exports.uploadPhoto = async (req, res, next) => {
     const folderID = clubFolderID;
     console.log(folderID);
 
-    const driveService = google.drive({ version: "v3", driveAuth });
+    const drive = req.driveService;
 
     const response = await drive.files.create({
       requestBody: {
-        name: file.originalname,
-        parents: [`${folderID}`] // replace DRIVEID with the ID of your target folder
+        name: files,
+        parents: [`${folderID}`] 
       },
       media: {
-        mimeType: file.mimetype,
-        body: file.buffer
+        mimeType: 'image/png',
+        body: files,
       }
     })
 
