@@ -28,6 +28,7 @@ exports.uploadPhoto = async (req, res, next) => {
   try {
     const body = req.body;
     const clubName = req.body.clubName;
+    console.log(clubName);
     console.log(req.body, "body");
     console.log(req.body.clubName, "clubName");
     let sheets = req.object.sheets;
