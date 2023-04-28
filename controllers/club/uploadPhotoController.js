@@ -6,13 +6,14 @@ const { google } = require("googleapis");
 const { OAuth2Client, AuthClient } = require("google-auth-library");
 const { parse } = require("dotenv");
 const client = new OAuth2Client();
-const express = require("express");
+const express = require(`express`);
 const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
 const { sheetData } = require("../../utility.js");
 
 const KEYFILEPATH = "keys.json";
+
 
 const sheetAuth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -26,7 +27,7 @@ const driveAuth = new google.auth.GoogleAuth({
 
 exports.uploadPhoto = async (req, res, next) => {
   try {
-    console.log(req.Body, "body");
+    console.log(req.body, "body");
     console.log(req.body.clubName, "clubName");
     const body = req.body;
     const clubName = req.body.clubName;
