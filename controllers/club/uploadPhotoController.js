@@ -26,11 +26,10 @@ const driveAuth = new google.auth.GoogleAuth({
 
 exports.uploadPhoto = async (req, res, next) => {
   try {
+    console.log(req.Body, "body");
+    console.log(req.body.clubName, "clubName");
     const body = req.body;
     const clubName = req.body.clubName;
-    console.log(clubName);
-    console.log(req.body, "body");
-    console.log(req.body.clubName, "clubName");
     let sheets = req.object.sheets;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
