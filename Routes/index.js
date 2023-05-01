@@ -13,6 +13,7 @@ const addClub = require("../controllers/club/clubcode");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
 const updateClubData = require("../controllers/club/clubDataOriginController");
 const uploadPhoto = require("../controllers/club/uploadPhotoController");
+const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 

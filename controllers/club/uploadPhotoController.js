@@ -29,11 +29,12 @@ const driveAuth = new google.auth.GoogleAuth({
 exports.uploadPhoto = async (req, res, next) => {
   try {
     console.log(req.body, "body");
-    console.log(req.body.clubName, "clubName");
     const body = req.body;
-    const clubName = req.body.clubName;
-    const files = req.photo;
-    console.log(files, "file");
+    const clubNameString = JSON.parse(req.body.data);
+    const clubName = clubNameString.clubName;
+    console.log(clubName, "clubName");
+    const file = req.file;
+    console.log(file, "file");
     let sheets = req.object.sheets;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
@@ -88,12 +89,12 @@ exports.uploadPhoto = async (req, res, next) => {
 
     const response = await drive.files.create({
       requestBody: {
-        name: files,
+        name: file.originalname,
         parents: [`${folderID}`],
       },
       media: {
         mimeType: "image/png",
-        body: files,
+        body: file.buffer,
       },
     });
 
@@ -105,7 +106,7 @@ exports.uploadPhoto = async (req, res, next) => {
 
     switch (response.status) {
       case 200:
-        let file = response.result;
+        let files = response.result;
         console.log("Created File Id: ", response.data.id);
         break;
       default:
