@@ -13,9 +13,12 @@ const addClub = require("../controllers/club/clubcode");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
 const updateClubData = require("../controllers/club/clubDataOriginController");
 const uploadPhoto = require("../controllers/club/uploadPhotoController");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.post(
   "/upload-attendance",
+  upload.single("file"),
   driveAuth.getDriveService,
   sheetAuth.authSheets,
   uploadPhoto.uploadPhoto

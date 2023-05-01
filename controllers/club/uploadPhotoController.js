@@ -7,17 +7,14 @@ const { OAuth2Client, AuthClient } = require("google-auth-library");
 const { parse } = require("dotenv");
 const client = new OAuth2Client();
 const express = require(`express`);
-const multer = require('multer');
+const multer = require("multer");
 const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
 const { sheetData } = require("../../utility.js");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-;
-
 const KEYFILEPATH = "keys.json";
-
 
 const sheetAuth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -36,7 +33,7 @@ exports.uploadPhoto = async (req, res, next) => {
     const body = req.body;
     const clubName = req.body.clubName;
     const files = req.photo;
-    console.log(files , "file");
+    console.log(files, "file");
     let sheets = req.object.sheets;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
@@ -92,19 +89,19 @@ exports.uploadPhoto = async (req, res, next) => {
     const response = await drive.files.create({
       requestBody: {
         name: files,
-        parents: [`${folderID}`] 
+        parents: [`${folderID}`],
       },
       media: {
-        mimeType: 'image/png',
+        mimeType: "image/png",
         body: files,
-      }
-    })
+      },
+    });
 
     // Send a response with the Google Drive file ID
     res.json({
-      message: 'File uploaded successfully',
-      fileId: response.data.id
-    })
+      message: "File uploaded successfully",
+      fileId: response.data.id,
+    });
 
     switch (response.status) {
       case 200:
