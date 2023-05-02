@@ -15,7 +15,7 @@ const { sheetData } = require("../../utility.js");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const KEYFILEPATH = "keys.json";
-const { Readable } =  require('stream');
+const { Readable } = require("stream");
 const { stringify } = require("querystring");
 
 const sheetAuth = new google.auth.GoogleAuth({
@@ -44,12 +44,10 @@ exports.uploadPhoto = async (req, res, next) => {
     const buffRead = Readable.from([buff]);
     const mimeT = file.mimeType;
     const readM = Readable.from([mimeT]);
-    fileType = file.type;
+    fileType = file.mimeType;
     console.log(fileType, "mimeType");
     const buffString = stringify(buff);
-    console.log(buffString.substring(0, 10), "buffString");
-
-    // heys
+    console.log(buffString.substring("hex", 0, 100), "buffString");
 
     // This gets the list of every club's name
     const mainClubDataSheet = await sheetData(
