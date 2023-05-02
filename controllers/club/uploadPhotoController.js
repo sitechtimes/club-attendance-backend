@@ -15,6 +15,7 @@ const { sheetData } = require("../../utility.js");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const KEYFILEPATH = "keys.json";
+const { Readable } =  require('stream')
 
 const sheetAuth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -38,6 +39,11 @@ exports.uploadPhoto = async (req, res, next) => {
     let sheets = req.object.sheets;
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
+    const mimeT = file.mimeType;
+    const readM = Readable.from([mimeT]);
+    fileType = file.type;
+    console.log(fileType, "mimeType");
+    console.log(req, "req");
 
     // This gets the list of every club's name
     const mainClubDataSheet = await sheetData(
@@ -86,6 +92,7 @@ exports.uploadPhoto = async (req, res, next) => {
     console.log(folderID);
 
     const drive = req.driveService;
+    const buff = file.buffer;
 
     const response = await drive.files.create({
       requestBody: {
@@ -93,8 +100,8 @@ exports.uploadPhoto = async (req, res, next) => {
         parents: [`${folderID}`],
       },
       media: {
-        mimeType: "image/png",
-        body: file.buffer,
+        mimeType: file.mimeType,
+        body: Readable.from([buff]),
       },
     });
 
