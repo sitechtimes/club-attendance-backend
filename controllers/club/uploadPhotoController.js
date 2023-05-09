@@ -17,6 +17,7 @@ const upload = multer({ storage: storage });
 const KEYFILEPATH = "keys.json";
 const { Readable } = require("stream");
 const { stringify } = require("querystring");
+const { lookupService } = require("dns");
 
 const sheetAuth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -41,13 +42,8 @@ exports.uploadPhoto = async (req, res, next) => {
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
     const buff = file.buffer;
-    const buffRead = Readable.from([buff]);
-    const mimeT = file.mimeType;
-    const readM = Readable.from([mimeT]);
-    fileType = file.mimeType;
-    console.log(fileType, "mimeType");
-    const buffString = stringify(buff);
-    console.log(buffString.substring("hex", 0, 100), "buffString");
+    const buffString = buff.toString('hex',0,4);
+    console.log(buffString, "buffString");
 
     // This gets the list of every club's name
     const mainClubDataSheet = await sheetData(
@@ -97,32 +93,37 @@ exports.uploadPhoto = async (req, res, next) => {
 
     const drive = req.driveService;
 
-    const response = await drive.files.create({
-      requestBody: {
-        name: file.originalname,
-        parents: [`${folderID}`],
-      },
-      media: {
-        mimeType: file.mimeType,
-        body: Readable.from([buff]),
-      },
-    });
+    if (buffString == 25504446 || 89504e47 || ffd8ffe0 ) {
+      let response = await drive.files.create({
+        requestBody: {
+          name: file.originalname,
+          parents: [`${folderID}`],
+        },
+        media: {
+          mimeType: file.mimeType,
+          body: Readable.from([buff]),
+        },
+      });
 
-    // Send a response with the Google Drive file ID
-    res.json({
-      message: "File uploaded successfully",
-      fileId: response.data.id,
-    });
-
-    switch (response.status) {
-      case 200:
-        let files = response.result;
-        console.log("Created File Id: ", response.data.id);
-        break;
-      default:
-        console.error("Error creating the file, " + response.errors);
-        break;
-    }
+      switch (response.status) {
+        case 200:
+          let files = response.result;
+          console.log("Created File Id: ", response.data.id);
+          break;
+        default:
+          console.error("Error creating the file, " + response.errors);
+          break;
+      }
+      // Send a response with the Google Drive file ID
+      res.json({
+        message: "File uploaded successfully",
+        fileId: response.data.id,
+      });
+    } else {
+      res.json({
+        message: "Not a valid file",
+      });
+    };
   } catch (error) {
     console.log(error);
   }
