@@ -1,17 +1,17 @@
 "use strict";
 const express = require("express");
 const router = new express.Router();
-const clubData = require("../Controllers/clubDataController");
-const sheetAuth = require("../Controllers/googleSheetAuthController");
-const markingAttendence = require("../Controllers/markAttendenceController");
-const joinClub = require("../Controllers/joinClubController");
-const AttendeceDate = require("../Controllers/createAttendenceDateController");
-const verify = require("../Controllers/verificationController");
-const userLogic = require("../Controllers/userLogicController");
-const addClub = require("../Controllers/clubcode");
-const clubAttendence = require("../Controllers/clubAttendenceController");
-const addMeeting = require("../Controllers/newMeeting");
-const removeMeeting = require("../Controllers/deleteMeeting");
+const clubData = require("../Controllers/club/clubDataController");
+const sheetAuth = require("../Controllers/club/googleSheetAuthController");
+const markingAttendence = require("../Controllers/club/markAttendenceController");
+const joinClub = require("../Controllers/club/joinClubController");
+const AttendeceDate = require("../Controllers/club/createAttendenceDateController");
+const verify = require("../Controllers/club/verificationController");
+const userLogic = require("../Controllers/club/userLogicController");
+const addClub = require("../Controllers/club/clubcode");
+const clubAttendence = require("../Controllers/club/clubAttendenceController");
+const addMeeting = require("../Controllers/club/newMeeting");
+const removeMeeting = require("../Controllers/club/deleteMeeting");
 
 router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 
