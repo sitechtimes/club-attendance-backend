@@ -1,29 +1,25 @@
 "use strict";
 const express = require("express");
 const router = new express.Router();
-const clubData = require("../controllers/club/clubDataController");
-const sheetAuth = require("../controllers/services/sheetAuthController");
-const driveAuth = require("../controllers/services/driveAuthController");
-const markingAttendence = require("../controllers/club/markAttendenceController");
-const joinClub = require("../controllers/club/joinClubController");
-const AttendeceDate = require("../controllers/club/createAttendenceDateController");
-const verify = require("../controllers/user/verificationController");
-const userLogic = require("../controllers/user/postUserController");
-const addClub = require("../controllers/club/clubcode");
-const clubAttendence = require("../controllers/club/clubAttendenceController");
-const updateClubData = require("../controllers/club/clubDataOriginController");
-const uploadPhoto = require("../controllers/club/uploadPhotoController");
-const multer = require("multer");
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const clubData = require("../Controllers/clubDataController");
+const sheetAuth = require("../Controllers/googleSheetAuthController");
+const markingAttendence = require("../Controllers/markAttendenceController");
+const joinClub = require("../Controllers/joinClubController");
+const AttendeceDate = require("../Controllers/createAttendenceDateController");
+const verify = require("../Controllers/verificationController");
+const userLogic = require("../Controllers/userLogicController");
+const addClub = require("../Controllers/clubcode");
+const clubAttendence = require("../Controllers/clubAttendenceController");
+const addMeeting = require("../Controllers/newMeeting");
+const removeMeeting = require("../Controllers/deleteMeeting");
 
-router.post(
-  "/upload-attendance",
-  upload.single("file"),
-  driveAuth.getDriveService,
-  sheetAuth.authSheets,
-  uploadPhoto.uploadPhoto
-);
+router.post("/deleteMeeting", removeMeeting.deleteMeeting);
+
+router.post("/newMeeting", addMeeting.newMeeting);
+
+router.get("/getMeeting");
+
+router.post("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
 router.get(
   "/update-club-data",
@@ -73,6 +69,8 @@ router.post(
   clubData.returnSheetId,
   clubData.readAClub
 );
+
+router.post("/addMeeting", addMeeting.newMeeting);
 
 router.post(
   "/login",
