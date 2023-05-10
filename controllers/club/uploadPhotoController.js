@@ -1,33 +1,7 @@
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 require("dotenv").config({ path: "variables.env" });
-const fs = require("fs");
-const { GoogleAuth } = require("google-auth-library");
-const { google } = require("googleapis");
-const { OAuth2Client, AuthClient } = require("google-auth-library");
-const { parse } = require("dotenv");
-const client = new OAuth2Client();
-const express = require(`express`);
-const multer = require("multer");
-const { osconfig } = require("googleapis/build/src/apis/osconfig");
-const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
-const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
 const { sheetData } = require("../../utility.js");
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-const KEYFILEPATH = "keys.json";
 const { Readable } = require("stream");
-const { stringify } = require("querystring");
-const { lookupService } = require("dns");
-
-const sheetAuth = new google.auth.GoogleAuth({
-  keyFile: "keys.json",
-  scopes: "https://www.googleapis.com/auth/spreadsheets",
-});
-
-const driveAuth = new google.auth.GoogleAuth({
-  keyFile: "keys.json",
-  scopes: "https://www.googleapis.com/auth/drive",
-});
 
 exports.uploadPhoto = async (req, res, next) => {
   try {
@@ -42,7 +16,7 @@ exports.uploadPhoto = async (req, res, next) => {
     const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
     const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
     const buff = file.buffer;
-    const buffString = buff.toString('hex',0,4);
+    const buffString = buff.toString("hex", 0, 4);
     console.log(buffString, "buffString");
 
     // This gets the list of every club's name
@@ -93,9 +67,18 @@ exports.uploadPhoto = async (req, res, next) => {
 
     const drive = req.driveService;
 
-    console.log(buffString === "89504e47" || buffString === "25504446" || buffString === "ffd8ffe0", "Is this true?!");
+    console.log(
+      buffString === "89504e47" ||
+        buffString === "25504446" ||
+        buffString === "ffd8ffe0",
+      "Is this true?!"
+    );
 
-    if (buffString === "89504e47" || buffString === "25504446" || buffString === "ffd8ffe0" ) {
+    if (
+      buffString === "89504e47" ||
+      buffString === "25504446" ||
+      buffString === "ffd8ffe0"
+    ) {
       let response = await drive.files.create({
         requestBody: {
           name: file.originalname,
@@ -126,9 +109,7 @@ exports.uploadPhoto = async (req, res, next) => {
         message: "Not a valid file",
       });
       console.log("not valid file", buffString);
-
-    };
-
+    }
   } catch (error) {
     console.log(error);
   }
