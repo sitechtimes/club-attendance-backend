@@ -1,3 +1,4 @@
+"use strict";
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 
 //google spreadsheet id for "Main-Club-Data"

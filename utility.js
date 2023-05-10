@@ -1,11 +1,10 @@
+"use strict";
 //One spreadsheet can contains multiple sheets
-
 //return all the data from the spreadsheet's sheet you specify
 //sheets- represents the sheets value from  the return object from authSheetsMiddleware
 //spreadsheetId- represents the id of the spreadsheet you are looking for
 //range- represents the sheet name you want the data from in the spreadsheet
 const sheetData = async (sheets, spreadsheetId, range) => {
-  console.log("running sheetData");
   const sheet = await sheets.spreadsheets.values.get({
     spreadsheetId: spreadsheetId,
     range: range,
@@ -13,6 +12,31 @@ const sheetData = async (sheets, spreadsheetId, range) => {
 
   const sheetDataValues = sheet.data.values;
   return sheetDataValues;
+};
+
+const addItemToRow = async (
+  sheets,
+  spreadsheetId,
+  range,
+  itemRowNumber,
+  addItem
+) => {
+  const data = await sheetData(sheets, spreadsheetId, range);
+  const item = [];
+  item.push(data[itemRowNumber], addItem);
+
+  console.log(...item.flat());
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: spreadsheetId,
+    range: `${range}`,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      values: [[...item.flat()]],
+    },
+  });
+
+  console.log("addData");
 };
 
 //returns a boolean if the value you are searching for exist
@@ -41,7 +65,7 @@ const ifValueExist = async (
   return Promise.resolve(suchVale);
 };
 
-const ifValueExistUsingUid = async (
+const ifValueExistBinary = async (
   sheets,
   spreadsheetId,
   range,
@@ -113,34 +137,43 @@ const sheetColumnAlphabetFinder = async (
   }
 };
 
-function sheetRowNumberTrue(data, columnNumber, valueComparing) {
+function sheetRowNumberTrue(data, specificRangeNumber, valueComparing) {
   const matchValueArray = [];
-  let rowNumber = 0;
 
-  for (let i = 0; data.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = data[i][columnNumber];
-    rowNumber++;
-    if (eachId === valueComparing) {
-      matchValueArray.push(rowNumber);
+  let start = 0;
+  let end = data.length - 1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    console.log(mid, data[mid][specificRangeNumber]);
+    if (data[mid][specificRangeNumber] === valueComparing) {
+      matchValueArray.push(data[mid]);
+    } else if (data[mid][specificRangeNumber] < valueComparing) {
+      start = mid + 1;
+    } else {
+      end = mid - 1;
     }
   }
+  console.log("array", matchValueArray);
 
   if (matchValueArray.length !== 0) {
     console.log(matchValueArray);
     return matchValueArray;
   }
-  return "There is no such value in google sheet";
+
+  return console.log(
+    "sheetRowNumberFinder: There is no such value in google sheet"
+  );
 }
 
-function sheetRowNumberFalse(data, columnNumber, valueComparing) {
+function sheetRowNumberFalse(data, specificRangeNumber, valueComparing) {
   let rowNumber = 0;
   let ifValueExist = false;
-  for (let i = 0; data.length > i; i++) {
+
+  let flatData = data[specificRangeNumber].flat();
+  for (let i = 0; flatData.length > i; i++) {
     //the number zero need to be change to the data representing number
     //0 might return "Michael" for example
-    let eachId = data[i][columnNumber];
+    let eachId = flatData[i];
     rowNumber++;
     if (eachId === valueComparing) {
       ifValueExist = true;
@@ -168,16 +201,16 @@ const sheetRowNumberFinder = async (
   sheets,
   spreadsheetId,
   range,
+  specificRangeNumber,
   valueComparing,
-  columnNumber,
   addEveryValue
 ) => {
-  console.log("running sheetRowNumberFinder");
   const data = await sheetData(sheets, spreadsheetId, range);
+
   if (addEveryValue) {
-    return sheetRowNumberTrue(data, columnNumber, valueComparing);
+    return sheetRowNumberTrue(data, specificRangeNumber, valueComparing);
   } else if (addEveryValue === false) {
-    return sheetRowNumberFalse(data, columnNumber, valueComparing);
+    return sheetRowNumberFalse(data, specificRangeNumber, valueComparing);
   }
 };
 
@@ -186,11 +219,10 @@ const sheetRowNumberFinder = async (
 //verficationMiddleware
 //user data that was pass through after google auth verifcation
 //spreadsheetid is from the url id from google sheets
-const addUserData = async (sheets, spreadsheetId, range, value) => {
+const addData = async (sheets, spreadsheetId, range, value) => {
   //this is the value we are going to add to google sheets
   //value must be an array format
   let values = [value];
-
   return Promise.resolve(
     await sheets.spreadsheets.values.append({
       spreadsheetId: spreadsheetId,
@@ -315,9 +347,9 @@ const getSheetNames = async (sheets, spreadsheetId) => {
   return result;
 };
 
-const createNewSheetWithName = async (sheets, sheetId, sheetName) => {
+const createNewSheetWithName = async (sheets, spreadsheetId, sheetName) => {
   await sheets.spreadsheets.batchUpdate({
-    spreadsheetId: sheetId,
+    spreadsheetId: spreadsheetId,
     resource: {
       requests: [
         {
@@ -326,6 +358,45 @@ const createNewSheetWithName = async (sheets, sheetId, sheetName) => {
               //this is the data from the frontend for dates
               title: sheetName,
             },
+          },
+        },
+      ],
+    },
+  });
+};
+
+const createNewSpreadSheet = async (sheets, title) => {
+  const spreadsheet = await sheets.spreadsheets.create({
+    resource: {
+      properties: {
+        title,
+      },
+    },
+    fields: "spreadsheetId",
+  });
+  return spreadsheet.data.spreadsheetId;
+};
+
+const sortColumn = async (sheets, spreadsheetId) => {
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: spreadsheetId,
+    resource: {
+      requests: [
+        {
+          sortRange: {
+            range: {
+              sheetId: 0,
+              start_row_index: 0,
+              end_row_index: 7,
+              start_column_index: 0,
+              end_column_index: 1,
+            },
+            sortSpecs: [
+              {
+                sortOrder: "ASCENDING",
+                dimensionIndex: 1,
+              },
+            ],
           },
         },
       ],
@@ -345,6 +416,7 @@ const generateRandomString = (length) => {
 };
 
 const updateKnownRowAndColumn = async (
+  sheets,
   spreadsheetId,
   range,
   columnAlphabet,
@@ -361,12 +433,85 @@ const updateKnownRowAndColumn = async (
   });
 };
 
+//inputValue should be in array
+const appendNewItemToColumn = async (
+  sheets,
+  spreadsheetId,
+  range,
+  inputValue
+) => {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: spreadsheetId,
+    range: range,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      majorDimension: "COLUMNS",
+      values: [inputValue],
+    },
+  });
+};
+
+const appendNewItemToRow = async (sheets, spreadsheetId, range, inputValue) => {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: spreadsheetId,
+    range: range,
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      majorDimension: "ROWS",
+      values: [inputValue],
+    },
+  });
+};
+
+//google drive functions
+const uploadToFolder = async (drive, parentFolderId, folderName) => {
+  const fileMetadata = {
+    name: folderName,
+    mimeType: "application/vnd.google-apps.folder",
+    parents: [parentFolderId],
+  };
+
+  try {
+    const file = await drive.files.create({
+      resource: fileMetadata,
+      fields: "id",
+    });
+    const childFolderId = file.data.id;
+    console.log("Folder Id:", childFolderId);
+
+    return childFolderId;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const createSheetInFolder = async (drive, childFolderId, spreadsheetName) => {
+  const fileMetadata = {
+    name: spreadsheetName,
+    parents: [childFolderId],
+    mimeType: "application/vnd.google-apps.spreadsheet",
+  };
+
+  try {
+    const file = await drive.files.create({
+      resource: fileMetadata,
+      fields: "id",
+    });
+
+    const spreadsheetId = file.data.id;
+    console.log("Spreadsheet Id:", spreadsheetId);
+    return spreadsheetId;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   sheetColumnAlphabetFinder,
   sheetRowNumberFinder,
   sheetData,
   ifValueExist,
-  addUserData,
+  addData,
   getUserData, //revamp
   //  getRowData, //revamp
   findAndUpdateValue,
@@ -374,5 +519,12 @@ module.exports = {
   generateRandomString,
   createNewSheetWithName,
   updateKnownRowAndColumn,
-  ifValueExistUsingUid,
+  ifValueExistBinary,
+  sortColumn,
+  addItemToRow,
+  appendNewItemToColumn,
+  appendNewItemToRow,
+  createNewSpreadSheet,
+  uploadToFolder,
+  createSheetInFolder,
 };

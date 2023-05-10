@@ -1,24 +1,53 @@
+"use strict";
 const express = require("express");
 const router = new express.Router();
-const clubData = require("../Controllers/clubDataController");
-const sheetAuth = require("../Controllers/googleSheetAuthController");
-const markingAttendence = require("../Controllers/markAttendenceController");
-const joinClub = require("../Controllers/joinClubController");
-const AttendeceDate = require("../Controllers/createAttendenceDateController");
-const verify = require("../Controllers/verificationController");
-const userLogic = require("../Controllers/userLogicController");
-const addClub = require("../Controllers/clubcode");
-const clubAttendence = require("../Controllers/clubAttendenceController");
+const clubData = require("../controllers/club/clubDataController");
+const sheetAuth = require("../controllers/services/sheetAuthController");
+const driveAuth = require("../controllers/services/driveAuthController");
+const markingAttendence = require("../controllers/club/markAttendenceController");
+const joinClub = require("../controllers/club/joinClubController");
+const AttendeceDate = require("../controllers/club/createAttendenceDateController");
+const verify = require("../controllers/user/verificationController");
+const userLogic = require("../controllers/user/postUserController");
+const addClub = require("../controllers/club/clubcode");
+const clubAttendence = require("../controllers/club/clubAttendenceController");
+const updateClubData = require("../controllers/club/clubDataOriginController");
+const uploadPhoto = require("../controllers/club/uploadPhotoController");
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+router.post(
+  "/upload-attendance",
+  upload.single("file"),
+  driveAuth.getDriveService,
+  sheetAuth.authSheets,
+  uploadPhoto.uploadPhoto
+);
 
 router.get(
-  "/get-all-user-data",
-  sheetAuth.authSheetsMiddleware,
-  userLogic.allUserData
+  "/update-club-data",
+  sheetAuth.authSheets,
+  updateClubData.generateNewItem,
+  updateClubData.generateRowItem,
+  driveAuth.getDriveService,
+  updateClubData.generateAcdemicYearDriveFolder,
+  updateClubData.generateClubSheetAndFolder,
+  updateClubData.uploadIdToClubData
+);
+
+router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
+
+router.post(
+  "/mark-attendence",
+  clubData.ifClubExist,
+  clubAttendence.getQrcode,
+  clubData.returnSheetId
 );
 
 router.post(
   "/get-qrcode",
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
   clubAttendence.generateSheetData,
@@ -32,14 +61,14 @@ router.post(
 //need ti create auth
 router.get(
   "/all-club-data", // "/"
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   clubData.allClubData
 );
 
 //read the club google spreadsheet data
 router.post(
   "/one-club-data", //readClub
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
   clubData.readAClub
@@ -47,23 +76,24 @@ router.post(
 
 router.post(
   "/login",
-  verify.verifyByGmailMiddleware,
-  sheetAuth.authSheetsMiddleware,
-  userLogic.checkUserData,
-  userLogic.sendBackUserData,
-  userLogic.createNewUser
+  verify.gmailVerification,
+  sheetAuth.authSheets,
+  userLogic.ifUserExist,
+  userLogic.sendUserData,
+  userLogic.createNewUser,
+  userLogic.ifPresident
 );
 
 router.post(
   "/addOsisGradeOfficalClass",
-  sheetAuth.authSheetsMiddleware,
-  verify.verifyUser,
+  sheetAuth.authSheets,
+  verify.verifyUserInDb,
   userLogic.addOsisGradeOfficalClass
 );
 
 router.post(
   "/get-club-attendence-date",
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
   clubAttendence.getClubAttendenceDate
@@ -71,7 +101,7 @@ router.post(
 
 router.post(
   "/get-club-attendence-data",
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
   clubAttendence.getClubAttendenceData
@@ -93,7 +123,7 @@ router.post(
   // this should later be change to a post later
   // this route will mark mark down their attendence
   "/markAttendence",
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   markingAttendence.compareQRCodeMiddleware,
   markingAttendence.markAttendence
 );
@@ -101,13 +131,13 @@ router.post(
 //adds attendence date to club spreadsheet
 router.post(
   "/createAttendenceDate",
-  sheetAuth.authSheetsMiddleware,
+  sheetAuth.authSheets,
   joinClub.compareClubCodeMiddleware,
   AttendeceDate.createAttendeceDate
 );
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
-router.get("/test", sheetAuth.authSheetsMiddleware, verify.verifyUser);
+router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
 
 module.exports = router;

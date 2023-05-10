@@ -1,8 +1,8 @@
+"use strict";
 const { google } = require("googleapis");
-
 //Function that access google spreadsheet
 //and returns user's google spreadsheet object data
-exports.authSheetsMiddleware = async (req, res, next) => {
+exports.authSheets = async (req, res, next) => {
   try {
     const auth = new google.auth.GoogleAuth({
       keyFile: "keys.json",

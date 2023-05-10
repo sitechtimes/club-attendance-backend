@@ -1,12 +1,12 @@
+"use strict";
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
-
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
-const { ifValueExistUsingUid } = require("../utility.js");
+const { ifValueExistBinary } = require("../../utility.js");
 
-exports.verifyByGmailMiddleware = async (req, res, next) => {
+exports.gmailVerification = async (req, res, next) => {
   try {
     //this is the google crediental that is being sent over
     const incomingUserData = req.body.userCredential;
@@ -49,11 +49,12 @@ exports.verifyByGmailMiddleware = async (req, res, next) => {
   }
 };
 
-exports.verifyUser = async (req, res, next) => {
+//use this verfication for actions they do
+exports.verifyUserInDb = async (req, res, next) => {
   try {
     console.log("running verifyingUser");
-
     console.log(req.body);
+
     if (req.body.user === null) {
       return res.json("User is not log in");
     }
@@ -64,7 +65,7 @@ exports.verifyUser = async (req, res, next) => {
     console.log(uid);
 
     //userData!A:A refers to uid
-    const ifUserExist = await ifValueExistUsingUid(
+    const ifUserExist = await ifValueExistBinary(
       sheets,
       USER_DATA_SPREADSHEET_ID,
       `userData!A:A`,

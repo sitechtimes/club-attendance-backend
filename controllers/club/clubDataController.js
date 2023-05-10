@@ -1,12 +1,12 @@
+"use strict";
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
-
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
 const {
   sheetColumnAlphabetFinder,
   ifValueExist,
   sheetData,
-} = require("../utility.js");
+} = require("../../utility.js");
 
 //this lets us read all the data from main spreadsheet
 exports.allClubData = async (req, res) => {
@@ -18,6 +18,8 @@ exports.allClubData = async (req, res) => {
       CLUB_DATA_SPREADSHEET_ID,
       "clubData"
     );
+
+    console.log(allClubData);
 
     //this array will store the object from
     //changing arrays in sheetValue into object
