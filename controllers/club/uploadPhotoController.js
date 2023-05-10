@@ -93,7 +93,9 @@ exports.uploadPhoto = async (req, res, next) => {
 
     const drive = req.driveService;
 
-    if (buffString == 25504446 || 89504e47 || ffd8ffe0 ) {
+    console.log(buffString === "89504e47" || buffString === "25504446" || buffString === "ffd8ffe0", "Is this true?!");
+
+    if (buffString === "89504e47" || buffString === "25504446" || buffString === "ffd8ffe0" ) {
       let response = await drive.files.create({
         requestBody: {
           name: file.originalname,
@@ -123,7 +125,10 @@ exports.uploadPhoto = async (req, res, next) => {
       res.json({
         message: "Not a valid file",
       });
+      console.log("not valid file", buffString);
+
     };
+
   } catch (error) {
     console.log(error);
   }
