@@ -3,14 +3,13 @@ require("dotenv").config({ path: "./env/spreadsheetId.env" });
 require("dotenv").config({ path: "./env/driveId.env" });
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
-
 const {
   sheetData,
   addItemToRow,
-  appendNewItemToColumn,
   generateRandomString,
   uploadToFolder,
   createSheetInFolder,
+  appendNewItemBatch,
 } = require("../../utility.js");
 
 //a bug on keep adding
@@ -18,7 +17,7 @@ exports.generateNewItem = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
 
-    await addItemToRow(sheets, NEW_CLUB_DATA_SPREADSHEETID, "userData", 0, [
+    await addItemToRow(sheets, NEW_CLUB_DATA_SPREADSHEETID, "clubData", 0, [
       "Next Meeting",
       "QR Code",
       "Club Folder Id", //m
@@ -40,39 +39,83 @@ exports.generateRowItem = async (req, res, next) => {
     const clubNameData = await sheetData(
       sheets,
       NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!A:A"
+      "clubData!A:A"
     );
     clubNameData.shift();
 
+    // now change
     const clubNameDataLength = clubNameData.flat().length;
 
     console.log(clubNameDataLength);
 
-    const rowNumber = [];
+    const totalNull = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
-      rowNumber.push(i);
+      totalNull.push("null");
     }
+
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!K2:K",
+    //   totalNull
+    // );
+
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!L2:L",
+    //   totalNull
+    // );
 
     const clubCode = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       clubCode.push(generateRandomString(6));
     }
 
-    await appendNewItemToColumn(
-      sheets,
-      NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!Q2:Q",
-      rowNumber
-    );
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!P2:P",
+    //   clubCode
+    // );
 
-    await appendNewItemToColumn(
-      sheets,
-      NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!P2:P",
-      clubCode
-    );
+    const rowNumber = [];
+    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
+      rowNumber.push(i);
+    }
+
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!Q2:Q",
+    //   rowNumber
+    // );
+
+    await appendNewItemBatch(sheets, NEW_CLUB_DATA_SPREADSHEETID, [
+      {
+        range: "clubData!K2:K",
+        majorDimension: "COLUMNS",
+        values: [totalNull],
+      },
+      {
+        range: "clubData!L2:L",
+        majorDimension: "COLUMNS",
+        values: [totalNull],
+      },
+      {
+        range: "clubData!P2:P",
+        majorDimension: "COLUMNS",
+        values: [clubCode],
+      },
+      {
+        range: "clubData!Q2:Q",
+        majorDimension: "COLUMNS",
+        values: [rowNumber],
+      },
+    ]);
 
     req.clubNameData = clubNameData.flat();
+
     return next();
   } catch (error) {
     console.log(error);
@@ -86,7 +129,7 @@ exports.generateAcdemicYearDriveFolder = async (req, res, next) => {
     const acdemicYearFolderId = await uploadToFolder(
       drive,
       CLUB_ATTENDENCE_FOLDERID,
-      `${currentYear}-${currentYear + 1}`
+      `${currentYear} - ${currentYear + 1}`
     );
 
     req.acdemicYearFolderId = acdemicYearFolderId;
@@ -107,8 +150,7 @@ exports.generateClubSheetAndFolder = async (req, res, next) => {
     const folderAttendenceId = [];
     const idSpreadsheet = [];
 
-    //replace 2 with spreadsheetName.length
-    for (let i = 0; spreadsheetName.length - 1 >= i; i++) {
+    for (let i = 0; spreadsheetName.length > i; i++) {
       const clubFolderId = await uploadToFolder(
         drive,
         childFolderId,
@@ -132,7 +174,6 @@ exports.generateClubSheetAndFolder = async (req, res, next) => {
       idSpreadsheet.push(spreadsheetId);
     }
 
-    console.log(folderClubId, folderAttendenceId, idSpreadsheet);
     req.folderClubId = folderClubId;
     req.folderAttendenceId = folderAttendenceId;
     req.idSpreadsheet = idSpreadsheet;
@@ -142,28 +183,89 @@ exports.generateClubSheetAndFolder = async (req, res, next) => {
   }
 };
 
+exports.generaterRowForClub = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+
+    setTimeout(async () => {
+      for (let i = 0; req.idSpreadsheet.length > i; i++) {
+        await appendNewItemBatch(sheets, req.idSpreadsheet[i], [
+          {
+            range: "Sheet1",
+            majorDimension: "ROWS",
+            values: [
+              [
+                "UID",
+                "First Name",
+                "Last Name",
+                "OSIS",
+                "Posisiton",
+                "Grade",
+                "Email",
+                "Offical Class",
+                "# of Attendence",
+                "Row Number",
+                "Total Meeting",
+              ],
+            ],
+          },
+          {
+            range: "Sheet1!J2:J",
+            majorDimension: "COLUMNS",
+            values: [["0"]],
+          },
+        ]);
+        console.log(i);
+      }
+      console.log("done with adding things for each clubs");
+      return next();
+    }, 70000);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.uploadIdToClubData = async (req, res) => {
   try {
     const sheets = req.object.sheets;
 
-    await appendNewItemToColumn(
-      sheets,
-      NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!M2:M",
-      req.folderClubId
-    );
-    await appendNewItemToColumn(
-      sheets,
-      NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!N2:N",
-      req.folderAttendenceId
-    );
-    await appendNewItemToColumn(
-      sheets,
-      NEW_CLUB_DATA_SPREADSHEETID,
-      "userData!O2:O",
-      req.idSpreadsheet
-    );
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!M2:M",
+    //   req.folderClubId
+    // );
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!N2:N",
+    //   req.folderAttendenceId
+    // );
+    // await appendNewItemToColumn(
+    //   sheets,
+    //   NEW_CLUB_DATA_SPREADSHEETID,
+    //   "clubData!O2:O",
+    //   req.idSpreadsheet
+    // );
+
+    await appendNewItemBatch(sheets, NEW_CLUB_DATA_SPREADSHEETID, [
+      {
+        range: "clubData!M2:M",
+        majorDimension: "COLUMNS",
+        values: [req.folderClubId],
+      },
+      {
+        range: "clubData!N2:N",
+        majorDimension: "COLUMNS",
+        values: [req.idSpreadsheet],
+      },
+      {
+        range: "clubData!O2:O",
+        majorDimension: "COLUMNS",
+        values: [req.folderAttendenceId],
+      },
+    ]);
+    console.log("done with everything");
     return res.json("done");
   } catch (error) {
     console.log(error);

@@ -240,44 +240,29 @@ const addData = async (sheets, spreadsheetId, range, value) => {
 //spreadsheetId- represents the id of the spreadsheet you are looking for
 //range- represents the sheet name you want the data from in the spreadsheet
 //valueComparing- represents the item name you are looking for
-const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
+const getOneData = async (
+  sheets,
+  spreadsheetId,
+  range,
+  valueComparing,
+  column // where the item you looking  for are located
+) => {
   const data = await sheetData(sheets, spreadsheetId, range);
 
-  const columnUidFinder = await sheetColumnAlphabetFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    "UID"
-  );
+  const newData = data.sort((a, b) => {
+    return a[column] - b[column];
+  });
 
-  console.log(columnUidFinder);
-
-  let user = null;
-  for (let i = 0; data.length > i; i++) {
-    //the number zero need to be change to the data representing number
-    //0 might return "Michael" for example
-    let eachId = data[i][columnUidFinder.columnNumber];
-
-    if (eachId === valueComparing) {
-      user = data[i];
-      break;
-    }
+  let start = 0;
+  let end = newData.length - 1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    if (newData[mid][column] === valueComparing) {
+      return newData[mid];
+    } else if (newData[mid][column] < valueComparing) {
+      start = mid + 1;
+    } else end = mid - 1;
   }
-
-  const newUserDataObject = {
-    uid: user[0],
-    firstName: user[1],
-    lastName: user[2],
-    email: user[3],
-    clientAuthority: user[4],
-    osis: user[5],
-    grade: user[6],
-    officalClass: user[7],
-    emailDomain: user[8],
-    clubData: JSON.parse(user[9]),
-  };
-
-  return Promise.resolve(newUserDataObject);
 };
 
 //find one cell to update the value of the cell
@@ -288,43 +273,10 @@ const getUserData = async (sheets, spreadsheetId, range, valueComparing) => {
 //fromWhatYouChanging- find the column of identifier of that user
 //identifierOfItem- is basically the comparing value to fromWhatYouChanging's item
 //inputValue- is what the user want to put in the cell
-const findAndUpdateValue = async (
-  sheets,
-  spreadsheetId,
-  range,
-  valueOfRowThatNeedChange,
-  fromWhatYouChanging,
-  identifierOfItem,
-  inputValue
-) => {
-  const columnThingFinder = await sheetColumnAlphabetFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    valueOfRowThatNeedChange
-  );
-
-  const columnIdentifierFinder = await sheetColumnAlphabetFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    fromWhatYouChanging
-  );
-  console.log(identifierOfItem);
-
-  const rowUidNumber = await sheetRowNumberFinder(
-    sheets,
-    spreadsheetId,
-    range,
-    identifierOfItem,
-    columnIdentifierFinder.columnNumber,
-    false
-  );
-
-  console.log(`userData!${columnThingFinder.alphabet}${rowUidNumber}`);
+const updateValue = async (sheets, spreadsheetId, range, inputValue) => {
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
-    range: `${range}!${columnThingFinder.alphabet}${rowUidNumber}`,
+    range: range,
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [[`${inputValue}`]],
@@ -377,33 +329,6 @@ const createNewSpreadSheet = async (sheets, title) => {
   return spreadsheet.data.spreadsheetId;
 };
 
-const sortColumn = async (sheets, spreadsheetId) => {
-  await sheets.spreadsheets.batchUpdate({
-    spreadsheetId: spreadsheetId,
-    resource: {
-      requests: [
-        {
-          sortRange: {
-            range: {
-              sheetId: 0,
-              start_row_index: 0,
-              end_row_index: 7,
-              start_column_index: 0,
-              end_column_index: 1,
-            },
-            sortSpecs: [
-              {
-                sortOrder: "ASCENDING",
-                dimensionIndex: 1,
-              },
-            ],
-          },
-        },
-      ],
-    },
-  });
-};
-
 const generateRandomString = (length) => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -433,6 +358,21 @@ const updateKnownRowAndColumn = async (
   });
 };
 
+const appendNewItemBatch = async (sheets, spreadsheetId, payloadObject) => {
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: spreadsheetId,
+    resource: {
+      data: payloadObject, // array of objects
+      // {
+      // majorDimension: "COLUMNS" || "ROWS",
+      // values: [inputValue]
+      // range: range
+      // }
+      valueInputOption: "USER_ENTERED",
+    },
+  });
+};
+
 //inputValue should be in array
 const appendNewItemToColumn = async (
   sheets,
@@ -446,7 +386,7 @@ const appendNewItemToColumn = async (
     valueInputOption: "USER_ENTERED",
     resource: {
       majorDimension: "COLUMNS",
-      values: [inputValue],
+      values: inputValue, //double array
     },
   });
 };
@@ -458,7 +398,7 @@ const appendNewItemToRow = async (sheets, spreadsheetId, range, inputValue) => {
     valueInputOption: "USER_ENTERED",
     resource: {
       majorDimension: "ROWS",
-      values: [inputValue],
+      values: inputValue, //double array
     },
   });
 };
@@ -512,19 +452,19 @@ module.exports = {
   sheetData,
   ifValueExist,
   addData,
-  getUserData, //revamp
+  getOneData, //revamp
   //  getRowData, //revamp
-  findAndUpdateValue,
+  updateValue,
   getSheetNames,
   generateRandomString,
   createNewSheetWithName,
   updateKnownRowAndColumn,
   ifValueExistBinary,
-  sortColumn,
   addItemToRow,
   appendNewItemToColumn,
   appendNewItemToRow,
   createNewSpreadSheet,
   uploadToFolder,
   createSheetInFolder,
+  appendNewItemBatch,
 };

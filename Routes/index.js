@@ -6,23 +6,14 @@ const sheetAuth = require("../Controllers/services/sheetAuthController");
 const driveAuth = require("../Controllers/services/driveAuthController");
 const markingAttendence = require("../Controllers/club/markAttendenceController");
 const joinClub = require("../Controllers/club/joinClubController");
-const AttendeceDate = require("../Controllers/club/createAttendenceDateController");
-const verify = require("../Controllers/user/verificationController");
-const userLogic = require("../Controllers/user/userController");
+const verify = require("../Controllers/user/verifyController");
+const postUser = require("../Controllers/user/userController");
+const getAllUser = require("../Controllers/user/getAllUserController");
 const addClub = require("../Controllers/club/clubcode");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
-const addMeeting = require("../Controllers/club/newMeeting");
-const removeMeeting = require("../Controllers/club/deleteMeeting");
 const updateClubData = require("../Controllers/club/clubOriginController");
 
-router.post("/deleteMeeting", removeMeeting.deleteMeeting);
-
-router.post("/newMeeting", addMeeting.newMeeting);
-
-router.get("/getMeeting");
-
-router.post("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
-
+//make sure user has authorize power: need route!
 router.get(
   "/update-club-data",
   sheetAuth.authSheets,
@@ -31,16 +22,41 @@ router.get(
   driveAuth.getDriveService,
   updateClubData.generateAcdemicYearDriveFolder,
   updateClubData.generateClubSheetAndFolder,
+  updateClubData.generaterRowForClub,
   updateClubData.uploadIdToClubData
 );
 
-router.get("/get-all-user-data", sheetAuth.authSheets, userLogic.allUserData);
+router.post(
+  "/login",
+  verify.gmailVerification,
+  sheetAuth.authSheets,
+  postUser.ifUserExist,
+  postUser.sendUserData,
+  postUser.createNewUser
+);
 
 router.post(
+  "/addOsisGradeOfficialClass",
+  sheetAuth.authSheets,
+  verify.verifyUserInDb,
+  postUser.addOsisGradeOfficialClass
+);
+
+router.get("/get-all-user-data", sheetAuth.authSheets, getAllUser.allUserData);
+
+//dont know what this route does
+router.post(
   "/mark-attendence",
-  clubData.ifClubExist,
+  sheetAuth.authSheets,
   clubAttendence.getQrcode,
-  clubData.returnSheetId
+  clubAttendence.markAttendence
+);
+
+router.post(
+  "/manually-mark-attendence",
+  sheetAuth.authSheets,
+  clubAttendence.manuallyPresentAbsent,
+  clubAttendence.manuallyPresentAbsent2
 );
 
 router.post(
@@ -51,8 +67,8 @@ router.post(
   clubAttendence.generateSheetData,
   clubAttendence.userCopyToAttendence,
   clubAttendence.generateQrCodeOnSheet,
-  clubAttendence.generateQrCode,
-  clubAttendence.totalMeeting
+  clubAttendence.totalMeeting,
+  clubAttendence.generateQrCode
 );
 
 //read the main google spreadsheet data
@@ -73,23 +89,6 @@ router.post(
 );
 
 router.post("/addMeeting", addMeeting.newMeeting);
-
-router.post(
-  "/login",
-  verify.gmailVerification,
-  sheetAuth.authSheets,
-  userLogic.ifUserExist,
-  userLogic.sendUserData,
-  userLogic.createNewUser,
-  userLogic.ifPresident
-);
-
-router.post(
-  "/addOsisGradeOfficalClass",
-  sheetAuth.authSheets,
-  verify.verifyUserInDb,
-  userLogic.addOsisGradeOfficalClass
-);
 
 router.post(
   "/get-club-attendence-date",
@@ -126,14 +125,6 @@ router.post(
   sheetAuth.authSheets,
   markingAttendence.compareQRCodeMiddleware,
   markingAttendence.markAttendence
-);
-
-//adds attendence date to club spreadsheet
-router.post(
-  "/createAttendenceDate",
-  sheetAuth.authSheets,
-  joinClub.compareClubCodeMiddleware,
-  AttendeceDate.createAttendeceDate
 );
 
 router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);

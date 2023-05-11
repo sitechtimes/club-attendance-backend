@@ -1,11 +1,11 @@
 "use strict";
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
-const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const {
-  sheetColumnAlphabetFinder,
-  ifValueExist,
+  getOneData,
   sheetData,
+  ifValueExistBinary,
 } = require("../../utility.js");
 
 //this lets us read all the data from main spreadsheet
@@ -61,40 +61,24 @@ exports.allClubData = async (req, res) => {
 exports.ifClubExist = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
-    const userClubCode = req.body; //this is the data from the frontend
+    const userClub = req.body; //this is the data from the frontend
 
     //this specific which google spreadsheet we are acessing
     const clubRange = "clubData";
 
-    const clubCodeFinder = await sheetColumnAlphabetFinder(
+    const ifClubExist = await ifValueExistBinary(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      clubRange,
-      "Club Code"
+      `${clubRange}!A:A`,
+      userClub.clubName
     );
-    const clubSheetIdFinder = await sheetColumnAlphabetFinder(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      clubRange,
-      "Own Sheet ID"
-    );
-    const ifClubExist = await ifValueExist(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      clubRange,
-      clubCodeFinder.columnNumber,
-      userClubCode.clubCode
-    );
-    console.log(ifClubExist);
+    console.log(ifClubExist, userClub.clubName);
 
     if (ifClubExist === false) {
       console.log("no such club");
       return res.json("no such club");
     }
 
-    console.log(clubCodeFinder.alphabet, clubSheetIdFinder.alphabet);
-    req.clubCodeAlphabet = clubCodeFinder.alphabet;
-    req.clubSheetIdAlphabet = clubSheetIdFinder.alphabet;
     return next();
   } catch (error) {
     console.log(error);
@@ -104,34 +88,20 @@ exports.ifClubExist = async (req, res, next) => {
 exports.returnSheetId = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const userClubCode = req.body;
+    const userClub = req.body;
 
     const clubRange = "clubData";
-    const clubSheetIdAndClubCode = await sheetData(
+
+    const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `${clubRange}!${req.clubCodeAlphabet}:${req.clubSheetIdAlphabet}`
+      clubRange,
+      userClub.clubName,
+      0
     );
 
-    console.log(clubSheetIdAndClubCode);
-
-    //this variable will be needed to access the specific club google spreadsheet id
-    let idOfSheet = null;
-
-    //this compare the incoming club code to google spreadsheet club code
-    for (let i = 0; clubSheetIdAndClubCode.length > i; i++) {
-      let eachClubCode = clubSheetIdAndClubCode[i][1];
-      console.log(eachClubCode);
-      if (eachClubCode === userClubCode.clubCode) {
-        idOfSheet = clubSheetIdAndClubCode[i][0];
-      }
-    }
-
-    if (idOfSheet === null) {
-      console.log("idOfSheet is null");
-      return res.json("Backend error: compareClubCodeMiddleware ");
-    }
-    req.sheetId = idOfSheet;
+    req.clubData = clubData;
+    req.sheetId = clubData[14];
     return next();
   } catch (error) {
     console.log(error);
@@ -145,7 +115,7 @@ exports.readAClub = async (req, res) => {
 
     //this specific which google spreadsheet we are acessing
 
-    const clubData = await sheetData(sheets, req.sheetId, "Information");
+    const clubData = await sheetData(sheets, req.sheetId, "Sheet1");
 
     let sheetArray = [];
 
@@ -159,16 +129,15 @@ exports.readAClub = async (req, res) => {
     //formatting
 
     const sheetObject = sheetArray.map((value) => ({
-      firstName: value[0],
-      lastName: value[1],
-      uid: value[2],
+      uid: value[0],
+      firstName: value[1],
+      lastName: value[2],
       osis: value[3],
       position: value[4],
       grade: value[5],
       email: value[6],
       officalClass: value[7],
       numbOfAttendence: value[8],
-      numbOfAbsent: value[9],
     }));
     sheetObject.shift();
 

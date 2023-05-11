@@ -1,21 +1,20 @@
 "use strict";
+
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
 //google spreadsheet id for "Main-Club-Data"
-const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
+const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 //google spreadsheet id for "User Data"
-const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
+
 const {
   sheetData,
   getSheetNames,
   generateRandomString,
-  findAndUpdateValue,
+  updateValue,
   createNewSheetWithName,
-  addUserData,
-  sheetColumnAlphabetFinder,
-  sheetRowNumberFinder,
-  ifValueExistBinary,
+  appendNewItemToRow,
+  getOneData,
 } = require("../../utility.js");
 
 //get all the club attendence data
@@ -85,7 +84,7 @@ exports.generateSheetData = async (req, res, next) => {
     await createNewSheetWithName(sheets, sheetId, incomingData.dateOfToday);
 
     console.log(`You added date of ${incomingData.dateOfToday} to club sheet`);
-    console.log("testing");
+
     return next();
   } catch (error) {
     console.log(error);
@@ -95,7 +94,7 @@ exports.generateSheetData = async (req, res, next) => {
 exports.userCopyToAttendence = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const clubRange = "Information";
+    const clubRange = "Sheet1";
     const incomingData = req.body;
     const sheetId = req.sheetId;
     const clubData = await sheetData(sheets, sheetId, clubRange);
@@ -113,7 +112,9 @@ exports.userCopyToAttendence = async (req, res, next) => {
           clubData[i][6],
           clubData[i][7],
           "Status",
+          "Row Number",
         ]);
+
         continue;
       }
       copyUserValueForAttenence.push([
@@ -126,18 +127,20 @@ exports.userCopyToAttendence = async (req, res, next) => {
         clubData[i][6],
         clubData[i][7],
         "absent",
+        `${i + 1}`,
       ]);
     }
 
+    console.log(copyUserValueForAttenence);
     //maybe chnage addUserData to be name
-    for (let i = 0; copyUserValueForAttenence.length >= i; i++) {
-      await addUserData(
-        sheets,
-        sheetId,
-        incomingData.dateOfToday,
-        copyUserValueForAttenence[i]
-      );
-    }
+
+    await appendNewItemToRow(
+      sheets,
+      sheetId,
+      incomingData.dateOfToday,
+      copyUserValueForAttenence
+    );
+
     return next();
   } catch (error) {
     console.log(error);
@@ -148,46 +151,15 @@ exports.totalMeeting = async (req, res, next) => {
   console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
-    const clubRange = "Information";
     const sheetId = req.sheetId;
-    const totalMeetingColumnFinder = await sheetColumnAlphabetFinder(
-      sheets,
-      sheetId,
-      clubRange,
-      "Total Meeting"
-    );
-    const totalMeetingRowFinder = await sheetRowNumberFinder(
-      sheets,
-      sheetId,
-      clubRange,
-      "Total Meeting",
-      totalMeetingColumnFinder.columnNumber,
-      false
-    );
-    const totalMeeting = await sheetData(
-      sheets,
-      sheetId,
-      `${clubRange}!${totalMeetingColumnFinder.alphabet}${
-        totalMeetingRowFinder + 1
-      }`
-    );
 
-    const totalMeetingArray = JSON.parse(totalMeeting[0]);
-    +totalMeetingArray.totalMeeting++;
+    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!J2`);
 
-    const totalMeetingString = JSON.stringify(totalMeetingArray);
-    console.log(totalMeetingString);
+    const addMeeting = +totalMeeting + 1;
 
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: sheetId,
-      range: `${clubRange}!${totalMeetingColumnFinder.alphabet}${
-        totalMeetingRowFinder + 1
-      }`,
-      valueInputOption: "USER_ENTERED",
-      resource: {
-        values: [[totalMeetingString]],
-      },
-    });
+    await updateValue(sheets, sheetId, "Sheet1!J2", addMeeting);
+
+    return next();
   } catch (error) {
     console.log(error);
   }
@@ -199,18 +171,14 @@ exports.generateQrCodeOnSheet = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
     const clubRange = "clubData";
-    const incomingData = req.body;
 
     let randomString = generateRandomString(10);
     console.log(randomString);
 
-    await findAndUpdateValue(
+    await updateValue(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      clubRange,
-      "QR Code",
-      "Club Code",
-      incomingData.clubCode,
+      `${clubRange}!L${req.clubData[16]}`,
       randomString
     );
     req.randomString = randomString;
@@ -235,7 +203,6 @@ exports.generateQrCode = async (req, res, next) => {
         res.json(url);
       }
     );
-    return next();
   } catch (error) {
     console.log(error);
   }
@@ -244,26 +211,24 @@ exports.generateQrCode = async (req, res, next) => {
 exports.getQrcode = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
+    const qrCode = req.body.club.qrCode;
+    const clubName = req.body.club.clubName;
 
-    const qrCode = req.body.qrCode;
-    const qrCodeFinder = await sheetColumnAlphabetFinder(
+    const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      "QR Code"
-    );
-    const ifequal = await ifValueExistBinary(
-      sheets,
-      CLUB_DATA_SPREADSHEET_ID,
-      `clubData!${qrCodeFinder.alphabet}`,
-      qrCode
+      clubName,
+      0
     );
 
-    if (ifequal) {
-      return next();
+    if (clubData[11] !== qrCode) {
+      return res.json("Club qr code is wrong");
     }
 
-    return res.json("Wrong QR code!");
+    console.log(clubData[14]);
+    req.spreadId = clubData[14];
+    return next();
   } catch (error) {
     console.log(error);
   }
@@ -272,11 +237,79 @@ exports.getQrcode = async (req, res, next) => {
 exports.markAttendence = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const attendenceOfTodayData = await sheetData(
+    const sheetID = req.spreadId;
+    const dateOfToday = req.body.dateOfToday;
+    const userUid = req.body.user.uid;
+
+    const userData = await getOneData(
       sheets,
-      req.sheetId,
-      req.dateOfToday
+      sheetID,
+      `${dateOfToday}!A2:K`,
+      userUid,
+      0
     );
+
+    console.log(dateOfToday, userUid, userData);
+
+    await updateValue(
+      sheets,
+      sheetID,
+      `${dateOfToday}!I${userData[9]}`,
+      "present"
+    );
+    return res.json("Recorded attendence");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// send back all meeting date
+// able to create meeting for that date or manually select present or absent
+
+exports.manuallyPresentAbsent = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const clubName = req.body.clubName;
+
+    const clubData = await getOneData(
+      sheets,
+      CLUB_DATA_SPREADSHEET_ID,
+      "clubData",
+      clubName,
+      0
+    );
+
+    req.spreadId = clubData[14];
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.manuallyPresentAbsent2 = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const sheetID = req.spreadId;
+    const dateOfToday = req.body.dateOfToday;
+    const userUid = req.body.user.uid;
+
+    const userData = await getOneData(
+      sheets,
+      sheetID,
+      `${dateOfToday}!A2:K`,
+      userUid,
+      0
+    );
+
+    console.log(dateOfToday, userUid, userData);
+
+    await updateValue(
+      sheets,
+      sheetID,
+      `${dateOfToday}!I${userData[9]}`,
+      `${req.body.status}`
+    );
+    return res.json("Recorded attendence");
   } catch (error) {
     console.log(error);
   }
