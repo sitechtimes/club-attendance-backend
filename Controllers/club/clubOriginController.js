@@ -53,43 +53,15 @@ exports.generateRowItem = async (req, res, next) => {
       totalNull.push("null");
     }
 
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!K2:K",
-    //   totalNull
-    // );
-
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!L2:L",
-    //   totalNull
-    // );
-
     const clubCode = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       clubCode.push(generateRandomString(6));
     }
 
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!P2:P",
-    //   clubCode
-    // );
-
     const rowNumber = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       rowNumber.push(i);
     }
-
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!Q2:Q",
-    //   rowNumber
-    // );
 
     await appendNewItemBatch(sheets, NEW_CLUB_DATA_SPREADSHEETID, [
       {
@@ -228,25 +200,6 @@ exports.generaterRowForClub = async (req, res, next) => {
 exports.uploadIdToClubData = async (req, res) => {
   try {
     const sheets = req.object.sheets;
-
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!M2:M",
-    //   req.folderClubId
-    // );
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!N2:N",
-    //   req.folderAttendenceId
-    // );
-    // await appendNewItemToColumn(
-    //   sheets,
-    //   NEW_CLUB_DATA_SPREADSHEETID,
-    //   "clubData!O2:O",
-    //   req.idSpreadsheet
-    // );
 
     await appendNewItemBatch(sheets, NEW_CLUB_DATA_SPREADSHEETID, [
       {

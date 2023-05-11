@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const { google } = require("googleapis");
 const { OAuth2Client, AuthClient } = require("google-auth-library");

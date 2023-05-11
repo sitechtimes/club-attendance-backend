@@ -12,6 +12,7 @@ const getAllUser = require("../Controllers/user/getAllUserController");
 const addClub = require("../Controllers/club/clubcode");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const updateClubData = require("../Controllers/club/clubOriginController");
+const addMeeting = require("../Controllers/club/newMeeting");
 
 //make sure user has authorize power: need route!
 router.get(

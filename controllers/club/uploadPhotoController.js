@@ -1,3 +1,4 @@
+"use strict";
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 require("dotenv").config({ path: "variables.env" });
 const { sheetData } = require("../../utility.js");
