@@ -2,16 +2,18 @@
 const express = require("express");
 const router = new express.Router();
 const clubData = require("../Controllers/club/clubDataController");
-const sheetAuth = require("../Controllers/club/googleSheetAuthController");
+const sheetAuth = require("../Controllers/services/sheetAuthController");
+const driveAuth = require("../Controllers/services/driveAuthController");
 const markingAttendence = require("../Controllers/club/markAttendenceController");
 const joinClub = require("../Controllers/club/joinClubController");
 const AttendeceDate = require("../Controllers/club/createAttendenceDateController");
-const verify = require("../Controllers/club/verificationController");
-const userLogic = require("../Controllers/club/userLogicController");
+const verify = require("../Controllers/user/verificationController");
+const userLogic = require("../Controllers/user/userController");
 const addClub = require("../Controllers/club/clubcode");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const addMeeting = require("../Controllers/club/newMeeting");
 const removeMeeting = require("../Controllers/club/deleteMeeting");
+const updateClubData = require("../Controllers/club/clubOriginController");
 
 router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 
