@@ -5,7 +5,7 @@ const { OAuth2Client, AuthClient } = require("google-auth-library");
 const { osconfig } = require("googleapis/build/src/apis/osconfig");
 const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
-const MainClubData = "1Xm649d7suBlRVjXJeH31k4mAq3NLFV8pW_8QrJ55QpU";
+const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 
 const auth = new google.auth.GoogleAuth({
@@ -27,23 +27,39 @@ exports.addClubCode = async (req, res, next) => {
         range: "userData!A2:A",
       });
     // idk why but we need do this
-    const userIDList = userDataSheet.data.values;
-    const listLength = userIDList?.length;
-    console.log(`${listLength} listLength`);
-    console.log(`${userIDList} userIDList`);
-    // This gets the row number of the user in the User Data Sheet
-    let rowNumber = 0;
-    for (let i = 0; i < listLength; i++) {
-      if (userIDList[i][0] === UserID) {
-        rowNumber = i + 2;
-        break;
+    const userIDList = userDataSheet.data.values.flat();
+    const userIDSorted = userIDList.sort();
+    console.log(userIDSorted);
+
+    // This gets the row number of the club with a binary search, x is the club name
+    function binarySearch(userIDSorted, x) {
+      let l = 0,
+        r = userIDSorted.length - 1;
+      while (l <= r) {
+        let m = l + Math.floor((r - l) / 2);
+
+        let res = x.localeCompare(userIDSorted[m]);
+
+        // Check if x is present at mid
+        if (res == 0) return m;
+
+        // If x greater, ignore left half
+        if (res > 0) l = m + 1;
+        // If x is smaller, ignore right half
+        else r = m - 1;
       }
+      return -1;
     }
-    console.log(rowNumber);
+    let x = UserID;
+    // result would be the number in the array
+    let result = binarySearch(userIDSorted, x);
+    // add 1 to get row number (google sheets don't start with 0)
+    let userRowNumber = result + 2;
+    console.log(userRowNumber);
 
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
       spreadsheetId: userDataSheetID,
-      range: `userData!K${rowNumber}:K${rowNumber}`,
+      range: `userData!K${userRowNumber}:K${userRowNumber}`,
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [[ClubCode]],
@@ -67,17 +83,34 @@ exports.addUserDataToClub = async (req, res) => {
         spreadsheetId: MainClubData,
         range: "clubData!L2:L",
       });
-    const clubCodeList = mainClubDataSheet.data.values;
-    const clubCodesLength = clubCodeList?.length;
-    console.log(clubCodeList);
-    console.log(clubCodesLength);
-    let clubDataRowNumber = 0;
-    for (let i = 0; i < clubCodesLength; i++) {
-      if (clubCodeList[i][0] === ClubCode) {
-        clubDataRowNumber = i + 2;
-        break;
+    const clubCodeList = mainClubDataSheet.data.values.flat();
+    const clubCodeSorted = clubCodeList.sort();
+    console.log(clubCodeSorted);
+
+    // This gets the row number of the club with a binary search, x is the club name
+    function binarySearch(clubCodeSorted, x) {
+      let l = 0,
+        r = clubCodeSorted.length - 1;
+      while (l <= r) {
+        let m = l + Math.floor((r - l) / 2);
+
+        let res = x.localeCompare(clubCodeSorted[m]);
+
+        // Check if x is present at mid
+        if (res == 0) return m;
+
+        // If x greater, ignore left half
+        if (res > 0) l = m + 1;
+        // If x is smaller, ignore right half
+        else r = m - 1;
       }
+      return -1;
     }
+    let x = ClubCode;
+    // result would be the number in the array
+    let result = binarySearch(clubCodeSorted, x);
+    // add 1 to get row number (google sheets don't start with 0)
+    let clubDataRowNumber = result + 2;
     console.log(clubDataRowNumber);
 
     // This uses the row number to get the club's sheetid
@@ -85,7 +118,7 @@ exports.addUserDataToClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: MainClubData,
-        range: `clubData!K${clubDataRowNumber}:K${clubDataRowNumber}`,
+        range: `clubData!O${clubDataRowNumber}:O${clubDataRowNumber}`,
       });
     let clubSheet = clubSheetData.data.values[0][0];
     console.log(clubSheet);
@@ -97,18 +130,36 @@ exports.addUserDataToClub = async (req, res) => {
         spreadsheetId: userDataSheetID,
         range: "userData!A2:A",
       });
-    const userIDList = userDataSheet.data.values;
-    const listLength = userIDList?.length;
-    console.log(listLength);
-    console.log(userIDList);
-    let userRowNumber2 = 0;
-    for (let i = 0; i < listLength; i++) {
-      if (userIDList[i][0] === UserID) {
-        userRowNumber2 = i + 2;
-        break;
+    // idk why but we need do this
+    const userIDList = userDataSheet.data.values.flat();
+    const userIDSorted = userIDList.sort();
+    console.log(userIDSorted);
+
+    // This gets the row number of the club with a binary search, x is the club name
+    function binarySearch(userIDSorted, y) {
+      let l = 0,
+        r = userIDSorted.length - 1;
+      while (l <= r) {
+        let m = l + Math.floor((r - l) / 2);
+
+        let res = y.localeCompare(userIDSorted[m]);
+
+        // Check if x is present at mid
+        if (res == 0) return m;
+
+        // If x greater, ignore left half
+        if (res > 0) l = m + 1;
+        // If x is smaller, ignore right half
+        else r = m - 1;
       }
+      return -1;
     }
-    console.log(`${userRowNumber2} userRowNumber2`);
+    let y = UserID;
+    // result would be the number in the array
+    let resultUser = binarySearch(userIDSorted, y);
+    // add 1 to get row number (google sheets don't start with 0)
+    let userRowNumber2 = resultUser + 2;
+    console.log(userRowNumber2);
 
     // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
     const clubData = await google
@@ -136,7 +187,7 @@ exports.addUserDataToClub = async (req, res) => {
     // In the ClubData sheet add First Name to column A, Last Name to column B, UserID to column C, and "Member" to column E
     google.sheets({ version: "v4", auth }).spreadsheets.values.append({
       spreadsheetId: clubSheet,
-      range: "Sheet1!A2:H2",
+      range: "Sheet1!A:H",
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [
@@ -150,20 +201,37 @@ exports.addUserDataToClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: clubSheet,
-        range: "Sheet1!C2:C",
+        range: "Sheet1!A2:A",
       });
-    const nameIDList = clubNameSheet.data.values;
-    const nameListLength = nameIDList?.length;
-    console.log(`${nameIDList} nameIDList`);
-    console.log(`${nameListLength} nameListLength`);
-    let specificClubRowNumber = 0;
-    for (let i = 0; i < nameListLength; i++) {
-      if (nameIDList[i][0] === UserID) {
-        specificClubRowNumber = i + 2;
-        break;
+    const nameIDList = clubNameSheet.data.values.flat();
+    const nameIDSorted = nameIDList.sort();
+    console.log(nameIDSorted);
+
+    // This gets the row number of the club with a binary search, x is the club name
+    function binarySearch(nameIDSorted, v) {
+      let l = 0,
+        r = nameIDSorted.length - 1;
+      while (l <= r) {
+        let m = l + Math.floor((r - l) / 2);
+
+        let res = v.localeCompare(nameIDSorted[m]);
+
+        // Check if x is present at mid
+        if (res == 0) return m;
+
+        // If x greater, ignore left half
+        if (res > 0) l = m + 1;
+        // If x is smaller, ignore right half
+        else r = m - 1;
       }
+      return -1;
     }
-    console.log(`${specificClubRowNumber} specificClubRowNumber`);
+    let v = UserID;
+    // result would be the number in the array
+    let resultID = binarySearch(nameIDSorted, x);
+    // add 1 to get row number (google sheets don't start with 0)
+    let specificClubRowNumber = resultID + 2;
+    console.log(specificClubRowNumber);
 
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
       spreadsheetId: clubSheet,
