@@ -13,6 +13,10 @@ const addClub = require("../Controllers/club/clubcode");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const updateClubData = require("../Controllers/club/clubOriginController");
 const addMeeting = require("../Controllers/club/newMeeting");
+const uploadPhoto = require("../Controllers/club/uploadPhotoController");
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 //make sure user has authorize power: need route!
 router.get(
