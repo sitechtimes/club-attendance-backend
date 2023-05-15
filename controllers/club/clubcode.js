@@ -136,24 +136,24 @@ exports.addUserDataToClub = async (req, res) => {
     console.log(userIDSorted);
 
     // This gets the row number of the club with a binary search, x is the club name
-    function binarySearch(userIDSorted, y) {
-      let l = 0,
-        r = userIDSorted.length - 1;
-      while (l <= r) {
-        let m = l + Math.floor((r - l) / 2);
+    // function binarySearch(userIDSorted, y) {
+    //   let l = 0,
+    //     r = userIDSorted.length - 1;
+    //   while (l <= r) {
+    //     let m = l + Math.floor((r - l) / 2);
 
-        let res = y.localeCompare(userIDSorted[m]);
+    //     let res = y.localeCompare(userIDSorted[m]);
 
-        // Check if x is present at mid
-        if (res == 0) return m;
+    //     // Check if x is present at mid
+    //     if (res == 0) return m;
 
-        // If x greater, ignore left half
-        if (res > 0) l = m + 1;
-        // If x is smaller, ignore right half
-        else r = m - 1;
-      }
-      return -1;
-    }
+    //     // If x greater, ignore left half
+    //     if (res > 0) l = m + 1;
+    //     // If x is smaller, ignore right half
+    //     else r = m - 1;
+    //   }
+    //   return -1;
+    // }
     let y = UserID;
     // result would be the number in the array
     let resultUser = binarySearch(userIDSorted, y);
@@ -208,24 +208,24 @@ exports.addUserDataToClub = async (req, res) => {
     console.log(nameIDSorted);
 
     // This gets the row number of the club with a binary search, x is the club name
-    function binarySearch(nameIDSorted, v) {
-      let l = 0,
-        r = nameIDSorted.length - 1;
-      while (l <= r) {
-        let m = l + Math.floor((r - l) / 2);
+    // function binarySearch(nameIDSorted, v) {
+    //   let l = 0,
+    //     r = nameIDSorted.length - 1;
+    //   while (l <= r) {
+    //     let m = l + Math.floor((r - l) / 2);
 
-        let res = v.localeCompare(nameIDSorted[m]);
+    //     let res = v.localeCompare(nameIDSorted[m]);
 
-        // Check if x is present at mid
-        if (res == 0) return m;
+    //     // Check if x is present at mid
+    //     if (res == 0) return m;
 
-        // If x greater, ignore left half
-        if (res > 0) l = m + 1;
-        // If x is smaller, ignore right half
-        else r = m - 1;
-      }
-      return -1;
-    }
+    //     // If x greater, ignore left half
+    //     if (res > 0) l = m + 1;
+    //     // If x is smaller, ignore right half
+    //     else r = m - 1;
+    //   }
+    //   return -1;
+    // }
     let v = UserID;
     // result would be the number in the array
     let resultID = binarySearch(nameIDSorted, x);
