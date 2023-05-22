@@ -9,16 +9,23 @@ const joinClub = require("../Controllers/club/joinClubController");
 const verify = require("../Controllers/user/verifyController");
 const postUser = require("../Controllers/user/userController");
 const getAllUser = require("../Controllers/user/getAllUserController");
-const addClub = require("../Controllers/club/clubcode");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const updateClubData = require("../Controllers/club/clubOriginController");
 const addMeeting = require("../Controllers/club/newMeeting");
-const addClub = require("../Controllers/clubcode");
-const removeMeeting = require("../Controllers/deleteMeeting");
+const addClub = require("../Controllers/club/clubCode");
+const removeMeeting = require("../Controllers/club/deleteMeeting");
 const uploadPhoto = require("../Controllers/club/uploadPhotoController");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
+router.post(
+  "/upload-attendance",
+  upload.single("file"),
+  driveAuth.getDriveService,
+  sheetAuth.authSheets,
+  uploadPhoto.uploadPhoto
+);
 
 //make sure user has authorize power: need route!
 router.get(
@@ -132,7 +139,7 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.post("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
+router.post("/addClub", addClub.addClubCode, addClub.addUserDataToClub);
 
 router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 
