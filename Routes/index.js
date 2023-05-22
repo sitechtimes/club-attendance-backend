@@ -139,7 +139,7 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.post("/addClub", addClub.addClubCode, addClub.addUserDataToClub);
+router.post("/addClub", addClub.addUserDataToClub);
 
 router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 

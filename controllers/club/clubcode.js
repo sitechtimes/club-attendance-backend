@@ -13,63 +13,62 @@ const auth = new google.auth.GoogleAuth({
   scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
 
-// Compare the UserID to the values in column A of "UserData" sheet then add ClubCode into user's Club Code into column H
-exports.addClubCode = async (req, res, next) => {
-  try {
-    console.log(req.body);
-    const UserID = req.body.user.uid;
-    const ClubCode = req.body.clubCode;
-    // get all UIDs
-    const userDataSheet = await google
-      .sheets({ version: "v4", auth })
-      .spreadsheets.values.get({
-        spreadsheetId: userDataSheetID,
-        range: "userData!A2:A",
-      });
-    // idk why but we need do this
-    const userIDList = userDataSheet.data.values.flat();
-    const userIDSorted = userIDList.sort();
-    console.log(userIDSorted);
+// // Compare the UserID to the values in column A of "UserData" sheet then add ClubCode into user's Club Code into column H
+// exports.addClubCode = async (req, res, next) => {
+//   try {
+//     console.log(req.body);
+//     const UserID = req.body.user.uid;
+//     const ClubCode = req.body.clubCode;
+//     // get all UIDs
+//     const userDataSheet = await google
+//       .sheets({ version: "v4", auth })
+//       .spreadsheets.values.get({
+//         spreadsheetId: userDataSheetID,
+//         range: "userData!A2:A",
+//       });
+//     const userIDList = userDataSheet.data.values.flat();
+//     const userIDSorted = userIDList.sort();
+//     console.log(userIDSorted);
 
-    // This gets the row number of the club with a binary search, x is the club name
-    function binarySearch(userIDSorted, x) {
-      let l = 0,
-        r = userIDSorted.length - 1;
-      while (l <= r) {
-        let m = l + Math.floor((r - l) / 2);
+//     // This gets the row number of the club with a binary search, x is the club name
+//     function binarySearch(userIDSorted, x) {
+//       let l = 0,
+//         r = userIDSorted.length - 1;
+//       while (l <= r) {
+//         let m = l + Math.floor((r - l) / 2);
 
-        let res = x.localeCompare(userIDSorted[m]);
+//         let res = x.localeCompare(userIDSorted[m]);
 
-        // Check if x is present at mid
-        if (res == 0) return m;
+//         // Check if x is present at mid
+//         if (res == 0) return m;
 
-        // If x greater, ignore left half
-        if (res > 0) l = m + 1;
-        // If x is smaller, ignore right half
-        else r = m - 1;
-      }
-      return -1;
-    }
-    let x = UserID;
-    // result would be the number in the array
-    let result = binarySearch(userIDSorted, x);
-    // add 1 to get row number (google sheets don't start with 0)
-    let userRowNumber = result + 2;
-    console.log(userRowNumber);
+//         // If x greater, ignore left half
+//         if (res > 0) l = m + 1;
+//         // If x is smaller, ignore right half
+//         else r = m - 1;
+//       }
+//       return -1;
+//     }
+//     let x = UserID;
+//     // result would be the number in the array
+//     let result = binarySearch(userIDSorted, x);
+//     // add 1 to get row number (google sheets don't start with 0)
+//     let userRowNumber = result + 2;
+//     console.log(userRowNumber);
 
-    google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-      spreadsheetId: userDataSheetID,
-      range: `userData!K${userRowNumber}:K${userRowNumber}`,
-      valueInputOption: "USER_ENTERED",
-      resource: {
-        values: [[ClubCode]],
-      },
-    });
-    return next();
-  } catch (error) {
-    console.log(error);
-  }
-};
+//     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+//       spreadsheetId: userDataSheetID,
+//       range: `userData!K${userRowNumber}:K${userRowNumber}`,
+//       valueInputOption: "USER_ENTERED",
+//       resource: {
+//         values: [[ClubCode]],
+//       },
+//     });
+//     return next();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 // Compare the ClubCode to the values in columne L of MainClubData sheet then get the sheetID(ClubData) of the club with the same ClubCode
 exports.addUserDataToClub = async (req, res) => {
@@ -81,7 +80,7 @@ exports.addUserDataToClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: MainClubData,
-        range: "clubData!L2:L",
+        range: "clubData!P2:P",
       });
     const clubCodeList = mainClubDataSheet.data.values.flat();
     const clubCodeSorted = clubCodeList.sort();
@@ -288,7 +287,7 @@ exports.addUserDataToClub = async (req, res) => {
       res.json(newPosition);
     }
 
-    const defaultClub = `[{"clubStatus":"User have not join any club yet."}]`;
+    const defaultClub = "null";
 
     let clubResponse = `[${newPosition}]`;
     console.log(`${userClubList}` === `${defaultClub}`);
