@@ -7,6 +7,7 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
+const { getOneData } = require("../../utility.js");
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -74,43 +75,58 @@ const auth = new google.auth.GoogleAuth({
 exports.addUserDataToClub = async (req, res) => {
   try {
     const UserID = req.body.user.uid;
+   
     const ClubCode = req.body.clubCode;
+    const sheets = req.object.sheets;
+    console.log(ClubCode);
     // This gets the row number of the clubcode, this rownumber would "identify" the specific club, MainClubdata row#
-    const mainClubDataSheet = await google
-      .sheets({ version: "v4", auth })
-      .spreadsheets.values.get({
-        spreadsheetId: MainClubData,
-        range: "clubData!P2:P",
-      });
-    const clubCodeList = mainClubDataSheet.data.values.flat();
-    const clubCodeSorted = clubCodeList.sort();
-    console.log(clubCodeSorted);
+    // const mainClubDataSheet = await google
+    //   .sheets({ version: "v4", auth })
+    //   .spreadsheets.values.get({
+    //     spreadsheetId: MainClubData,
+    //     range: "clubData!P2:P",
+    //   });
+    // const clubCodeList = mainClubDataSheet.data.values.flat();
+    // const clubCodeSorted = clubCodeList.sort();
+    // console.log(clubCodeSorted);
+    // console.log(ClubCode, "clubcode");
 
-    // This gets the row number of the club with a binary search, x is the club name
-    function binarySearch(clubCodeSorted, x) {
-      let l = 0,
-        r = clubCodeSorted.length - 1;
-      while (l <= r) {
-        let m = l + Math.floor((r - l) / 2);
+    // // This gets the row number of the club with a binary search, x is the club name
+    // function binarySearch(clubCodeSorted, x) {
+    //   let l = 0,
+    //     r = clubCodeSorted.length - 1;
+    //   while (l <= r) {
+    //     let m = l + Math.floor((r - l) / 2);
 
-        let res = x.localeCompare(clubCodeSorted[m]);
+    //     let res = x.localeCompare(clubCodeSorted[m]);
 
-        // Check if x is present at mid
-        if (res == 0) return m;
+    //     // Check if x is present at mid
+    //     if (res == 0) return m;
 
-        // If x greater, ignore left half
-        if (res > 0) l = m + 1;
-        // If x is smaller, ignore right half
-        else r = m - 1;
-      }
-      return -1;
-    }
-    let x = ClubCode;
-    // result would be the number in the array
-    let result = binarySearch(clubCodeSorted, x);
-    // add 1 to get row number (google sheets don't start with 0)
-    let clubDataRowNumber = result + 2;
-    console.log(clubDataRowNumber);
+    //     // If x greater, ignore left half
+    //     if (res > 0) l = m + 1;
+    //     // If x is smaller, ignore right half
+    //     else r = m - 1;
+    //   }
+    //   return -1;
+    // }
+    // let x = ClubCode;
+    // // result would be the number in the array
+    // let result = binarySearch(clubCodeSorted, x);
+    // // add 1 to get row number (google sheets don't start with 0)
+    // let clubDataRowNumber = result + 2;
+    // console.log(clubDataRowNumber, "clubDataRowNumber");
+    const clubDatas = await getOneData(
+      sheets,
+      MainClubData,
+      "clubData",
+      ClubCode,
+      15
+    );
+
+    const clubDataRowNumber = clubDatas;
+
+    console.log(clubDatas, "clubDataRowNumber")
 
     // This uses the row number to get the club's sheetid
     const clubSheetData = await google
@@ -122,17 +138,29 @@ exports.addUserDataToClub = async (req, res) => {
     let clubSheet = clubSheetData.data.values[0][0];
     console.log(clubSheet);
 
-    // This is same code as above to get user rowNumber, this could be used to get more User Info
-    const userDataSheet = await google
-      .sheets({ version: "v4", auth })
-      .spreadsheets.values.get({
-        spreadsheetId: userDataSheetID,
-        range: "userData!A2:A",
-      });
-    // idk why but we need do this
-    const userIDList = userDataSheet.data.values.flat();
-    const userIDSorted = userIDList.sort();
-    console.log(userIDSorted);
+    const userRowNumber21 = await getOneData(
+      sheets,
+      userDataSheetID,
+      "userData",
+      UserID,
+      0
+    );
+
+    const userRowNumber2 = userRowNumber21[11].toString();
+
+    console.log(userRowNumber2, "userRowNumber2")
+
+    // // This is same code as above to get user rowNumber, this could be used to get more User Info
+    // const userDataSheet = await google
+    //   .sheets({ version: "v4", auth })
+    //   .spreadsheets.values.get({
+    //     spreadsheetId: userDataSheetID,
+    //     range: "userData!A2:A",
+    //   });
+    // // idk why but we need do this
+    // const userIDList = userDataSheet.data.values.flat();
+    // const userIDSorted = userIDList.sort();
+    // console.log(userIDSorted);
 
     // This gets the row number of the club with a binary search, x is the club name
     // function binarySearch(userIDSorted, y) {
@@ -150,15 +178,16 @@ exports.addUserDataToClub = async (req, res) => {
     //     if (res > 0) l = m + 1;
     //     // If x is smaller, ignore right half
     //     else r = m - 1;
-    //   }
-    //   return -1;
-    // }
-    let y = UserID;
-    // result would be the number in the array
-    let resultUser = binarySearch(userIDSorted, y);
-    // add 1 to get row number (google sheets don't start with 0)
-    let userRowNumber2 = resultUser + 2;
-    console.log(userRowNumber2);
+    // //   }
+    // //   return -1;
+    // // }
+    // let y = UserID;
+    // // result would be the number in the array
+    // let resultUser = binarySearch(userIDSorted, y);
+    // // add 1 to get row number (google sheets don't start with 0)
+    // let userRowNumber2 = resultUser + 2;
+    // console.log(userRowNumber2, "userRowNumber2");
+
 
     // This uses the user row number to get the rest of the user data( A:UID, B:FName, C:LName, D:Email, F:OSIS, G:Grade, H:Off.Class)
     const clubData = await google

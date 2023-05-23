@@ -252,6 +252,7 @@ const getOneData = async (
   const newData = data.sort((a, b) => {
     return a[column] - b[column];
   });
+ 
 
   let start = 0;
   let end = newData.length - 1;
