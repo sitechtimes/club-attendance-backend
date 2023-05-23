@@ -67,10 +67,11 @@ exports.ifClubExist = async (req, res, next) => {
     const ifClubExist = await ifValueExistBinary(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `${clubRange}!A:A`,
-      userClub.clubName
+      `${clubRange}!P:P`,
+      userClub.clubCode
     );
-    console.log(ifClubExist, userClub.clubName);
+
+    console.log(ifClubExist, userClub.clubCode);
 
     if (ifClubExist === false) {
       console.log("no such club");
@@ -94,8 +95,8 @@ exports.returnSheetId = async (req, res, next) => {
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       clubRange,
-      userClub.clubName,
-      0
+      userClub.clubCode,
+      15
     );
 
     req.clubData = clubData;
