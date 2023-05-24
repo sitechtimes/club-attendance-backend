@@ -7,7 +7,7 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-const { getOneData } = require("../../utility.js");
+const { getOneData, sheetData } = require("../../utility.js");
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -37,7 +37,7 @@ exports.addUserDataToClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: MainClubData,
-        range: `clubData!O${clubDataRowNumber}:O${clubDataRowNumber}`,
+        range: `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`,
       });
     let clubSheet = clubSheetData.data.values[0][0];
     console.log(clubSheet);
@@ -52,6 +52,10 @@ exports.addUserDataToClub = async (req, res) => {
     );
     const userRowNumber = userDatas[11].toString();
     console.log(userRowNumber, "userRowNumber");
+
+    const userClubIDs = await sheetData(sheets, clubSheet, "A:A");
+    console.log(userClubIDs, "userClubIDs");
+    console.log(userClubIDs.includes(UserID), "Does User Exist Already");
 
     // This gets the user's data from the user data sheet
     const clubData = await google
@@ -88,56 +92,14 @@ exports.addUserDataToClub = async (req, res) => {
       },
     });
 
-    const specificClubDatas = await getOneData(
-      sheets,
-      clubSheet,
-      "Sheet1",
-      UserID,
-      0
-    );
-    const specificClubRowNumber = specificClubDatas[16];
-    console.log(specificClubDatas, "specificClubDataRowNumber");
-
-    // // This is used to get the row number of the user's data in their specific club
-    // const clubNameSheet = await google
-    //   .sheets({ version: "v4", auth })
-    //   .spreadsheets.values.get({
-    //     spreadsheetId: clubSheet,
-    //     range: "Sheet1!A2:A",
-    //   });
-    // const nameIDList = clubNameSheet.data.values.flat();
-    // const nameIDSorted = nameIDList.sort();
-    // console.log(nameIDSorted);
-
-    // // This gets the row number of the club with a binary search, x is the club name
-    // function binarySearch(nameIDSorted, v) {
-    //   let l = 0,
-    //     r = nameIDSorted.length - 1;
-    //   while (l <= r) {
-    //     let m = l + Math.floor((r - l) / 2);
-
-    //     let res = v.localeCompare(nameIDSorted[m]);
-
-    //     // Check if x is present at mid
-    //     if (res == 0) return m;
-
-    //     // If x greater, ignore left half
-    //     if (res > 0) l = m + 1;
-    //     // If x is smaller, ignore right half
-    //     else r = m - 1;
-    //   }
-    //   return -1;
-    // }
-    // let v = UserID;
-    // // result would be the number in the array
-    // let resultID = binarySearch(nameIDSorted, v);
-    // // add 1 to get row number (google sheets don't start with 0)
-    // let specificClubRowNumber = resultID + 2;
-    // console.log(specificClubRowNumber, "specificClubRowNumber");
+    const specificClubIDs = await sheetData(sheets, clubSheet, "A:B");
+    console.log(specificClubIDs, "specificClubIDs");
+    const specificClubRowNumber = specificClubIDs.length + 1;
+    console.log(specificClubIDs.length, "clublength");
 
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
       spreadsheetId: clubSheet,
-      range: `K${specificClubRowNumber}:K${specificClubRowNumber}`,
+      range: `J${specificClubRowNumber}:J${specificClubRowNumber}`,
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [[specificClubRowNumber]],
