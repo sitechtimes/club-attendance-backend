@@ -213,13 +213,14 @@ exports.getQrcode = async (req, res, next) => {
     const sheets = req.object.sheets;
     const qrCode = req.body.club.qrCode;
     const clubName = req.body.club.clubName;
+    const clubCode = req.body.club.clubCode;
 
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      clubName,
-      0
+      clubCode,
+      15
     );
 
     if (clubData[11] !== qrCode) {

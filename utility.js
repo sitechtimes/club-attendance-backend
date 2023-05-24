@@ -9,9 +9,8 @@ const sheetData = async (sheets, spreadsheetId, range) => {
     spreadsheetId: spreadsheetId,
     range: range,
   });
-
-  const sheetDataValues = sheet.data.values;
-  return sheetDataValues;
+  console.log(sheet.data.values);
+  return sheet.data.values;
 };
 
 const addItemToRow = async (
