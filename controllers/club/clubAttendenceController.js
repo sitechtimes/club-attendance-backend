@@ -54,9 +54,9 @@ exports.getClubAttendenceData = async (req, res) => {
     //this will have a new array that rearrange the data into better
     //formatting
     const attendenceData = sheetArray.map((value) => ({
-      firstName: value[0],
-      lastName: value[1],
-      uid: value[2],
+      uid: value[0],
+      firstName: value[1],
+      lastName: value[2],
       osis: value[3],
       position: value[4],
       grade: value[5],
@@ -213,13 +213,14 @@ exports.getQrcode = async (req, res, next) => {
     const sheets = req.object.sheets;
     const qrCode = req.body.club.qrCode;
     const clubName = req.body.club.clubName;
+    const clubCode = req.body.club.clubCode;
 
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      clubName,
-      0
+      clubCode,
+      15
     );
 
     if (clubData[11] !== qrCode) {

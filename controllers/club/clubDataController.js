@@ -100,7 +100,7 @@ exports.returnSheetId = async (req, res, next) => {
     );
 
     req.clubData = clubData;
-    req.sheetId = clubData[14];
+    req.sheetId = clubData[13];
     return next();
   } catch (error) {
     console.log(error);
@@ -113,7 +113,7 @@ exports.readAClub = async (req, res) => {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
 
     //this specific which google spreadsheet we are acessing
-
+    console.log(req.sheetId);
     const clubData = await sheetData(sheets, req.sheetId, "Sheet1");
 
     let sheetArray = [];
