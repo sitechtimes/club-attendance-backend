@@ -329,9 +329,9 @@ const createNewSpreadSheet = async (sheets, title) => {
   return spreadsheet.data.spreadsheetId;
 };
 
-const generateRandomString = (length) => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const generateRandomNumber = (length) => {
+  const characters = "123456789";
+  //for random string use this for character "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
@@ -456,7 +456,7 @@ module.exports = {
   //  getRowData, //revamp
   updateValue,
   getSheetNames,
-  generateRandomString,
+  generateRandomNumber,
   createNewSheetWithName,
   updateKnownRowAndColumn,
   ifValueExistBinary,

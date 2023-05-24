@@ -28,7 +28,7 @@ router.post(
 );
 
 //make sure user has authorize power: need route!
-router.get(
+router.post(
   "/update-club-data",
   sheetAuth.authSheets,
   updateClubData.generateNewItem,
@@ -139,7 +139,7 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.post("/addClub",  sheetAuth.authSheets, addClub.addUserDataToClub);
+router.post("/addClub", sheetAuth.authSheets, addClub.addUserDataToClub);
 
 router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 
