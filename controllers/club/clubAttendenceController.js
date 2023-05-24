@@ -54,9 +54,9 @@ exports.getClubAttendenceData = async (req, res) => {
     //this will have a new array that rearrange the data into better
     //formatting
     const attendenceData = sheetArray.map((value) => ({
-      firstName: value[0],
-      lastName: value[1],
-      uid: value[2],
+      uid: value[0],
+      firstName: value[1],
+      lastName: value[2],
       osis: value[3],
       position: value[4],
       grade: value[5],
