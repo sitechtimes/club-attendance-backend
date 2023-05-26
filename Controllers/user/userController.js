@@ -19,7 +19,7 @@ exports.ifUserExist = async (req, res, next) => {
   try {
     const userUidRange = "userData!A:A";
     const sheets = req.object.sheets;
-
+    console.log(req.userInfo.sub);
     const ifUserExist = await ifValueExistBinary(
       sheets,
       USER_DATA_SPREADSHEET_ID,
