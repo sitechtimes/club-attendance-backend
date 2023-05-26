@@ -36,16 +36,14 @@ exports.allClubData = async (req, res) => {
     const sheetObject = sheetArray.map((value) => ({
       clubName: value[0],
       advisor: value[1],
-      advisorEmail: value[2],
-      president: value[3],
-      presidentEmail: value[4],
-      presidentUID: value[5],
-      roomNumber: value[6],
-      memberCount: value[7],
-      nextMeeting: value[8],
-      qrCode: value[9],
-      clubSpreadsheetId: value[10],
-      clubCode: value[11],
+      president: value[2],
+      frequency: value[3],
+      day: value[4],
+      room: value[5],
+      activityType: value[6],
+      advisorEmail: value[7],
+      presidentEmail: value[8],
+      clubCode: value[15],
     }));
     sheetObject.shift();
 
@@ -69,10 +67,11 @@ exports.ifClubExist = async (req, res, next) => {
     const ifClubExist = await ifValueExistBinary(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `${clubRange}!A:A`,
-      userClub.clubName
+      `${clubRange}!P:P`,
+      userClub.clubCode
     );
-    console.log(ifClubExist, userClub.clubName);
+
+    console.log(ifClubExist, userClub.clubCode);
 
     if (ifClubExist === false) {
       console.log("no such club");
@@ -96,12 +95,12 @@ exports.returnSheetId = async (req, res, next) => {
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       clubRange,
-      userClub.clubName,
-      0
+      userClub.clubCode,
+      15
     );
 
     req.clubData = clubData;
-    req.sheetId = clubData[14];
+    req.sheetId = clubData[13];
     return next();
   } catch (error) {
     console.log(error);
@@ -114,7 +113,7 @@ exports.readAClub = async (req, res) => {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
 
     //this specific which google spreadsheet we are acessing
-
+    console.log(req.sheetId);
     const clubData = await sheetData(sheets, req.sheetId, "Sheet1");
 
     let sheetArray = [];
