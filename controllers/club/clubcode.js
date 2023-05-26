@@ -53,9 +53,17 @@ exports.addUserDataToClub = async (req, res) => {
     const userRowNumber = userDatas[11].toString();
     console.log(userRowNumber, "userRowNumber");
 
-    const userClubIDs = await sheetData(sheets, clubSheet, "A:A");
-    console.log(userClubIDs, "userClubIDs");
-    console.log(userClubIDs.includes(UserID), "Does User Exist Already");
+    const userClubIDs = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: clubSheet,
+        range: "sheet1!A2:A",
+      });
+    let clubIDs = userClubIDs.data.values.flat();
+    // const userClubIDs = await sheetData(sheets, clubSheet, "A:A");
+    console.log(clubIDs, "userClubIDs");
+    console.log(UserID, "userID");
+    console.log(clubIDs.includes(UserID), "Does User Exist Already");
 
     // This gets the user's data from the user data sheet
     const clubData = await google
@@ -169,7 +177,7 @@ exports.addUserDataToClub = async (req, res) => {
       clubResponse = `[${newPosition}]`;
       google.sheets({ version: "v4", auth }).spreadsheets.values.update({
         spreadsheetId: userDataSheetID,
-        range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+        range: `userData!J${userRowNumber}:J${userRowNumber}`,
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [[clubResponse]],
@@ -182,7 +190,7 @@ exports.addUserDataToClub = async (req, res) => {
       let clubResponse = `${userClubList}`;
       google.sheets({ version: "v4", auth }).spreadsheets.values.update({
         spreadsheetId: userDataSheetID,
-        range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+        range: `userData!J${userRowNumber}:J${userRowNumber}`,
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [[clubResponse]],
@@ -196,7 +204,7 @@ exports.addUserDataToClub = async (req, res) => {
       console.log(clubResponse.includes(newPosition));
       google.sheets({ version: "v4", auth }).spreadsheets.values.update({
         spreadsheetId: userDataSheetID,
-        range: `userData!J${userRowNumber2}:J${userRowNumber2}`,
+        range: `userData!J${userRowNumber}:J${userRowNumber}`,
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [[clubResponse]],
