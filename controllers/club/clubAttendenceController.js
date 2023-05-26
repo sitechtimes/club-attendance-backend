@@ -153,11 +153,11 @@ exports.totalMeeting = async (req, res, next) => {
     const sheets = req.object.sheets;
     const sheetId = req.sheetId;
 
-    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!J1`);
+    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!K1`);
 
     const addMeeting = +totalMeeting + 1;
 
-    await updateValue(sheets, sheetId, "Sheet1!J1", addMeeting);
+    await updateValue(sheets, sheetId, "Sheet1!K1", addMeeting);
 
     return next();
   } catch (error) {
@@ -211,24 +211,18 @@ exports.generateQrCode = async (req, res, next) => {
 exports.getQrcode = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const qrCode = req.body.club.qrCode;
-    const clubName = req.body.club.clubName;
-    const clubCode = req.body.club.clubCode;
+    const qrCode = req.body.qrCode;
 
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      clubCode,
-      15
+      qrCode,
+      11
     );
 
-    if (clubData[11] !== qrCode) {
-      return res.json("Club qr code is wrong");
-    }
-
-    console.log(clubData[14]);
-    req.spreadId = clubData[14];
+    console.log(clubData);
+    req.spreadId = clubData[13];
     return next();
   } catch (error) {
     console.log(error);
