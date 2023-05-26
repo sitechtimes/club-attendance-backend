@@ -9,26 +9,13 @@ const joinClub = require("../Controllers/club/joinClubController");
 const verify = require("../Controllers/user/verifyController");
 const postUser = require("../Controllers/user/userController");
 const getAllUser = require("../Controllers/user/getAllUserController");
+const addClub = require("../Controllers/club/clubcode");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const updateClubData = require("../Controllers/club/clubOriginController");
 const addMeeting = require("../Controllers/club/newMeeting");
-const addClub = require("../Controllers/club/clubCode");
-const removeMeeting = require("../Controllers/club/deleteMeeting");
-const uploadPhoto = require("../Controllers/club/uploadPhotoController");
-const multer = require("multer");
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-router.post(
-  "/upload-attendance",
-  upload.single("file"),
-  driveAuth.getDriveService,
-  sheetAuth.authSheets,
-  uploadPhoto.uploadPhoto
-);
 
 //make sure user has authorize power: need route!
-router.post(
+router.get(
   "/update-club-data",
   sheetAuth.authSheets,
   updateClubData.generateNewItem,
@@ -102,6 +89,8 @@ router.post(
   clubData.readAClub
 );
 
+router.post("/addMeeting", addMeeting.newMeeting);
+
 router.post(
   "/get-club-attendence-date",
   sheetAuth.authSheets,
@@ -139,12 +128,8 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.post("/addClub", sheetAuth.authSheets, addClub.addUserDataToClub);
-
-router.post("/deleteMeeting", removeMeeting.deleteMeeting);
+router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
 
 router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
-
-router.post("/addMeeting", addMeeting.newMeeting);
 
 module.exports = router;

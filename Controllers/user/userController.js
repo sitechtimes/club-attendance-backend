@@ -60,7 +60,6 @@ exports.sendUserData = async (req, res, next) => {
         clubData: JSON.parse(userArray[9]),
         presentLocation: JSON.parse(userArray[10]),
         rowNumber: userArray[11],
-        president: true, //make a function for it
       };
       console.log(userObject, "user");
       const response = userObject;

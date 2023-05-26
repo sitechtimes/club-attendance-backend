@@ -54,9 +54,9 @@ exports.getClubAttendenceData = async (req, res) => {
     //this will have a new array that rearrange the data into better
     //formatting
     const attendenceData = sheetArray.map((value) => ({
-      uid: value[0],
-      firstName: value[1],
-      lastName: value[2],
+      firstName: value[0],
+      lastName: value[1],
+      uid: value[2],
       osis: value[3],
       position: value[4],
       grade: value[5],
@@ -153,11 +153,11 @@ exports.totalMeeting = async (req, res, next) => {
     const sheets = req.object.sheets;
     const sheetId = req.sheetId;
 
-    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!K1`);
+    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!J2`);
 
     const addMeeting = +totalMeeting + 1;
 
-    await updateValue(sheets, sheetId, "Sheet1!K1", addMeeting);
+    await updateValue(sheets, sheetId, "Sheet1!J2", addMeeting);
 
     return next();
   } catch (error) {
@@ -211,18 +211,23 @@ exports.generateQrCode = async (req, res, next) => {
 exports.getQrcode = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const qrCode = req.body.qrCode;
+    const qrCode = req.body.club.qrCode;
+    const clubName = req.body.club.clubName;
 
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      qrCode,
-      11
+      clubName,
+      0
     );
 
-    console.log(clubData);
-    req.spreadId = clubData[13];
+    if (clubData[11] !== qrCode) {
+      return res.json("Club qr code is wrong");
+    }
+
+    console.log(clubData[14]);
+    req.spreadId = clubData[14];
     return next();
   } catch (error) {
     console.log(error);
