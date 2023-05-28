@@ -128,7 +128,7 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.get("/addclub", addClub.addClubCode, addClub.addUserDataToClub);
+router.get("/addclub", addClub.addUserDataToClub);
 
 router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
 
