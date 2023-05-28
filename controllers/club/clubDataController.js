@@ -101,7 +101,7 @@ exports.returnSheetId = async (req, res, next) => {
     );
 
     req.clubData = clubData;
-    req.sheetId = clubData[14];
+    req.sheetId = clubData[13];
     return next();
   } catch (error) {
     console.log(error);

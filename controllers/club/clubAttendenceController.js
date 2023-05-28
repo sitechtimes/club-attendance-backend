@@ -153,11 +153,13 @@ exports.totalMeeting = async (req, res, next) => {
     const sheets = req.object.sheets;
     const sheetId = req.sheetId;
 
-    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!J2`);
+    const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!K1`);
 
     const addMeeting = +totalMeeting + 1;
 
-    await updateValue(sheets, sheetId, "Sheet1!J2", addMeeting);
+    console.log(totalMeeting);
+
+    await updateValue(sheets, sheetId, "Sheet1!K1", addMeeting);
 
     return next();
   } catch (error) {
