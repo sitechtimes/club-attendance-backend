@@ -264,6 +264,8 @@ const getOneData = async (
       start = mid + 1;
     } else end = mid - 1;
   }
+
+  console.log("no similar");
 };
 
 //find one cell to update the value of the cell

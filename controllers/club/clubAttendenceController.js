@@ -10,7 +10,7 @@ const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const {
   sheetData,
   getSheetNames,
-  generateRandomString,
+  generateRandomNumber,
   updateValue,
   createNewSheetWithName,
   appendNewItemToRow,
@@ -174,7 +174,7 @@ exports.generateQrCodeOnSheet = async (req, res, next) => {
     const sheets = req.object.sheets;
     const clubRange = "clubData";
 
-    let randomString = generateRandomString(10);
+    let randomString = generateRandomNumber(10);
     console.log(randomString);
 
     await updateValue(
@@ -213,23 +213,24 @@ exports.generateQrCode = async (req, res, next) => {
 exports.getQrcode = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-    const qrCode = req.body.club.qrCode;
-    const clubName = req.body.club.clubName;
+    const qrCode = req.body.qrCode;
+
+    console.log(qrCode);
 
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       "clubData",
-      clubName,
-      0
+      qrCode,
+      11
     );
 
-    if (clubData[11] !== qrCode) {
+    if (clubData === undefined) {
       return res.json("Club qr code is wrong");
     }
 
-    console.log(clubData[14]);
-    req.spreadId = clubData[14];
+    console.log(clubData[13]);
+    req.spreadId = clubData[13];
     return next();
   } catch (error) {
     console.log(error);
