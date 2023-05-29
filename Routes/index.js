@@ -139,7 +139,7 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.post("/addClub", sheetAuth.authSheets, addClub.addUserDataToClub);
+router.post("/addClub", sheetAuth.authSheets, addClub.addUserDataToClub, addClub.updateUserClubs);
 
 router.post("/deleteMeeting", removeMeeting.deleteMeeting);
 
