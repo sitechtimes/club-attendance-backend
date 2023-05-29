@@ -10,11 +10,11 @@ const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 const {
   sheetData,
   getSheetNames,
-  generateRandomString,
   updateValue,
   createNewSheetWithName,
   appendNewItemToRow,
   getOneData,
+  generateRandomNumber,
 } = require("../../utility.js");
 
 //get all the club attendence data
@@ -172,7 +172,7 @@ exports.generateQrCodeOnSheet = async (req, res, next) => {
     const sheets = req.object.sheets;
     const clubRange = "clubData";
 
-    let randomString = generateRandomString(10);
+    let randomString = generateRandomNumber(10);
     console.log(randomString);
 
     await updateValue(
