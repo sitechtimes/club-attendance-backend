@@ -6,6 +6,7 @@ const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 //google spreadsheet id for "User Data"
+const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 
 const {
   sheetData,
@@ -222,6 +223,7 @@ exports.getQrcode = async (req, res, next) => {
     );
 
     console.log(clubData);
+    req.clubData = clubData;
     req.spreadId = clubData[13];
     return next();
   } catch (error) {
@@ -253,6 +255,36 @@ exports.markAttendence = async (req, res, next) => {
       "present"
     );
     return res.json("Recorded attendence");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.updateLocation = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const userArray = await getOneData(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      "userData",
+      req.userInfo.sub,
+      0
+    );
+
+    let updateLocation = JSON.parse(userArray[10]);
+    console.log(updateLocation);
+    updateLocation.inClubToday = true;
+    updateLocation.club = req.clubData.clubName;
+    updateLocation.roomNumber = req.clubData.room;
+
+    const stringLocation = JSON.stringify(updateLocation);
+
+    await updateValue(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      `userData!K${userArray[11]}`,
+      stringLocation
+    );
   } catch (error) {
     console.log(error);
   }

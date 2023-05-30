@@ -75,7 +75,7 @@ exports.generateRowItem = async (req, res, next) => {
       {
         range: "clubData!L2:L",
         majorDimension: "COLUMNS",
-        values: [totalNull],
+        values: [randNum],
       },
       {
         range: "clubData!P2:P",
