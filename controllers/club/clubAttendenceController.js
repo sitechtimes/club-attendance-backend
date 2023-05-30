@@ -272,12 +272,9 @@ exports.updateLocation = async (req, res, next) => {
     );
 
     let updateLocation = JSON.parse(userArray[10]);
-    console.log(updateLocation);
     updateLocation.inClubToday = true;
-    updateLocation.club = `${req.clubData.clubName}`;
-    updateLocation.roomNumber = `${req.clubData.room}`;
-
-    console.log(updateLocation);
+    updateLocation.club = `${req.clubData[0]}`;
+    updateLocation.roomNumber = `${req.clubData[5]}`;
 
     const stringLocation = JSON.stringify(updateLocation);
 
@@ -287,7 +284,28 @@ exports.updateLocation = async (req, res, next) => {
       `userData!K${userArray[11]}`,
       stringLocation
     );
-    return res.json("Recorded attendence");
+    res.json("Recorded attendence");
+
+    console.log(updateLocation);
+
+    async function clearLocation() {
+      console.log(updateLocation, "owrvor");
+
+      updateLocation.inClubToday = false;
+      updateLocation.club = null;
+      updateLocation.roomNumber = null;
+
+      const stringLocation = JSON.stringify(updateLocation);
+
+      await updateValue(
+        sheets,
+        USER_DATA_SPREADSHEET_ID,
+        `userData!K${userArray[11]}`,
+        stringLocation
+      );
+    }
+
+    setTimeout(clearLocation, 3600000);
   } catch (error) {
     console.log(error);
   }
