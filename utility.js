@@ -9,7 +9,7 @@ const sheetData = async (sheets, spreadsheetId, range) => {
     spreadsheetId: spreadsheetId,
     range: range,
   });
-  console.log(sheet.data.values);
+
   return sheet.data.values;
 };
 
