@@ -1,8 +1,8 @@
 "use strict";
 
-exports.adminCheck = async (req, res) => {
+exports.adminCheck = async (req, res, next) => {
   try {
-    if (req.body.user.clientAuthority !== "admin") {
+    if (req.body.clientAuthority !== "admin") {
       return res.json("You are not authorize");
     }
     return next();

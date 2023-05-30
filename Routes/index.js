@@ -99,14 +99,15 @@ router.post(
 //need ti create auth
 router.get(
   "/all-club-data", // "/"
-
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.allClubData
 );
 
-//read the club google spreadsheet data
+//need admin
 router.post(
   "/one-club-data", //readClub
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
@@ -115,6 +116,7 @@ router.post(
 
 router.post(
   "/get-club-attendence-date",
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
@@ -123,6 +125,7 @@ router.post(
 
 router.post(
   "/get-club-attendence-data",
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
