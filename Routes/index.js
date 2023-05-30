@@ -63,7 +63,8 @@ router.post(
   "/mark-attendence",
   sheetAuth.authSheets,
   clubAttendence.getQrcode,
-  clubAttendence.markAttendence
+  clubAttendence.markAttendence,
+  clubAttendence.updateLocation
 );
 
 router.post(

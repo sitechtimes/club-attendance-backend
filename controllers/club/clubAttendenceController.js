@@ -254,7 +254,7 @@ exports.markAttendence = async (req, res, next) => {
       `${dateOfToday}!I${userData[9]}`,
       "present"
     );
-    return res.json("Recorded attendence");
+    return next();
   } catch (error) {
     console.log(error);
   }
@@ -267,15 +267,17 @@ exports.updateLocation = async (req, res, next) => {
       sheets,
       USER_DATA_SPREADSHEET_ID,
       "userData",
-      req.userInfo.sub,
+      req.body.user.uid,
       0
     );
 
     let updateLocation = JSON.parse(userArray[10]);
     console.log(updateLocation);
     updateLocation.inClubToday = true;
-    updateLocation.club = req.clubData.clubName;
-    updateLocation.roomNumber = req.clubData.room;
+    updateLocation.club = `${req.clubData.clubName}`;
+    updateLocation.roomNumber = `${req.clubData.room}`;
+
+    console.log(updateLocation);
 
     const stringLocation = JSON.stringify(updateLocation);
 
@@ -285,6 +287,7 @@ exports.updateLocation = async (req, res, next) => {
       `userData!K${userArray[11]}`,
       stringLocation
     );
+    return res.json("Recorded attendence");
   } catch (error) {
     console.log(error);
   }
