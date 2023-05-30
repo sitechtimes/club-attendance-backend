@@ -305,7 +305,7 @@ exports.updateLocation = async (req, res, next) => {
       );
     }
 
-    setTimeout(clearLocation, 3600000);
+    return setTimeout(clearLocation, 7200000);
   } catch (error) {
     console.log(error);
   }

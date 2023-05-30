@@ -8,13 +8,15 @@ const markingAttendence = require("../Controllers/club/markAttendenceController"
 const joinClub = require("../Controllers/club/joinClubController");
 const verify = require("../Controllers/user/verifyController");
 const postUser = require("../Controllers/user/userController");
-const getAllUser = require("../Controllers/user/getAllUserController");
+const getAllUser = require("../Controllers/user/allUserController");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const updateClubData = require("../Controllers/club/clubOriginController");
 const addMeeting = require("../Controllers/club/newMeeting");
 const addClub = require("../Controllers/club/clubCode");
 const removeMeeting = require("../Controllers/club/deleteMeeting");
 const uploadPhoto = require("../Controllers/club/uploadPhotoController");
+const admin = require("../Controllers/user/adminController");
+
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -30,6 +32,7 @@ router.post(
 //make sure user has authorize power: need route!
 router.post(
   "/update-club-data",
+  admin.adminCheck,
   sheetAuth.authSheets,
   updateClubData.generateNewItem,
   updateClubData.generateRowItem,
@@ -56,7 +59,13 @@ router.post(
   postUser.addOsisGradeOfficialClass
 );
 
-router.get("/get-all-user-data", sheetAuth.authSheets, getAllUser.allUserData);
+//here
+router.post(
+  "/get-all-user-data",
+  admin.adminCheck,
+  sheetAuth.authSheets,
+  getAllUser.allUserData
+);
 
 //dont know what this route does
 router.post(
@@ -90,6 +99,7 @@ router.post(
 //need ti create auth
 router.get(
   "/all-club-data", // "/"
+
   sheetAuth.authSheets,
   clubData.allClubData
 );
