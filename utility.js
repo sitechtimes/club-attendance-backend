@@ -9,8 +9,9 @@ const sheetData = async (sheets, spreadsheetId, range) => {
     spreadsheetId: spreadsheetId,
     range: range,
   });
-  console.log(sheet.data.values);
-  return sheet.data.values;
+
+  const sheetDataValues = sheet.data.values;
+  return sheetDataValues;
 };
 
 const addItemToRow = async (
@@ -70,6 +71,7 @@ const ifValueExistBinary = async (
   range,
   valueComparing
 ) => {
+  console.log("datas");
   const datas = await sheetData(sheets, spreadsheetId, range);
   const newData = datas.flat().sort((a, b) => {
     return a - b;
@@ -328,21 +330,9 @@ const createNewSpreadSheet = async (sheets, title) => {
   return spreadsheet.data.spreadsheetId;
 };
 
-const generateRandomNumber = (length) => {
-  const characters = "123456789";
-
-  let result = "";
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-};
-
 const generateRandomString = (length) => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
   let result = "";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
@@ -467,7 +457,6 @@ module.exports = {
   //  getRowData, //revamp
   updateValue,
   getSheetNames,
-  generateRandomNumber,
   generateRandomString,
   createNewSheetWithName,
   updateKnownRowAndColumn,
