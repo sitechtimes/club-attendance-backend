@@ -10,8 +10,8 @@ const {
   sheetData,
   addData,
   getOneData,
-  findAndUpdateValue,
   ifValueExistBinary,
+  updateValue,
 } = require("../../utility.js");
 
 //use this verfication for signing/loggin in
@@ -53,9 +53,9 @@ exports.sendUserData = async (req, res, next) => {
         lastName: userArray[2],
         email: userArray[3],
         clientAuthority: userArray[4],
-        osis: userArray[5],
-        grade: userArray[6],
-        officalClass: userArray[7],
+        osis: JSON.parse(userArray[5]),
+        grade: JSON.parse(userArray[6]),
+        officalClass: JSON.parse(userArray[7]),
         emailDomain: userArray[8],
         clubData: JSON.parse(userArray[9]),
         presentLocation: JSON.parse(userArray[10]),
@@ -113,7 +113,6 @@ exports.createNewUser = async (req, res) => {
       "userData!L:L"
     ).then((row) => {
       let flatData = row.flat();
-
       if (flatData[flatData.length - 1] === "Row Number") {
         return 2;
       } else {
@@ -179,12 +178,10 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       columnAlphabet = "H";
     }
 
-    await findAndUpdateValue(
+    await updateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,
-      userData,
-      userObject.rowNumber,
-      columnAlphabet,
+      `${userData}!${columnAlphabet}${userObject.rowNumber}`,
       req.body.additionalInfoValue
     );
 
