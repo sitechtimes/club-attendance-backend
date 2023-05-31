@@ -257,6 +257,7 @@ exports.markAttendence = async (req, res, next) => {
     return next();
   } catch (error) {
     console.log(error);
+    res.json("Wrong QR Code!");
   }
 };
 

@@ -97,7 +97,7 @@ router.post(
 
 //read the main google spreadsheet data
 //need ti create auth
-router.get(
+router.post(
   "/all-club-data", // "/"
   admin.adminCheck,
   sheetAuth.authSheets,
