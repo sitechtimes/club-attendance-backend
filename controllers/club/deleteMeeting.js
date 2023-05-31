@@ -28,8 +28,8 @@ exports.deleteMeeting = async (req, res) => {
       sheets,
       MainClubData,
       "clubData",
-      ClubCode,
-      15
+      clubName,
+      0
     );
     const clubDataRowNumber = clubDatas[16];
     console.log(clubDataRowNumber, "clubDataRowNumber");

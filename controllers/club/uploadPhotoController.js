@@ -8,8 +8,8 @@ exports.uploadPhoto = async (req, res, next) => {
   try {
     console.log(req.body, "body");
     const body = req.body;
-    const clubNameString = JSON.parse(req.body.data);
-    const clubName = clubNameString.clubName;
+    // const clubNameString = JSON.parse(req.body.data);
+    const clubName = body.clubName;
     console.log(clubName, "clubName");
     const file = req.file;
     console.log(file, "file");
@@ -61,7 +61,7 @@ exports.uploadPhoto = async (req, res, next) => {
     const clubFolderID = await sheetData(
       sheets,
       MainClubData,
-      `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`
+      `clubData!O${clubDataRowNumber}:O${clubDataRowNumber}`
     );
     const folderID = clubFolderID;
     console.log(folderID);
@@ -101,10 +101,13 @@ exports.uploadPhoto = async (req, res, next) => {
           break;
       }
       // Send a response with the Google Drive file ID
-      res.json({
-        message: "File uploaded successfully",
-        fileId: response.data.id,
-      });
+      res.json(
+      //   {
+      //   message: "File uploaded successfully",
+      //   fileId: response.data.id,
+      // }
+      "File Uploaded Successfully"
+      );
     } else {
       res.json({
         message: "Not a valid file",

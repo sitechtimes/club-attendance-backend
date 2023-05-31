@@ -19,7 +19,7 @@ exports.addUserDataToClub = async (req, res, next) => {
     const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
-    console.log(ClubCode);
+    console.log(ClubCode, "clubCode");
     console.log(UserID);
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
@@ -47,7 +47,7 @@ exports.addUserDataToClub = async (req, res, next) => {
     const userDatas = await getOneData(
       sheets,
       userDataSheetID,
-      "userData",
+      "userData",  
       UserID,
       0
     );
