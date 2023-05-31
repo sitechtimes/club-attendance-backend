@@ -20,6 +20,7 @@ exports.addUserDataToClub = async (req, res, next) => {
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
     console.log(ClubCode);
+    console.log(UserID);
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(
@@ -64,7 +65,8 @@ exports.addUserDataToClub = async (req, res, next) => {
     console.log(clubIDs, "userClubIDs");
     console.log(UserID, "userID");
     console.log(clubIDs.includes(UserID), "Does User Exist Already");
-
+  
+    let specificClubRowNumber;
     if (clubIDs.includes(UserID) === true) {
       res.json("Club Already Added");
     } else {
@@ -105,7 +107,7 @@ exports.addUserDataToClub = async (req, res, next) => {
 
       const specificClubIDs = await sheetData(sheets, clubSheet, "A:B");
       console.log(specificClubIDs, "specificClubIDs");
-      const specificClubRowNumber = specificClubIDs.length + 1;
+      specificClubRowNumber = specificClubIDs.length + 1;
       console.log(specificClubIDs.length, "clublength");
 
       google.sheets({ version: "v4", auth }).spreadsheets.values.update({
@@ -116,9 +118,9 @@ exports.addUserDataToClub = async (req, res, next) => {
           values: [[specificClubRowNumber]],
         },
       });
-      // return specificClubRowNumber;
-    }
-    // req.specificClubRowNumber = specificClubRowNumber;
+    };
+    req.specificClubRowNumber = specificClubRowNumber;
+    console.log(specificClubRowNumber, "testtt")
     return next();
   } catch (error) {
     console.log(error);
@@ -131,7 +133,8 @@ exports.updateUserClubs = async (req, res) => {
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
     console.log(ClubCode);
-    // console.log(req.specificClubRowNumber);
+    console.log(req.specificClubRowNumber, "specificClubRowNumber 2");
+    const specificClubRowNumber = req.specificClubRowNumber;
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(
@@ -165,16 +168,16 @@ exports.updateUserClubs = async (req, res) => {
     const userRowNumber = userDatas[11].toString();
     console.log(userRowNumber, "userRowNumber 2");
 
-    const specificClubUID = await getOneData(
-      sheets,
-      clubSheet,
-      "Sheet1",
-      UserID,
-      0
-    );
-    console.log(specificClubUID, "specificClubUID");
-    const specificClubRowNumber = specificClubUID[9].toString();
-    console.log(specificClubRowNumber, "specificClubRowNumber 2");
+    // const specificClubUID = await getOneData(
+    //   sheets,
+    //   clubSheet,
+    //   "Sheet1",
+    //   UserID,
+    //   0
+    // );
+    // console.log(specificClubUID, "specificClubUID");
+    // const specificClubRowNumber = specificClubUID[9].toString();
+    // console.log(specificClubRowNumber, "specificClubRowNumber 2");
 
     // get what clubs user is in
     const userWhatClubs = await google
