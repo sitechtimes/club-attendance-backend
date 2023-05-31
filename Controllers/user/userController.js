@@ -55,7 +55,7 @@ exports.sendUserData = async (req, res, next) => {
         clientAuthority: userArray[4],
         osis: JSON.parse(userArray[5]),
         grade: JSON.parse(userArray[6]),
-        officalClass: JSON.parse(userArray[7]),
+        officalClass: userArray[7],
         emailDomain: userArray[8],
         clubData: JSON.parse(userArray[9]),
         presentLocation: JSON.parse(userArray[10]),
