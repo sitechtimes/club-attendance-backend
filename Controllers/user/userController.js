@@ -165,6 +165,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       req.body.user.uid,
       0
     );
+
     const userObject = {
       rowNumber: userArray[11],
     };
