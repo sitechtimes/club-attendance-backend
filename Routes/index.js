@@ -15,6 +15,7 @@ const addMeeting = require("../Controllers/club/newMeeting");
 const addClub = require("../Controllers/club/clubCode");
 const removeMeeting = require("../Controllers/club/deleteMeeting");
 const uploadPhoto = require("../Controllers/club/uploadPhotoController");
+const deleteClub = require("../controllers/club/deleteClub");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -139,12 +140,14 @@ router.post(
   markingAttendence.markAttendence
 );
 
+router.post("/deleteClub", sheetAuth.authSheets, deleteClub.removeClub);
+
 router.post("/addClub", sheetAuth.authSheets, addClub.addUserDataToClub, addClub.updateUserClubs);
 
-router.post("/deleteMeeting", removeMeeting.deleteMeeting);
+router.post("/deleteMeeting", sheetAuth.authSheets, removeMeeting.deleteMeeting);
 
 router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
 
-router.post("/addMeeting", addMeeting.newMeeting);
+router.post("/addMeeting", sheetAuth.authSheets, addMeeting.newMeeting);
 
 module.exports = router;
