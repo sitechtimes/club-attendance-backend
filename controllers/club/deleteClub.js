@@ -110,3 +110,5 @@ exports.removeClub = async (req, res) => {
     console.log(error);
   }
 };
+
+

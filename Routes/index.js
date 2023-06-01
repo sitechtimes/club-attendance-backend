@@ -155,8 +155,14 @@ router.post(
   markingAttendence.markAttendence
 );
 
-router.get("/addclub", addClub.addUserDataToClub);
+router.post("/deleteClub", sheetAuth.authSheets, deleteClub.removeClub);
+
+router.post("/addClub", sheetAuth.authSheets, addClub.addUserDataToClub, addClub.updateUserClubs);
+
+router.post("/deleteMeeting", sheetAuth.authSheets, removeMeeting.deleteMeeting);
 
 router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
+
+router.post("/addMeeting", sheetAuth.authSheets, addMeeting.newMeeting);
 
 module.exports = router;
