@@ -250,7 +250,7 @@ const getOneData = async (
   const data = await sheetData(sheets, spreadsheetId, range);
 
   const newData = data.sort((a, b) => {
-    return a[column] - b[column];
+    return a[0] - b[0];
   });
 
   console.log(newData);
