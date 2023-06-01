@@ -16,6 +16,7 @@ const addClub = require("../controllers/club/clubcode");
 const removeMeeting = require("../controllers/club/deleteMeeting");
 const uploadPhoto = require("../controllers/club/uploadPhotoController");
 const admin = require("../controllers/user/adminController");
+const deleteClub = require("../controllers/club/deleteClub");
 
 const multer = require("multer");
 const storage = multer.memoryStorage();
