@@ -14,12 +14,13 @@ const auth = new google.auth.GoogleAuth({
   scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
 
-exports.addUserDataToClub = async (req, res) => {
+exports.addUserDataToClub = async (req, res, next) => {
   try {
     const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
-    console.log(ClubCode);
+    console.log(ClubCode, "clubCode");
+    console.log(UserID);
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(
@@ -46,7 +47,7 @@ exports.addUserDataToClub = async (req, res) => {
     const userDatas = await getOneData(
       sheets,
       userDataSheetID,
-      "userData",
+      "userData",  
       UserID,
       0
     );
@@ -57,14 +58,15 @@ exports.addUserDataToClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: clubSheet,
-        range: "sheet1!A2:A",
+        range: "sheet1!A1:A",
       });
     let clubIDs = userClubIDs.data.values.flat();
     // const userClubIDs = await sheetData(sheets, clubSheet, "A:A");
     console.log(clubIDs, "userClubIDs");
     console.log(UserID, "userID");
     console.log(clubIDs.includes(UserID), "Does User Exist Already");
-
+  
+    let specificClubRowNumber;
     if (clubIDs.includes(UserID) === true) {
       res.json("Club Already Added");
     } else {
@@ -105,7 +107,7 @@ exports.addUserDataToClub = async (req, res) => {
 
       const specificClubIDs = await sheetData(sheets, clubSheet, "A:B");
       console.log(specificClubIDs, "specificClubIDs");
-      const specificClubRowNumber = specificClubIDs.length + 1;
+      specificClubRowNumber = specificClubIDs.length + 1;
       console.log(specificClubIDs.length, "clublength");
 
       google.sheets({ version: "v4", auth }).spreadsheets.values.update({
@@ -116,18 +118,55 @@ exports.addUserDataToClub = async (req, res) => {
           values: [[specificClubRowNumber]],
         },
       });
-    }
-    // end of the if
+    };
+    req.specificClubRowNumber = specificClubRowNumber;
+    console.log(specificClubRowNumber, "testtt")
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-    const specificCLubUID = await getOneData(
+exports.updateUserClubs = async (req, res) => {
+  try {
+    const UserID = req.body.user.uid;
+    const ClubCode = req.body.clubCode;
+    const sheets = req.object.sheets;
+    console.log(ClubCode);
+    console.log(req.specificClubRowNumber, "specificClubRowNumber 2");
+    const specificClubRowNumber = req.specificClubRowNumber;
+
+    // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
+    const clubDatas = await getOneData(
       sheets,
-      clubSheet,
-      "Sheet1",
+      MainClubData,
+      "clubData",
+      ClubCode,
+      15
+    );
+    const clubDataRowNumber = clubDatas[16];
+    console.log(clubDataRowNumber, "clubDataRowNumber 2");
+
+    // This uses the row number to get the club's sheetid
+    const clubSheetData = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: MainClubData,
+        range: `clubData!N${clubDataRowNumber}:N${clubDataRowNumber}`,
+      });
+    let clubSheet = clubSheetData.data.values[0][0];
+    console.log(clubSheet);
+
+    // This gets the user's rownumber on the user data sheet
+    const userDatas = await getOneData(
+      sheets,
+      userDataSheetID,
+      "userData",
       UserID,
       0
     );
-    const specificClubRowNumber = specificCLubUID[9].toString();
-    console.log(specificClubRowNumber, "specificClubRowNumber 2");
+    const userRowNumber = userDatas[11].toString();
+    console.log(userRowNumber, "userRowNumber 2");
 
     // get what clubs user is in
     const userWhatClubs = await google
@@ -169,12 +208,12 @@ exports.addUserDataToClub = async (req, res) => {
     let newPosition = `{"clubCode":"${ClubCode}","position":"${userClubPosition}","clubName":"${userClubName}"}`;
     console.log(`${newPosition} newPosition`);
 
+    let resJson;
     if (`${userClubList}`.includes(`${newPosition}`) === true) {
-      res.json(`club already exists`);
+      resJson = "Club Already Exists";
     } else {
-      res.json(newPosition);
+      resJson = newPosition;
     }
-
     const defaultClub = "null";
 
     let clubResponse = `[${newPosition}]`;
@@ -226,6 +265,7 @@ exports.addUserDataToClub = async (req, res) => {
         },
       });
     }
+    res.json(resJson);
   } catch (error) {
     console.log(error);
   }
