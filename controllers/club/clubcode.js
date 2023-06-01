@@ -9,12 +9,6 @@ const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
 const { getOneData, sheetData } = require("../../utility.js");
 
-const UserID = req.body.user.uid;
-const ClubCode = req.body.clubCode;
-const sheets = req.object.sheets;
-console.log(ClubCode, "clubCode");
-console.log(UserID);
-
 const auth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
   scopes: "https://www.googleapis.com/auth/spreadsheets",
@@ -22,6 +16,12 @@ const auth = new google.auth.GoogleAuth({
 
 exports.addUserDataToClub = async (req, res, next) => {
   try {
+    const UserID = req.body.user.uid;
+    const ClubCode = req.body.clubCode;
+    const sheets = req.object.sheets;
+    console.log(ClubCode, "clubCode");
+    console.log(UserID);
+
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(
       sheets,
