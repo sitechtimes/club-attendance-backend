@@ -27,6 +27,7 @@ exports.newMeeting = async (req, res, next) => {
     console.log(req.body.clubName);
     const clubName = req.body.clubName;
     const newMeeting = req.body.newMeeting;
+    console.log(newMeeting, "newMeeting");
     const sheets = req.object.sheets;
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
@@ -34,8 +35,8 @@ exports.newMeeting = async (req, res, next) => {
       sheets,
       MainClubData,
       "clubData",
-      ClubCode,
-      15
+      clubName,
+      0
     );
     const clubDataRowNumber = clubDatas[16];
     console.log(clubDataRowNumber, "clubDataRowNumber");
@@ -60,6 +61,7 @@ exports.newMeeting = async (req, res, next) => {
       res.json(responseBack);
     }
 
+    let meetingResponse;
     const meetingDefault = `null`;
     if (`${meetingList}` === `${meetingDefault}`) {
       // This is to change the "user got no club" to a real club.
