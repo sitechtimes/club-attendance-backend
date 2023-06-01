@@ -6,15 +6,16 @@ const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
 const CLUB_DATA_SPREADSHEET_ID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
 //google spreadsheet id for "User Data"
+const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 
 const {
   sheetData,
   getSheetNames,
-  generateRandomNumber,
   updateValue,
   createNewSheetWithName,
   appendNewItemToRow,
   getOneData,
+  generateRandomNumber,
 } = require("../../utility.js");
 
 //get all the club attendence data
@@ -225,11 +226,8 @@ exports.getQrcode = async (req, res, next) => {
       11
     );
 
-    if (clubData === undefined) {
-      return res.json("Club qr code is wrong");
-    }
-
-    console.log(clubData[13]);
+    console.log(clubData);
+    req.clubData = clubData;
     req.spreadId = clubData[13];
     return next();
   } catch (error) {
@@ -260,7 +258,59 @@ exports.markAttendence = async (req, res, next) => {
       `${dateOfToday}!I${userData[9]}`,
       "present"
     );
-    return res.json("Recorded attendence");
+    return next();
+  } catch (error) {
+    console.log(error);
+    res.json("Wrong QR Code!");
+  }
+};
+
+exports.updateLocation = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+    const userArray = await getOneData(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      "userData",
+      req.body.user.uid,
+      0
+    );
+
+    let updateLocation = JSON.parse(userArray[10]);
+    updateLocation.inClubToday = true;
+    updateLocation.club = `${req.clubData[0]}`;
+    updateLocation.roomNumber = `${req.clubData[5]}`;
+
+    const stringLocation = JSON.stringify(updateLocation);
+
+    await updateValue(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      `userData!K${userArray[11]}`,
+      stringLocation
+    );
+    res.json("Recorded attendence");
+
+    console.log(updateLocation);
+
+    async function clearLocation() {
+      console.log(updateLocation, "owrvor");
+
+      updateLocation.inClubToday = false;
+      updateLocation.club = null;
+      updateLocation.roomNumber = null;
+
+      const stringLocation = JSON.stringify(updateLocation);
+
+      await updateValue(
+        sheets,
+        USER_DATA_SPREADSHEET_ID,
+        `userData!K${userArray[11]}`,
+        stringLocation
+      );
+    }
+
+    return setTimeout(clearLocation, 7200000);
   } catch (error) {
     console.log(error);
   }

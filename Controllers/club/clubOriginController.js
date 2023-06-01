@@ -49,8 +49,11 @@ exports.generateRowItem = async (req, res, next) => {
     console.log(clubNameDataLength);
 
     const totalNull = [];
+    const randNum = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
-      totalNull.push("null");
+      let randomNumber = generateRandomNumber(10);
+      randNum.push(`${randomNumber}`);
+      totalNull.push(`null`);
     }
 
     const clubCode = [];
@@ -72,7 +75,7 @@ exports.generateRowItem = async (req, res, next) => {
       {
         range: "clubData!L2:L",
         majorDimension: "COLUMNS",
-        values: [totalNull],
+        values: [randNum],
       },
       {
         range: "clubData!P2:P",

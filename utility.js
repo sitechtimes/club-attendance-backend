@@ -254,6 +254,8 @@ const getOneData = async (
     return a[column] - b[column];
   });
 
+  console.log(newData);
+
   let start = 0;
   let end = newData.length - 1;
   while (start <= end) {

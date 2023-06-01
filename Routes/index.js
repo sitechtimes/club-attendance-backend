@@ -8,15 +8,31 @@ const markingAttendence = require("../Controllers/club/markAttendenceController"
 const joinClub = require("../Controllers/club/joinClubController");
 const verify = require("../Controllers/user/verifyController");
 const postUser = require("../Controllers/user/userController");
-const getAllUser = require("../Controllers/user/getAllUserController");
-const addClub = require("../Controllers/club/clubcode");
+const getAllUser = require("../Controllers/user/allUserController");
 const clubAttendence = require("../Controllers/club/clubAttendenceController");
 const updateClubData = require("../Controllers/club/clubOriginController");
 const addMeeting = require("../Controllers/club/newMeeting");
+const addClub = require("../Controllers/club/clubCode");
+const removeMeeting = require("../Controllers/club/deleteMeeting");
+const uploadPhoto = require("../Controllers/club/uploadPhotoController");
+const admin = require("../Controllers/user/adminController");
+
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+router.post(
+  "/upload-attendance",
+  upload.single("file"),
+  driveAuth.getDriveService,
+  sheetAuth.authSheets,
+  uploadPhoto.uploadPhoto
+);
 
 //make sure user has authorize power: need route!
 router.get(
   "/update-club-data",
+  admin.adminCheck,
   sheetAuth.authSheets,
   updateClubData.generateNewItem,
   updateClubData.generateRowItem,
@@ -43,14 +59,21 @@ router.post(
   postUser.addOsisGradeOfficialClass
 );
 
-router.get("/get-all-user-data", sheetAuth.authSheets, getAllUser.allUserData);
+//here
+router.post(
+  "/get-all-user-data",
+  admin.adminCheck,
+  sheetAuth.authSheets,
+  getAllUser.allUserData
+);
 
 //dont know what this route does
 router.post(
   "/mark-attendence",
   sheetAuth.authSheets,
   clubAttendence.getQrcode,
-  clubAttendence.markAttendence
+  clubAttendence.markAttendence,
+  clubAttendence.updateLocation
 );
 
 router.post(
@@ -74,15 +97,17 @@ router.post(
 
 //read the main google spreadsheet data
 //need ti create auth
-router.get(
+router.post(
   "/all-club-data", // "/"
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.allClubData
 );
 
-//read the club google spreadsheet data
+//need admin
 router.post(
   "/one-club-data", //readClub
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
@@ -93,6 +118,7 @@ router.post("/addMeeting", addMeeting.newMeeting);
 
 router.post(
   "/get-club-attendence-date",
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
@@ -101,6 +127,7 @@ router.post(
 
 router.post(
   "/get-club-attendence-data",
+  admin.adminCheck,
   sheetAuth.authSheets,
   clubData.ifClubExist,
   clubData.returnSheetId,
