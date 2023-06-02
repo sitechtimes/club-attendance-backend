@@ -7,7 +7,7 @@ const driveAuth = require("../controllers/services/driveAuthController");
 const markingAttendence = require("../controllers/club/markAttendenceController");
 const joinClub = require("../controllers/club/joinClubController");
 const verify = require("../controllers/user/verifyController");
-const postUser = require("../controllers/user/userController");
+const postUser = require("../Controllers/user/userController");
 const getAllUser = require("../controllers/user/allUserController");
 const clubAttendence = require("../controllers/club/clubAttendenceController");
 const updateClubData = require("../controllers/club/clubOriginController");
@@ -167,7 +167,11 @@ router.post(
 
 router.post("/deleteClub", sheetAuth.authSheets, deleteClub.removeClub);
 
-router.post("/deleteClubTeacher", sheetAuth.authSheets, deleteClubTeacher.removeClub);
+router.post(
+  "/deleteClubTeacher",
+  sheetAuth.authSheets,
+  deleteClubTeacher.removeClub
+);
 
 router.post(
   "/addClub",
