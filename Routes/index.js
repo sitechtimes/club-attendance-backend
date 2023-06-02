@@ -31,7 +31,7 @@ router.post(
 );
 
 //make sure user has authorize power: need route!
-router.get(
+router.post(
   "/update-club-data",
   admin.adminCheck,
   sheetAuth.authSheets,
