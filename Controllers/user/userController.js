@@ -49,7 +49,9 @@ exports.sendUserData = async (req, res, next) => {
       );
 
       let userClubData = JSON.parse(userArray[9]);
+
       for (let i = 0; userClubData.length > i; i++) {
+        console.log(userClubData[i].clubCode);
         const inThatClub = await getOneData(
           sheets,
           NEW_CLUB_DATA_SPREADSHEETID,
@@ -57,6 +59,7 @@ exports.sendUserData = async (req, res, next) => {
           userClubData[i].clubCode,
           15
         );
+        console.log(inThatClub);
         userClubData[i].meetingDates = [inThatClub[10]];
       }
 
