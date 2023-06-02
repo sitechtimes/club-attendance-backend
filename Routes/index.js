@@ -17,6 +17,7 @@ const removeMeeting = require("../controllers/club/deleteMeeting");
 const uploadPhoto = require("../controllers/club/uploadPhotoController");
 const admin = require("../controllers/user/adminController");
 const deleteClub = require("../controllers/club/deleteClub");
+const deleteClubTeacher = require("../controllers/club/deleteClubTeacher");
 
 const multer = require("multer");
 const storage = multer.memoryStorage();
@@ -165,6 +166,8 @@ router.post(
 );
 
 router.post("/deleteClub", sheetAuth.authSheets, deleteClub.removeClub);
+
+router.post("/deleteClubTeacher", sheetAuth.authSheets, deleteClubTeacher.removeClub);
 
 router.post(
   "/addClub",
