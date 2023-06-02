@@ -71,7 +71,6 @@ const ifValueExistBinary = async (
   range,
   valueComparing
 ) => {
-  console.log("datas");
   const datas = await sheetData(sheets, spreadsheetId, range);
   const newData = datas.flat().sort((a, b) => {
     return a - b;

@@ -62,15 +62,15 @@ exports.ifClubExist = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
     const userClub = req.body; //this is the data from the frontend
-
+    console.log(userClub);
     //this specific which google spreadsheet we are acessing
     const clubRange = "clubData";
 
     const ifClubExist = await ifValueExistBinary(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `${clubRange}!A:A`,
-      userClub.clubName
+      `${clubRange}!P:P`,
+      userClub.clubCode
     );
     console.log(ifClubExist, userClub.clubName);
 
@@ -133,6 +133,54 @@ exports.readAClub = async (req, res) => {
       firstName: value[1],
       lastName: value[2],
       osis: value[3],
+      position: value[4],
+      grade: value[5],
+      email: value[6],
+      officalClass: value[7],
+      numbOfAttendence: value[8],
+    }));
+    sheetObject.shift();
+
+    console.log(sheetObject);
+
+    res.json(sheetObject);
+  } catch (error) {
+    // need better error handling
+    // https://expressjs.com/en/guide/error-handling.html
+    // create a middleware fpr event handling
+    console.log(error);
+    if (
+      error.response.data.error.message === "Requested entity was not found."
+    ) {
+      res.json("Invaild Club Code");
+    }
+  }
+};
+
+//this will read all the spreadsheet data
+exports.readAClubPresident = async (req, res) => {
+  try {
+    const sheets = req.object.sheets; //this is needed to get google spreadsheet data
+
+    //this specific which google spreadsheet we are acessing
+
+    const clubData = await sheetData(sheets, req.sheetId, "Sheet1");
+
+    let sheetArray = [];
+
+    //this is what change the array into object
+    clubData.forEach((element) => {
+      const turnArrayToObject = Object.assign({}, element);
+      sheetArray.push(turnArrayToObject);
+    });
+
+    //this will have a new array that rearrange the data into better
+    //formatting
+
+    const sheetObject = sheetArray.map((value) => ({
+      uid: value[0],
+      firstName: value[1],
+      lastName: value[2],
       position: value[4],
       grade: value[5],
       email: value[6],
