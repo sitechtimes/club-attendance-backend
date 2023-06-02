@@ -96,8 +96,8 @@ exports.returnSheetId = async (req, res, next) => {
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
       clubRange,
-      userClub.clubName,
-      0
+      userClub.clubCode,
+      15
     );
 
     req.clubData = clubData;
