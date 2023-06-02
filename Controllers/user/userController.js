@@ -60,7 +60,7 @@ exports.sendUserData = async (req, res, next) => {
             userClubData[i].clubCode,
             15
           );
-          console.log(inThatClub[10], "wbvjkbkbk");
+
           let dates = [];
           dates.push(inThatClub[10]);
           function separateDates(dateArray) {
@@ -210,6 +210,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       columnAlphabet = "G";
     } else if (req.body.additionalInfoType === "Official Class") {
       columnAlphabet = "H";
+      req.body.additionalInfoValue = req.body.additionalInfoValue.toUpperCase();
     }
     console.log(userObject.rowNumber, "rowNumber");
     await updateValue(
