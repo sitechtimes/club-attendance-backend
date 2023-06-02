@@ -15,7 +15,7 @@ const addMeeting = require("../controllers/club/newMeeting");
 const addClub = require("../controllers/club/clubcode");
 const removeMeeting = require("../controllers/club/deleteMeeting");
 const uploadPhoto = require("../controllers/club/uploadPhotoController");
-const admin = require("../controllers/user/adminController");
+const admin = require("../Controllers/user/adminController");
 const deleteClub = require("../controllers/club/deleteClub");
 const deleteClubTeacher = require("../controllers/club/deleteClubTeacher");
 
