@@ -60,8 +60,21 @@ exports.sendUserData = async (req, res, next) => {
             userClubData[i].clubCode,
             15
           );
-          console.log(inThatClub);
-          userClubData[i].meetingDates = [inThatClub[10]];
+          console.log(inThatClub[10], "wbvjkbkbk");
+          let dates = [];
+          dates.push(inThatClub[10]);
+          function separateDates(dateArray) {
+            // Extract the string from the array
+            let dateString = dateArray[0];
+
+            // Split the string by commas and trim any whitespace
+            let dates = dateString.split(",").map((date) => date.trim());
+
+            return dates;
+          }
+          const date = separateDates(dates);
+
+          userClubData[i].meetingDates = date;
         }
       }
 
