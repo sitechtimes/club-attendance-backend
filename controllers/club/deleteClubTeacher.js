@@ -23,8 +23,8 @@ exports.removeClub = async (req, res) => {
     console.log(req.body.clubName);
     console.log(req.body.user.uid);
     const clubName = req.body.clubName;
-    const UserID = req.body.user.uid;
-    // const UserID = req.body.user.uid;
+    const OSIS = "223113580"
+    // const OSIS = req.body.OSIS;
     const sheets = req.object.sheets;
 
 
@@ -44,8 +44,8 @@ exports.removeClub = async (req, res) => {
         sheets,
         userDataSheetID,
         "userData",
-        UserID,
-        0
+        OSIS,
+        5
     );
     const userRowNumber = userDatas[11];
     console.log(userRowNumber, "userRowNumber");
@@ -90,8 +90,8 @@ exports.removeClub = async (req, res) => {
       sheets,
       clubSheet,
       "Sheet1",
-      UserID,
-      0
+      OSIS,
+      3
     );
     console.log(specificClubUID, "specificClubUID");
     const specificClubRowNumber = specificClubUID[9].toString();
