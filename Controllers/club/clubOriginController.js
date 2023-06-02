@@ -6,7 +6,7 @@ const CLUB_ATTENDENCE_FOLDERID = `${process.env.CLUB_ATTENDENCE_FOLDERID}`;
 const {
   sheetData,
   addItemToRow,
-  generateRandomString,
+  generateRandomNumber,
   uploadToFolder,
   createSheetInFolder,
   appendNewItemBatch,
@@ -58,7 +58,7 @@ exports.generateRowItem = async (req, res, next) => {
 
     const clubCode = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
-      clubCode.push(generateRandomString(6));
+      clubCode.push(generateRandomNumber(6));
     }
 
     const rowNumber = [];
@@ -104,7 +104,7 @@ exports.generateAcdemicYearDriveFolder = async (req, res, next) => {
     const acdemicYearFolderId = await uploadToFolder(
       drive,
       CLUB_ATTENDENCE_FOLDERID,
-      `${req.body.acdemicYear}`
+      `${currentYear} - ${currentYear + 1}`
     );
 
     req.acdemicYearFolderId = acdemicYearFolderId;
@@ -161,7 +161,6 @@ exports.generateClubSheetAndFolder = async (req, res, next) => {
 exports.generaterRowForClub = async (req, res, next) => {
   try {
     const sheets = req.object.sheets;
-
     setTimeout(async () => {
       for (let i = 0; req.idSpreadsheet.length > i; i++) {
         await appendNewItemBatch(sheets, req.idSpreadsheet[i], [
@@ -180,17 +179,22 @@ exports.generaterRowForClub = async (req, res, next) => {
                 "Offical Class",
                 "# of Attendence",
                 "Row Number",
-                "Total Meeting",
+                "0",
               ],
             ],
           },
-          {
-            range: "Sheet1!J2:J",
-            majorDimension: "COLUMNS",
-            values: [["0"]],
-          },
         ]);
         console.log(i);
+
+        function timeout(ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        if (i === 45) {
+          console.log("waiting");
+          await timeout(70000);
+          console.log("finish");
+        }
       }
       console.log("done with adding things for each clubs");
       return next();
