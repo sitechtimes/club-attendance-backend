@@ -48,19 +48,17 @@ exports.sendUserData = async (req, res, next) => {
         0
       );
 
-      // let userClubData = JSON.parse(userArray[9]);
-      // for (let i = 0; userClubData.length > i; i++) {
-      //   const inThatClub = await getOneData(
-      //     sheets,
-      //     NEW_CLUB_DATA_SPREADSHEETID,
-      //     "clubData",
-      //     userClubData.clubCode,
-      //     15
-      //   );
-      //   userClubData[i][meetingDates] = [inThatClub[10]];
-      // }
-
-      console.log(userClubData, "userClubData");
+      let userClubData = JSON.parse(userArray[9]);
+      for (let i = 0; userClubData.length > i; i++) {
+        const inThatClub = await getOneData(
+          sheets,
+          NEW_CLUB_DATA_SPREADSHEETID,
+          "clubData",
+          userClubData[i].clubCode,
+          15
+        );
+        userClubData[i].meetingDates = [inThatClub[10]];
+      }
 
       const userObject = {
         uid: userArray[0],
@@ -72,11 +70,11 @@ exports.sendUserData = async (req, res, next) => {
         grade: JSON.parse(userArray[6]),
         officalClass: userArray[7],
         emailDomain: userArray[8],
-        clubData: JSON.parse(userArray[9]),
+        clubData: userClubData,
         presentLocation: JSON.parse(userArray[10]),
         rowNumber: userArray[11],
       };
-      // console.log(userObject, "user");
+      console.log(userObject, "user");
       const response = userObject;
       console.log("user data exist");
       return res.json(response);
