@@ -75,7 +75,7 @@ const ifValueExistBinary = async (
   const newData = datas.flat().sort((a, b) => {
     return a - b;
   });
-
+  console.log(newData, "newData");
   let start = 0;
   let end = newData.length - 1;
   while (start <= end) {
@@ -253,7 +253,7 @@ const getOneData = async (
     return a[column] - b[column];
   });
 
-  console.log(newData);
+  // console.log(newData);
 
   let start = 0;
   let end = newData.length - 1;

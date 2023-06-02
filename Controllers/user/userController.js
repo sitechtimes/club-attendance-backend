@@ -2,7 +2,7 @@
 //this file require the env package to get env variable
 require("dotenv").config({ path: "./env/spreadsheetId.env" });
 //google spreadsheet id for "Main-Club-Data"
-const CLUB_DATA_SPREADSHEET_ID = `${process.env.CLUB_DATA_SPREADSHEET_ID}`;
+
 //google spreadsheet id for "User Data"
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 const NEW_CLUB_DATA_SPREADSHEETID = `${process.env.NEW_CLUB_DATA_SPREADSHEETID}`;
@@ -47,6 +47,21 @@ exports.sendUserData = async (req, res, next) => {
         req.userInfo.sub,
         0
       );
+
+      // let userClubData = JSON.parse(userArray[9]);
+      // for (let i = 0; userClubData.length > i; i++) {
+      //   const inThatClub = await getOneData(
+      //     sheets,
+      //     NEW_CLUB_DATA_SPREADSHEETID,
+      //     "clubData",
+      //     userClubData.clubCode,
+      //     15
+      //   );
+      //   userClubData[i][meetingDates] = [inThatClub[10]];
+      // }
+
+      console.log(userClubData, "userClubData");
+
       const userObject = {
         uid: userArray[0],
         firstName: userArray[1],
@@ -61,7 +76,7 @@ exports.sendUserData = async (req, res, next) => {
         presentLocation: JSON.parse(userArray[10]),
         rowNumber: userArray[11],
       };
-      console.log(userObject, "user");
+      // console.log(userObject, "user");
       const response = userObject;
       console.log("user data exist");
       return res.json(response);

@@ -45,7 +45,7 @@ exports.allClubData = async (req, res) => {
       nextMeeting: value[8],
       qrCode: value[9],
       clubSpreadsheetId: value[10],
-      clubCode: value[11],
+      clubCode: value[15],
     }));
     sheetObject.shift();
 
@@ -62,7 +62,7 @@ exports.ifClubExist = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
     const userClub = req.body; //this is the data from the frontend
-    console.log(userClub);
+    console.log(userClub, "body");
     //this specific which google spreadsheet we are acessing
     const clubRange = "clubData";
 
