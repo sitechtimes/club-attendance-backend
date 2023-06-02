@@ -21,8 +21,9 @@ exports.removeClub = async (req, res) => {
   try {
     console.log(req.body, "body");
     console.log(req.body.clubName);
+    console.log(req.body.user.uid);
     const clubName = req.body.clubName;
-    const UserID = "114999107574796439138";
+    const UserID = req.body.user.uid;
     // const UserID = req.body.user.uid;
     const sheets = req.object.sheets;
 
