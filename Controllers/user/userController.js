@@ -75,6 +75,9 @@ exports.sendUserData = async (req, res, next) => {
           const date = separateDates(dates);
 
           userClubData[i].meetingDates = date;
+          if (inThatClub[10] === "null") {
+            userClubData[i].meetingDates = [];
+          }
         }
       }
 
