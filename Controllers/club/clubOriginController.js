@@ -104,7 +104,7 @@ exports.generateAcdemicYearDriveFolder = async (req, res, next) => {
     const acdemicYearFolderId = await uploadToFolder(
       drive,
       CLUB_ATTENDENCE_FOLDERID,
-      `${currentYear} - ${currentYear + 1}`
+      `${req.body.acdemicYear}`
     );
 
     req.acdemicYearFolderId = acdemicYearFolderId;
