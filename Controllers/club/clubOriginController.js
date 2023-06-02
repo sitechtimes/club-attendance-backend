@@ -100,7 +100,6 @@ exports.generateRowItem = async (req, res, next) => {
 exports.generateAcdemicYearDriveFolder = async (req, res, next) => {
   try {
     let drive = req.driveService;
-    const currentYear = new Date().getFullYear();
     const acdemicYearFolderId = await uploadToFolder(
       drive,
       CLUB_ATTENDENCE_FOLDERID,

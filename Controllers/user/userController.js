@@ -49,15 +49,20 @@ exports.sendUserData = async (req, res, next) => {
       );
 
       let userClubData = JSON.parse(userArray[9]);
-      for (let i = 0; userClubData.length > i; i++) {
-        const inThatClub = await getOneData(
-          sheets,
-          NEW_CLUB_DATA_SPREADSHEETID,
-          "clubData",
-          userClubData[i].clubCode,
-          15
-        );
-        userClubData[i].meetingDates = [inThatClub[10]];
+
+      if (userClubData !== null) {
+        for (let i = 0; userClubData.length > i; i++) {
+          console.log(userClubData[i].clubCode);
+          const inThatClub = await getOneData(
+            sheets,
+            NEW_CLUB_DATA_SPREADSHEETID,
+            "clubData",
+            userClubData[i].clubCode,
+            15
+          );
+          console.log(inThatClub);
+          userClubData[i].meetingDates = [inThatClub[10]];
+        }
       }
 
       const userObject = {
@@ -68,7 +73,7 @@ exports.sendUserData = async (req, res, next) => {
         clientAuthority: userArray[4],
         osis: JSON.parse(userArray[5]),
         grade: JSON.parse(userArray[6]),
-        officalClass: userArray[7],
+        officialClass: userArray[7],
         emailDomain: userArray[8],
         clubData: userClubData,
         presentLocation: JSON.parse(userArray[10]),
@@ -190,7 +195,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
     } else if (req.body.additionalInfoType === "Official Class") {
       columnAlphabet = "H";
     }
-
+    console.log(userObject.rowNumber, "rowNumber");
     await updateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,
