@@ -15,7 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 
 //this code is guard clauses for cors, meaning
 //it prevents unauthorize Origin to accecss this server
-const allowlist = ["http://localhost:5173"];
+const allowlist = [
+  "http://localhost:5173",
+  "https://tech-club-attendance.netlify.app/",
+];
 const corsOptionsDelegate = (req, callback) => {
   let corsOptions;
   console.log(req.header("Origin"));
