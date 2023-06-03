@@ -25,8 +25,6 @@ const addItemToRow = async (
   const item = [];
   item.push(data[itemRowNumber], addItem);
 
-  console.log(...item.flat());
-
   await sheets.spreadsheets.values.update({
     spreadsheetId: spreadsheetId,
     range: `${range}`,
@@ -35,8 +33,6 @@ const addItemToRow = async (
       values: [[...item.flat()]],
     },
   });
-
-  console.log("addData");
 };
 
 //returns a boolean if the value you are searching for exist
@@ -55,8 +51,7 @@ const ifValueExist = async (
   //binary search
   for (let i = 0; data.length > i; i++) {
     let eachId = data[i][columnNumber];
-    console.log(data[i]);
-    console.log(eachId);
+
     if (eachId === valueComparing) {
       suchVale = true;
       break;
@@ -100,7 +95,6 @@ const sheetColumnAlphabetFinder = async (
   range,
   valueComparing
 ) => {
-  console.log("running sheetColumnAlphabetFinder");
   const data = await sheetData(sheets, spreadsheetId, range);
 
   let ifValueExist = false;
@@ -109,7 +103,6 @@ const sheetColumnAlphabetFinder = async (
     //get the first row data
     let eachId = data[0][i];
     columnNumber++;
-    console.log(eachId);
     if (eachId === valueComparing) {
       ifValueExist = true;
       break;
@@ -120,10 +113,7 @@ const sheetColumnAlphabetFinder = async (
 
   if (ifValueExist === true) {
     const alphabet = String.fromCharCode(columnNumber + 64);
-    console.log({
-      alphabet: alphabet,
-      columnNumber: columnNumber - 1,
-    });
+
     if (columnNumber >= 27) {
       return "No such alphabet";
     }
@@ -143,7 +133,6 @@ function sheetRowNumberTrue(data, specificRangeNumber, valueComparing) {
   let end = data.length - 1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
-    console.log(mid, data[mid][specificRangeNumber]);
     if (data[mid][specificRangeNumber] === valueComparing) {
       matchValueArray.push(data[mid]);
     } else if (data[mid][specificRangeNumber] < valueComparing) {
@@ -152,10 +141,8 @@ function sheetRowNumberTrue(data, specificRangeNumber, valueComparing) {
       end = mid - 1;
     }
   }
-  console.log("array", matchValueArray);
 
   if (matchValueArray.length !== 0) {
-    console.log(matchValueArray);
     return matchValueArray;
   }
 
@@ -181,7 +168,6 @@ function sheetRowNumberFalse(data, specificRangeNumber, valueComparing) {
   }
 
   if (ifValueExist === true) {
-    console.log(rowNumber);
     return rowNumber;
   }
 }
@@ -298,7 +284,6 @@ const getSheetNames = async (sheets, spreadsheetId) => {
   ).data.sheets.map((sheet) => {
     return sheet.properties.title;
   });
-  console.log(result);
   return result;
 };
 
@@ -431,7 +416,6 @@ const uploadToFolder = async (drive, parentFolderId, folderName) => {
       fields: "id",
     });
     const childFolderId = file.data.id;
-    console.log("Folder Id:", childFolderId);
 
     return childFolderId;
   } catch (err) {
@@ -453,7 +437,6 @@ const createSheetInFolder = async (drive, childFolderId, spreadsheetName) => {
     });
 
     const spreadsheetId = file.data.id;
-    console.log("Spreadsheet Id:", spreadsheetId);
     return spreadsheetId;
   } catch (err) {
     console.log(err);

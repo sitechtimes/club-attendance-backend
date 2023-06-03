@@ -18,9 +18,7 @@ const {
 exports.ifUserExist = async (req, res, next) => {
   try {
     const userUidRange = "userData!A:A";
-    console.log(USER_DATA_SPREADSHEET_ID, "jvdsjv");
     const sheets = req.object.sheets;
-    console.log(req.userInfo.sub);
     const ifUserExist = await ifValueExistBinary(
       sheets,
       USER_DATA_SPREADSHEET_ID,
@@ -53,7 +51,6 @@ exports.sendUserData = async (req, res, next) => {
 
       if (userClubData !== null) {
         for (let i = 0; userClubData.length > i; i++) {
-          console.log(userClubData[i].clubCode);
           const inThatClub = await getOneData(
             sheets,
             NEW_CLUB_DATA_SPREADSHEETID,
@@ -184,9 +181,7 @@ exports.createNewUser = async (req, res) => {
 
 //Additional Information(osis, grade, offical class)
 exports.addOsisGradeOfficialClass = async (req, res) => {
-  console.log("addOsisGradeOfficalClass");
   try {
-    console.log(req.body);
     console.log(req.body.additionalInfoType);
 
     const sheets = req.object.sheets;
@@ -213,7 +208,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       columnAlphabet = "H";
       req.body.additionalInfoValue = req.body.additionalInfoValue.toUpperCase();
     }
-    console.log(userObject.rowNumber, "rowNumber");
+
     await updateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,

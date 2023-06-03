@@ -20,8 +20,6 @@ exports.allClubData = async (req, res) => {
       "clubData"
     );
 
-    console.log(allClubData);
-
     //this array will store the object from
     //changing arrays in sheetValue into object
     let sheetArray = [];
@@ -50,7 +48,6 @@ exports.allClubData = async (req, res) => {
     }));
     sheetObject.shift();
 
-    console.log(sheetObject);
     res.send(sheetObject);
   } catch (error) {
     console.log(error);
@@ -63,7 +60,6 @@ exports.ifClubExist = async (req, res, next) => {
   try {
     const sheets = req.object.sheets; //this is needed to get google spreadsheet data
     const userClub = req.body; //this is the data from the frontend
-    console.log(userClub, "body");
     //this specific which google spreadsheet we are acessing
     const clubRange = "clubData";
 
@@ -73,10 +69,7 @@ exports.ifClubExist = async (req, res, next) => {
       `${clubRange}!P:P`,
       userClub.clubCode
     );
-    console.log(ifClubExist, userClub.clubName);
-
     if (ifClubExist === false) {
-      console.log("no such club");
       return res.json("no such club");
     }
 
@@ -141,8 +134,6 @@ exports.readAClub = async (req, res) => {
       numbOfAttendence: value[8],
     }));
     sheetObject.shift();
-
-    console.log(sheetObject);
 
     res.json(sheetObject);
   } catch (error) {

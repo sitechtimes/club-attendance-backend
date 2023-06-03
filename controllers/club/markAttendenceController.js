@@ -51,7 +51,7 @@ exports.markAttendence = async (req, res) => {
     };
 
     const sheetName = req.body.date;
-    console.log(sheetName);
+
     await sheets.spreadsheets.values.append({
       spreadsheetId: req.sheetID,
       range: sheetName,

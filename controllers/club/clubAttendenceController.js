@@ -1,4 +1,5 @@
 "use strict";
+
 require("dotenv").config();
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
@@ -28,7 +29,6 @@ exports.getClubAttendenceDate = async (req, res) => {
       }
     );
 
-    console.log(attendeceDate);
     res.json(attendeceDate);
   } catch (error) {
     console.log(error);
@@ -68,8 +68,6 @@ exports.getClubAttendenceData = async (req, res) => {
 
     //retrun the data
     res.json(attendenceData);
-
-    console.log(attendence);
   } catch (error) {
     console.log(error);
   }
@@ -82,8 +80,6 @@ exports.generateSheetData = async (req, res, next) => {
     const sheetId = req.sheetId;
 
     await createNewSheetWithName(sheets, sheetId, incomingData.dateOfToday);
-
-    console.log(`You added date of ${incomingData.dateOfToday} to club sheet`);
 
     return next();
   } catch (error) {
@@ -131,9 +127,6 @@ exports.userCopyToAttendence = async (req, res, next) => {
       ]);
     }
 
-    console.log(copyUserValueForAttenence);
-    //maybe chnage addUserData to be name
-
     await appendNewItemToRow(
       sheets,
       sheetId,
@@ -148,7 +141,6 @@ exports.userCopyToAttendence = async (req, res, next) => {
 };
 
 exports.totalMeeting = async (req, res, next) => {
-  console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
     const sheetId = req.sheetId;
@@ -156,8 +148,6 @@ exports.totalMeeting = async (req, res, next) => {
     const totalMeeting = await sheetData(sheets, sheetId, `Sheet1!K1`);
 
     const addMeeting = +totalMeeting + 1;
-
-    console.log(totalMeeting);
 
     await updateValue(sheets, sheetId, "Sheet1!K1", addMeeting);
 
@@ -169,13 +159,11 @@ exports.totalMeeting = async (req, res, next) => {
 
 //first
 exports.generateQrCodeOnSheet = async (req, res, next) => {
-  console.log("running generateQRcode");
   try {
     const sheets = req.object.sheets;
     const clubRange = "clubData";
 
     let randomString = generateRandomNumber(10);
-    console.log(randomString);
 
     await updateValue(
       sheets,
@@ -201,7 +189,7 @@ exports.generateQrCode = async (req, res, next) => {
           console.error(error);
           res.json("backend error");
         }
-        console.log(url);
+
         res.json(url);
       }
     );
@@ -215,8 +203,6 @@ exports.getQrcode = async (req, res, next) => {
     const sheets = req.object.sheets;
     const qrCode = req.body.qrCode;
 
-    console.log(qrCode);
-
     const clubData = await getOneData(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
@@ -225,7 +211,6 @@ exports.getQrcode = async (req, res, next) => {
       11
     );
 
-    console.log(clubData);
     req.clubData = clubData;
     req.spreadId = clubData[13];
     return next();
@@ -248,9 +233,6 @@ exports.markAttendence = async (req, res, next) => {
       userUid,
       0
     );
-
-    console.log(userUid, "vdsbgeo");
-    console.log(userData, "sdsadsad");
 
     await updateValue(
       sheets,
@@ -291,11 +273,7 @@ exports.updateLocation = async (req, res, next) => {
     );
     res.json("Recorded attendence");
 
-    console.log(updateLocation);
-
     async function clearLocation() {
-      console.log(updateLocation, "owrvor");
-
       updateLocation.inClubToday = false;
       updateLocation.club = null;
       updateLocation.roomNumber = null;
@@ -353,8 +331,6 @@ exports.manuallyPresentAbsent2 = async (req, res, next) => {
       userUid,
       0
     );
-
-    console.log(dateOfToday, userUid, userData);
 
     await updateValue(
       sheets,

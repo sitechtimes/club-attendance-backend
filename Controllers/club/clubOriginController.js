@@ -45,8 +45,6 @@ exports.generateRowItem = async (req, res, next) => {
     // now change
     const clubNameDataLength = clubNameData.flat().length;
 
-    console.log(clubNameDataLength);
-
     const totalNull = [];
     const randNum = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
@@ -182,7 +180,6 @@ exports.generaterRowForClub = async (req, res, next) => {
             ],
           },
         ]);
-        console.log(i);
 
         function timeout(ms) {
           return new Promise((resolve) => setTimeout(resolve, ms));

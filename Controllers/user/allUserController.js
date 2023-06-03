@@ -38,7 +38,6 @@ exports.allUserData = async (req, res) => {
       presentLocation: JSON.parse(value[10]),
     }));
 
-    console.log(sheetObject);
     res.send(sheetObject);
   } catch (error) {
     console.log(error);
