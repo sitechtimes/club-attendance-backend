@@ -1,4 +1,5 @@
 node_modules
-keys.json
-variables.env
 *.env
+keys.json
+
+

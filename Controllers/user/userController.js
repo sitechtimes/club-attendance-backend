@@ -1,6 +1,6 @@
 "use strict";
 //this file require the env package to get env variable
-require("dotenv").config({ path: "./env/spreadsheetId.env" });
+require("dotenv").config();
 //google spreadsheet id for "Main-Club-Data"
 
 //google spreadsheet id for "User Data"
@@ -18,6 +18,7 @@ const {
 exports.ifUserExist = async (req, res, next) => {
   try {
     const userUidRange = "userData!A:A";
+    console.log(USER_DATA_SPREADSHEET_ID, "jvdsjv");
     const sheets = req.object.sheets;
     console.log(req.userInfo.sub);
     const ifUserExist = await ifValueExistBinary(

@@ -1,6 +1,6 @@
 "use strict";
-require("dotenv").config({ path: "./env/spreadsheetId.env" });
-require("dotenv").config({ path: "variables.env" });
+require("dotenv").config();
+
 const { sheetData } = require("../../utility.js");
 const { Readable } = require("stream");
 
@@ -102,11 +102,11 @@ exports.uploadPhoto = async (req, res, next) => {
       }
       // Send a response with the Google Drive file ID
       res.json(
-      //   {
-      //   message: "File uploaded successfully",
-      //   fileId: response.data.id,
-      // }
-      "File Uploaded Successfully"
+        //   {
+        //   message: "File uploaded successfully",
+        //   fileId: response.data.id,
+        // }
+        "File Uploaded Successfully"
       );
     } else {
       res.json({

@@ -1,5 +1,5 @@
 "use strict";
-
+require("dotenv").config();
 const USER_DATA_SPREADSHEET_ID = `${process.env.USER_DATA_SPREADSHEET_ID}`;
 const { sheetData } = require("../../utility.js");
 
