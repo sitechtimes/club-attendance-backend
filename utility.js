@@ -249,18 +249,20 @@ const getOneData = async (
   const data = await sheetData(sheets, spreadsheetId, range);
 
   const newData = data.sort((a, b) => {
-    return a[column] - b[column];
+    return a[column].toString().localeCompare(b[column].toString());
   });
 
   let start = 0;
   let end = newData.length - 1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
-    if (newData[mid][column] === valueComparing) {
+    if (newData[mid][column].toString() === valueComparing.toString()) {
       return newData[mid];
     } else if (newData[mid][column] < valueComparing) {
       start = mid + 1;
-    } else end = mid - 1;
+    } else {
+      end = mid - 1;
+    }
   }
 
   console.log("no similar");

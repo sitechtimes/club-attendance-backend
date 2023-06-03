@@ -1,5 +1,4 @@
 "use strict";
-
 require("dotenv").config();
 const QRCode = require("qrcode");
 //google spreadsheet id for "Main-Club-Data"
@@ -250,7 +249,8 @@ exports.markAttendence = async (req, res, next) => {
       0
     );
 
-    console.log(dateOfToday, userUid, userData);
+    console.log(userUid, "vdsbgeo");
+    console.log(userData, "sdsadsad");
 
     await updateValue(
       sheets,
