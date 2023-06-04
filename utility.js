@@ -243,7 +243,6 @@ const getOneData = async (
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     if (newData[mid][column].toString() === valueComparing.toString()) {
-      console.log("it is found?????");
       return newData[mid];
     } else if (newData[mid][column] < valueComparing) {
       start = mid + 1;
