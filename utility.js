@@ -68,7 +68,7 @@ const ifValueExistBinary = async (
 ) => {
   const datas = await sheetData(sheets, spreadsheetId, range);
   const newData = datas.flat().sort((a, b) => {
-    return a - b;
+    return a.toString().localeCompare(b.toString());
   });
   let start = 0;
   let end = newData.length - 1;
