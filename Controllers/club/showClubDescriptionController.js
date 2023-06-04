@@ -34,18 +34,12 @@ exports.showClubDescription = async (req, res, next) => {
       day: value[4],
       room: value[5],
       activityType: value[6],
-      nextMeeting: value[10],
+      nextMeeting: [value[10]],
       clubDescription: value[16],
     }));
-    sheetObject.forEach((club) => {
-      if (club.nextMeeting === "null") {
-        club.nextMeeting = [];
-      }
-      console.log(club);
-    });
 
     sheetObject.shift();
-
+    console.log(sheetObject);
     res.send(sheetObject);
   } catch (error) {
     console.log(error);

@@ -45,26 +45,17 @@ exports.generateRowItem = async (req, res, next) => {
     // now change
     const clubNameDataLength = clubNameData.flat().length;
 
-    const totalNull = [];
+    const clubMeeting = [];
     const randNum = [];
+    const clubCode = [];
+    const rowNumber = [];
+    const noDescription = [];
     for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       let randomNumber = generateRandomNumber(10);
       randNum.push(`${randomNumber}`);
-      totalNull.push(`null`);
-    }
-
-    const clubCode = [];
-    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
+      clubMeeting.push(`No meeting date yet.`);
       clubCode.push(generateRandomNumber(6));
-    }
-
-    const rowNumber = [];
-    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       rowNumber.push(i);
-    }
-
-    const noDescription = [];
-    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
       noDescription.push("No description yet.");
     }
 
