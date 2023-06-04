@@ -35,16 +35,16 @@ exports.allClubData = async (req, res) => {
     const sheetObject = sheetArray.map((value) => ({
       clubName: value[0],
       advisor: value[1],
-      advisorEmail: value[2],
-      president: value[3],
-      presidentEmail: value[4],
-      presidentUID: value[5],
-      roomNumber: value[6],
-      memberCount: value[7],
-      nextMeeting: value[8],
-      qrCode: value[9],
-      clubSpreadsheetId: value[10],
-      clubCode: value[15],
+      president: value[2],
+      frequency: value[3],
+      day: value[4],
+      room: value[5],
+      activityType: value[6],
+      advisorEmail: value[8],
+      presidentEmail: value[9],
+      nextMeeting: value[10],
+      clubCode: value[16],
+      clubDescription: value[17],
     }));
     sheetObject.shift();
 

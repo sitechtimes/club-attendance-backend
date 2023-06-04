@@ -63,6 +63,11 @@ exports.generateRowItem = async (req, res, next) => {
       rowNumber.push(i);
     }
 
+    const noDescription = [];
+    for (let i = 2; clubNameDataLength + 1 >= i; i++) {
+      noDescription.push("No description yet.");
+    }
+
     await appendNewItemBatch(sheets, NEW_CLUB_DATA_SPREADSHEETID, [
       {
         range: "clubData!K2:K",
@@ -81,6 +86,11 @@ exports.generateRowItem = async (req, res, next) => {
       },
       {
         range: "clubData!Q2:Q",
+        majorDimension: "COLUMNS",
+        values: [noDescription],
+      },
+      {
+        range: "clubData!R2:R",
         majorDimension: "COLUMNS",
         values: [rowNumber],
       },

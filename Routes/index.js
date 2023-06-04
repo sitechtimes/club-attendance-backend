@@ -5,7 +5,6 @@ const clubData = require("../controllers/club/clubDataController");
 const sheetAuth = require("../controllers/services/sheetAuthController");
 const driveAuth = require("../controllers/services/driveAuthController");
 const markingAttendence = require("../controllers/club/markAttendenceController");
-const joinClub = require("../controllers/club/joinClubController");
 const verify = require("../Controllers/user/verifyController");
 const postUser = require("../Controllers/user/userController");
 const getAllUser = require("../Controllers/user/allUserController");
@@ -18,6 +17,8 @@ const uploadPhoto = require("../controllers/club/uploadPhotoController");
 const admin = require("../Controllers/user/adminController");
 const deleteClub = require("../controllers/club/deleteClub");
 const deleteClubTeacher = require("../controllers/club/deleteClubTeacher");
+const addClubDescription = require("../Controllers/club/addClubDescriptionController");
+const showClubDescription = require("../Controllers/club/showClubDescriptionController");
 
 const multer = require("multer");
 const storage = multer.memoryStorage();
@@ -144,6 +145,18 @@ router.post(
   clubAttendence.getClubAttendenceData
 );
 
+router.get(
+  "/get-all-club-student",
+  sheetAuth.authSheets,
+  showClubDescription.showClubDescription
+);
+
+router.post(
+  "/update-description",
+  sheetAuth.authSheets,
+  addClubDescription.addClubDescription
+);
+
 //the bottom need refactorization
 
 //create user using club code comparison
@@ -189,5 +202,7 @@ router.post(
 router.get("/test", sheetAuth.authSheets, verify.verifyUserInDb);
 
 router.post("/addMeeting", sheetAuth.authSheets, addMeeting.newMeeting);
+
+router.post("/test", sheetAuth.authSheets, addClubDescription.test);
 
 module.exports = router;
