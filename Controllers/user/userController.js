@@ -60,8 +60,24 @@ exports.sendUserData = async (req, res, next) => {
             userClubData[i].clubCode,
             15
           );
-          console.log(inThatClub);
-          userClubData[i].meetingDates = [inThatClub[10]];
+
+          let dates = [];
+          dates.push(inThatClub[10]);
+          function separateDates(dateArray) {
+            // Extract the string from the array
+            let dateString = dateArray[0];
+
+            // Split the string by commas and trim any whitespace
+            let dates = dateString.split(",").map((date) => date.trim());
+
+            return dates;
+          }
+          const date = separateDates(dates);
+
+          userClubData[i].meetingDates = date;
+          if (inThatClub[10] === "null") {
+            userClubData[i].meetingDates = [];
+          }
         }
       }
 
@@ -194,6 +210,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       columnAlphabet = "G";
     } else if (req.body.additionalInfoType === "Official Class") {
       columnAlphabet = "H";
+      req.body.additionalInfoValue = req.body.additionalInfoValue.toUpperCase();
     }
     console.log(userObject.rowNumber, "rowNumber");
     await updateValue(
