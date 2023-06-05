@@ -58,7 +58,6 @@ exports.sendUserData = async (req, res, next) => {
             userClubData[i].clubCode,
             15
           );
-
           let dates = [];
           dates.push(inThatClub[10]);
           function separateDates(dateArray) {
@@ -67,15 +66,11 @@ exports.sendUserData = async (req, res, next) => {
 
             // Split the string by commas and trim any whitespace
             let dates = dateString.split(",").map((date) => date.trim());
-
             return dates;
           }
           const date = separateDates(dates);
-
           userClubData[i].meetingDates = date;
-          if (inThatClub[10] === "null") {
-            userClubData[i].meetingDates = [];
-          }
+          userClubData[i].clubDescription = inThatClub[16];
         }
       }
 

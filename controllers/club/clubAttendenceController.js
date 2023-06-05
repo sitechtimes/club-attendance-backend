@@ -168,7 +168,7 @@ exports.generateQrCodeOnSheet = async (req, res, next) => {
     await updateValue(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `${clubRange}!L${req.clubData[16]}`,
+      `${clubRange}!L${req.clubData[17]}`,
       randomString
     );
     req.randomString = randomString;

@@ -43,8 +43,8 @@ exports.allClubData = async (req, res) => {
       advisorEmail: value[8],
       presidentEmail: value[9],
       nextMeeting: value[10],
-      clubCode: value[16],
-      clubDescription: value[17],
+      clubCode: value[15],
+      clubDescription: value[16],
     }));
     sheetObject.shift();
 
