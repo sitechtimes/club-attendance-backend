@@ -16,7 +16,8 @@ const auth = new google.auth.GoogleAuth({
 
 exports.addUserDataToClub = async (req, res, next) => {
   try {
-    const UserID = req.body.user.uid;
+    const UserID = req.body.userID;
+    // const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
     console.log(ClubCode, "clubCode");
@@ -30,7 +31,7 @@ exports.addUserDataToClub = async (req, res, next) => {
       ClubCode,
       15
     );
-    const clubDataRowNumber = clubDatas[16];
+    const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber");
 
     // This uses the row number to get the club's sheetid
@@ -129,7 +130,8 @@ exports.addUserDataToClub = async (req, res, next) => {
 
 exports.updateUserClubs = async (req, res) => {
   try {
-    const UserID = req.body.user.uid;
+    const UserID = req.body.userID;
+    // const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
     console.log(ClubCode);
@@ -144,7 +146,7 @@ exports.updateUserClubs = async (req, res) => {
       ClubCode,
       15
     );
-    const clubDataRowNumber = clubDatas[16];
+    const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber 2");
 
     // This uses the row number to get the club's sheetid
