@@ -36,7 +36,7 @@ exports.removeClub = async (req, res) => {
       clubName,
       0
     );
-    const clubDataRowNumber = clubDatas[16];
+    const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber");
 
     // This gets the user's rownumber on the user data sheet

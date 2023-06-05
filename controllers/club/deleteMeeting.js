@@ -20,7 +20,7 @@ exports.deleteMeeting = async (req, res) => {
     console.log(req.body, "body");
     console.log(req.body.clubName);
     const clubName = req.body.clubName;
-    const dateToDelete = req.body.newMeeting;
+    const dateToDelete = req.body.deleteMeeting;
     const sheets = req.object.sheets;
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
