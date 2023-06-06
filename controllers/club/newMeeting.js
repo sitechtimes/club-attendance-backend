@@ -14,21 +14,15 @@ const auth = new google.auth.GoogleAuth({
   scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
 
-exports.allUserMeeting = async (req, res) => {
-  try {
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 exports.newMeeting = async (req, res, next) => {
   try {
-    console.log(req.body, "body");
-    console.log(req.body.clubName);
     const clubName = req.body.clubName;
     const newMeeting = req.body.newMeeting;
-    console.log(newMeeting, "newMeeting");
     const sheets = req.object.sheets;
+    console.log(req.body, "body");
+    console.log(req.body.clubName);
+    console.log(newMeeting, "newMeeting");
+    
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(

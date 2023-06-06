@@ -20,7 +20,7 @@ exports.deleteMeeting = async (req, res) => {
     console.log(req.body, "body");
     console.log(req.body.clubName);
     const clubName = req.body.clubName;
-    const dateToDelete = req.body.deleteMeeting;
+    const dateToDelete = req.body.date;
     const sheets = req.object.sheets;
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
@@ -57,6 +57,10 @@ exports.deleteMeeting = async (req, res) => {
       newMeetingList = meetingList.replace(`, ${dateToDelete}`, "");
     }
     console.log(`${newMeetingList} newMeetingList`);
+
+    if (newMeetingList === meetingList) {
+      newMeetingList = "No meeting date yet"
+    }
 
     // Updates the sheet with the next list of meeting dates
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
