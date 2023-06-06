@@ -18,8 +18,8 @@ exports.newMeeting = async (req, res, next) => {
   try {
     const clubName = req.body.clubName;
     const newMeeting = req.body.newMeeting;
-    console.log(req.body.object, "cajkc");
-    const sheets = req.object.sheets;
+    const sheets = google.sheets({ version: "v4", auth });
+    // const sheets = req.object.sheets;
     console.log(req.body, "body");
     console.log(req.body.clubName);
     console.log(newMeeting, "newMeeting");
@@ -56,7 +56,7 @@ exports.newMeeting = async (req, res, next) => {
     }
 
     let meetingResponse;
-    const meetingDefault = `null`;
+    const meetingDefault = `No meeting date yet.`;
     if (`${meetingList}` === `${meetingDefault}`) {
       // This is to change the "user got no club" to a real club.
       console.log("Step 1");
