@@ -20,11 +20,10 @@ const auth = new google.auth.GoogleAuth({
 exports.removeClub = async (req, res) => {
   try {
     console.log(req.body, "body");
-    console.log(req.body.clubName);
-    console.log(req.body.user.uid);
-    const clubName = req.body.clubName;
-    const OSIS = "223113580"
-    // const OSIS = req.body.OSIS;
+    console.log(req.body.currentClubCode);
+    console.log(req.body.goneOsis);
+    const clubCode = req.body.currentClubCode;
+    const OSIS = req.body.goneOsis;
     const sheets = req.object.sheets;
 
 
@@ -33,8 +32,8 @@ exports.removeClub = async (req, res) => {
       sheets,
       MainClubData,
       "clubData",
-      clubName,
-      0
+      clubCode,
+      15
     );
     const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber");
@@ -62,7 +61,7 @@ exports.removeClub = async (req, res) => {
     const arrayUserClubs = JSON.parse(userClubs);
     console.log(arrayUserClubs);
 
-    const newArray = arrayUserClubs.filter((club) => club.clubName !== clubName);
+    const newArray = arrayUserClubs.filter((club) => club.clubCode !== clubCode);
     console.log(newArray);
     const newUserInfo = JSON.stringify(newArray);
     console.log(newUserInfo);
