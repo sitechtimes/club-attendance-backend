@@ -31,7 +31,7 @@ exports.deleteMeeting = async (req, res) => {
       clubName,
       0
     );
-    const clubDataRowNumber = clubDatas[16];
+    const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber");
 
     // This gets the list of meetings of that specific club

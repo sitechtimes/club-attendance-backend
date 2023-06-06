@@ -16,8 +16,7 @@ const auth = new google.auth.GoogleAuth({
 
 exports.addUserDataToClub = async (req, res, next) => {
   try {
-    const UserID = req.body.userID;
-    // const UserID = req.body.user.uid;
+    const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
     console.log(ClubCode, "clubCode");
@@ -130,8 +129,7 @@ exports.addUserDataToClub = async (req, res, next) => {
 
 exports.updateUserClubs = async (req, res) => {
   try {
-    const UserID = req.body.userID;
-    // const UserID = req.body.user.uid;
+    const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
     console.log(ClubCode);

@@ -38,7 +38,7 @@ exports.newMeeting = async (req, res, next) => {
       clubName,
       0
     );
-    const clubDataRowNumber = clubDatas[16];
+    const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber");
 
     const clubmeeting = await google
