@@ -226,6 +226,8 @@ exports.markAttendence = async (req, res, next) => {
     const dateOfToday = req.body.dateOfToday;
     const userUid = req.body.user.uid;
 
+    console.log(sheetID, dateOfToday, userUid);
+
     const userData = await getOneData(
       sheets,
       sheetID,
@@ -233,6 +235,8 @@ exports.markAttendence = async (req, res, next) => {
       userUid,
       0
     );
+
+    console.log(userData, "ndjvdsklnv");
 
     await updateValue(
       sheets,
