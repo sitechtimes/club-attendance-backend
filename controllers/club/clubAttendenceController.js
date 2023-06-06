@@ -84,6 +84,7 @@ exports.generateSheetData = async (req, res, next) => {
     return next();
   } catch (error) {
     console.log(error);
+    res.json(`Attendence of ${req.body.dateOfToday} is already created.`);
   }
 };
 

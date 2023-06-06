@@ -47,7 +47,7 @@ exports.addUserDataToClub = async (req, res, next) => {
     const userDatas = await getOneData(
       sheets,
       userDataSheetID,
-      "userData",  
+      "userData",
       UserID,
       0
     );
@@ -65,7 +65,7 @@ exports.addUserDataToClub = async (req, res, next) => {
     console.log(clubIDs, "userClubIDs");
     console.log(UserID, "userID");
     console.log(clubIDs.includes(UserID), "Does User Exist Already");
-  
+
     let specificClubRowNumber;
     if (clubIDs.includes(UserID) === true) {
       res.json("Club Already Added");
@@ -118,9 +118,9 @@ exports.addUserDataToClub = async (req, res, next) => {
           values: [[specificClubRowNumber]],
         },
       });
-    };
+    }
     req.specificClubRowNumber = specificClubRowNumber;
-    console.log(specificClubRowNumber, "testtt")
+    console.log(specificClubRowNumber, "testtt");
     return next();
   } catch (error) {
     console.log(error);

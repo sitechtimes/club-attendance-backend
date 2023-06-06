@@ -203,7 +203,7 @@ exports.addOsisGradeOfficialClass = async (req, res) => {
       columnAlphabet = "H";
       req.body.additionalInfoValue = req.body.additionalInfoValue.toUpperCase();
     }
-
+    console.log(userObject.rowNumber);
     await updateValue(
       sheets,
       USER_DATA_SPREADSHEET_ID,
