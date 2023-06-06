@@ -23,7 +23,6 @@ exports.newMeeting = async (req, res, next) => {
     console.log(req.body, "body");
     console.log(req.body.clubName);
     console.log(newMeeting, "newMeeting");
-    
 
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(

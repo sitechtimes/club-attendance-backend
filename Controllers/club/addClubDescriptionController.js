@@ -22,9 +22,10 @@ exports.addClubDescription = async (req, res, next) => {
     await updateValue(
       sheets,
       CLUB_DATA_SPREADSHEET_ID,
-      `clubData!Q${club[17]}`
+      `clubData!Q${club[17]}`,
+      req.body.description
     );
-    return res.json("Updated club  description!");
+    return res.json("Updated club description!");
   } catch (error) {
     console.log(error);
     res.json("Backend error");
