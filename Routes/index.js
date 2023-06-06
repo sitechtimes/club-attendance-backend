@@ -56,6 +56,13 @@ router.post(
 );
 
 router.post(
+  "/alreadyLogin",
+  sheetAuth.authSheets,
+  postUser.alreadyLogin,
+  postUser.sendLoginData
+);
+
+router.post(
   "/addOsisGradeOfficialClass",
   sheetAuth.authSheets,
   verify.verifyUserInDb,

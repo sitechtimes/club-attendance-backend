@@ -33,6 +33,89 @@ exports.ifUserExist = async (req, res, next) => {
   }
 };
 
+exports.alreadyLogin = async (req, res, next) => {
+  try {
+    const userUidRange = "userData!A:A";
+    const sheets = req.object.sheets;
+
+    const ifUserExist = await ifValueExistBinary(
+      sheets,
+      USER_DATA_SPREADSHEET_ID,
+      userUidRange,
+      req.body.uid
+    );
+
+    req.ifUserExist = ifUserExist;
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.sendLoginData = async (req, res, next) => {
+  try {
+    const sheets = req.object.sheets;
+
+    if (req.ifUserExist) {
+      const userArray = await getOneData(
+        sheets,
+        USER_DATA_SPREADSHEET_ID,
+        "userData",
+        req.body.uid,
+        0
+      );
+
+      let userClubData = JSON.parse(userArray[9]);
+
+      if (userClubData !== null) {
+        for (let i = 0; userClubData.length > i; i++) {
+          const inThatClub = await getOneData(
+            sheets,
+            NEW_CLUB_DATA_SPREADSHEETID,
+            "clubData",
+            userClubData[i].clubCode,
+            15
+          );
+          let dates = [];
+          dates.push(inThatClub[10]);
+          function separateDates(dateArray) {
+            // Extract the string from the array
+            let dateString = dateArray[0];
+
+            // Split the string by commas and trim any whitespace
+            let dates = dateString.split(",").map((date) => date.trim());
+            return dates;
+          }
+          const date = separateDates(dates);
+          userClubData[i].meetingDates = date;
+          userClubData[i].clubDescription = inThatClub[16];
+        }
+      }
+
+      const userObject = {
+        uid: userArray[0],
+        firstName: userArray[1],
+        lastName: userArray[2],
+        email: userArray[3],
+        clientAuthority: userArray[4],
+        osis: JSON.parse(userArray[5]),
+        grade: JSON.parse(userArray[6]),
+        officialClass: userArray[7],
+        emailDomain: userArray[8],
+        clubData: userClubData,
+        presentLocation: JSON.parse(userArray[10]),
+        rowNumber: userArray[11],
+      };
+      console.log(userObject, "user");
+      const response = userObject;
+      console.log("user data exist");
+      return res.json(response);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //need to use this function to check if user is exist
 exports.sendUserData = async (req, res, next) => {
   try {
