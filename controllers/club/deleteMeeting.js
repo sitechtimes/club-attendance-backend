@@ -51,7 +51,9 @@ exports.deleteMeeting = async (req, res) => {
     console.log(deleteLength);
     let newMeetingList;
     console.log(meetingList.substring(0, `${deleteLength}`));
-    if (dateToDelete === meetingList.substring(0, `${deleteLength}`)) {
+    if (newMeetingList === meetingList) {
+      newMeetingList = "No meeting date yet."
+    } else if (dateToDelete === meetingList.substring(0, `${deleteLength}`)) {
       newMeetingList = meetingList.replace(`${dateToDelete}, `, "");
     } else {
       newMeetingList = meetingList.replace(`, ${dateToDelete}`, "");
@@ -59,7 +61,7 @@ exports.deleteMeeting = async (req, res) => {
     console.log(`${newMeetingList} newMeetingList`);
 
     if (newMeetingList === meetingList) {
-      newMeetingList = "No meeting date yet"
+      newMeetingList = "No meeting date yet."
     }
 
     // Updates the sheet with the next list of meeting dates
