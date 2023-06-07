@@ -107,7 +107,7 @@ exports.addUserDataToClub = async (req, res, next) => {
 
       const specificClubIDs = await sheetData(sheets, clubSheet, "A:B");
       console.log(specificClubIDs, "specificClubIDs");
-      specificClubRowNumber = specificClubIDs.length + 1;
+      specificClubRowNumber = specificClubIDs.length;
       console.log(specificClubIDs.length, "clublength");
 
       google.sheets({ version: "v4", auth }).spreadsheets.values.update({

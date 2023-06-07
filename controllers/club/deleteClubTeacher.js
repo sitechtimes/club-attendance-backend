@@ -63,8 +63,15 @@ exports.removeClub = async (req, res) => {
 
     const newArray = arrayUserClubs.filter((club) => club.clubCode !== clubCode);
     console.log(newArray);
-    const newUserInfo = JSON.stringify(newArray);
-    console.log(newUserInfo);
+    const newArrayString = JSON.stringify(newArray);
+    
+    let newUserInfo;
+    if (newArrayString === "[]") {
+      newUserInfo = "null";
+    } else {
+      newUserInfo = JSON.stringify(newArray);
+    }
+    console.log(newUserInfo, "newUserInfo");
     
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
         spreadsheetId: userDataSheetID,
