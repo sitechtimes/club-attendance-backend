@@ -235,9 +235,10 @@ const getOneData = async (
   const data = await sheetData(sheets, spreadsheetId, range);
 
   const newData = data.sort((a, b) => {
+    // console.log( b[column].toString(), "breoberioonerb");
     return a[column].toString().localeCompare(b[column].toString());
   });
-
+  // console.log(newData, "newdata");
   let start = 0;
   let end = newData.length - 1;
   while (start <= end) {

@@ -63,9 +63,16 @@ exports.removeClub = async (req, res) => {
     console.log(arrayUserClubs);
 
     const newArray = arrayUserClubs.filter((club) => club.clubName !== clubName);
-    console.log(newArray);
-    const newUserInfo = JSON.stringify(newArray);
-    console.log(newUserInfo);
+    console.log(newArray, "newArray");
+    const newArrayString = JSON.stringify(newArray);
+    
+    let newUserInfo;
+    if (newArrayString === "[]") {
+      newUserInfo = "null"
+    } else {
+      newUserInfo = JSON.stringify(newArray);
+    }
+    console.log(newUserInfo, "newUserInfo");
     
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
         spreadsheetId: userDataSheetID,
@@ -86,11 +93,13 @@ exports.removeClub = async (req, res) => {
     let clubSheet = clubSheetData.data.values[0][0];
     console.log(clubSheet);
 
+    let UserIdString = UserID.toString();
+
     const specificClubUID = await getOneData(
       sheets,
       clubSheet,
       "Sheet1",
-      UserID,
+      UserIdString,
       0
     );
     console.log(specificClubUID, "specificClubUID");
