@@ -66,7 +66,11 @@ exports.addUserDataToClub = async (req, res, next) => {
     console.log(UserID, "userID");
     console.log(clubIDs.includes(UserID), "Does User Exist Already");
 
-    let specificClubRowNumber;
+    const specificClubIDs = await sheetData(sheets, clubSheet, "A:B");
+    console.log(specificClubIDs, "specificClubIDs");
+    console.log(specificClubIDs.length, "clublength");
+    let specificClubRowNumber = specificClubIDs.length + 1;
+
     if (clubIDs.includes(UserID) === true) {
       res.json("Club Already Added");
     } else {
@@ -100,22 +104,8 @@ exports.addUserDataToClub = async (req, res, next) => {
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [
-            [UID, firstName, lastName, OSIS, `member`, grade, email, offClass],
+            [UID, firstName, lastName, OSIS, `member`, grade, email, offClass, `0`, specificClubRowNumber],
           ],
-        },
-      });
-
-      const specificClubIDs = await sheetData(sheets, clubSheet, "A:B");
-      console.log(specificClubIDs, "specificClubIDs");
-      specificClubRowNumber = specificClubIDs.length;
-      console.log(specificClubIDs.length, "clublength");
-
-      google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-        spreadsheetId: clubSheet,
-        range: `J${specificClubRowNumber}:J${specificClubRowNumber}`,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          values: [[specificClubRowNumber]],
         },
       });
     }

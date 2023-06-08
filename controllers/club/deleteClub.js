@@ -8,7 +8,7 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-const { getOneData, sheetData } = require("../../utility.js");
+const { getOneData, getOneDataSpecial, sheetData } = require("../../utility.js");
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -93,19 +93,20 @@ exports.removeClub = async (req, res) => {
     console.log(clubSheet);
 
     let UserIdString = UserID.toString();
+    console.log(UserIdString, "UserIdString");
+    const valueComparing = "1ThZUhPXNg4o-ZqV_JyRZ4HUlK641KiGVDVRx2QcEOvU";
 
     const specificClubUID = await getOneData(
       sheets,
       clubSheet,
       "Sheet1",
-      UserIdString,
+      UserID,
       0
     );
     console.log(specificClubUID, "specificClubUID");
     const specificClubRowNumber = specificClubUID[9].toString();
     console.log(specificClubRowNumber, "specificClubRowNumber 2");
-    const specificClubIndex = specificClubRowNumber - 1;
-    const nothing = "";
+    const nothing = "null";
 
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
       spreadsheetId: clubSheet,
