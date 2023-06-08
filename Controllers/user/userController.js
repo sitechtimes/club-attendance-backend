@@ -108,7 +108,7 @@ exports.sendLoginData = async (req, res, next) => {
       };
       console.log(userObject, "user");
       const response = userObject;
-      console.log("user data exist");
+      console.log("vdklnvlkdnvlkdnslvvdsknlkdnsv");
       return res.json(response);
     }
   } catch (error) {

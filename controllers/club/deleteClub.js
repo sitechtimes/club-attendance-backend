@@ -8,7 +8,11 @@ const client = new OAuth2Client();
 require("dotenv").config({ path: "variables.env" });
 const MainClubData = "1nxcHKJ2kuOy-aWS_nnBoyk4MEtAk6i1b-_pC_l_mx3g";
 const userDataSheetID = "1noJsX0K3kuI4D7b2y6CnNkUyv4c5ZH-IDnfn2hFu_ws";
-const { getOneData, getOneDataSpecial, sheetData } = require("../../utility.js");
+const {
+  getOneData,
+  getOneDataSpecial,
+  sheetData,
+} = require("../../utility.js");
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "keys.json",
@@ -129,6 +133,7 @@ exports.removeClub = async (req, res) => {
         ],
       },
     });
+    res.json("Finish deleting");
   } catch (error) {
     console.log(error);
   }
