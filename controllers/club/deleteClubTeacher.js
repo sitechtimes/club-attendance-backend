@@ -102,8 +102,7 @@ exports.removeClub = async (req, res) => {
     console.log(specificClubUID, "specificClubUID");
     const specificClubRowNumber = specificClubUID[9].toString();
     console.log(specificClubRowNumber, "specificClubRowNumber 2");
-    const specificClubIndex = specificClubRowNumber - 1;
-    const nothing = "";
+    const nothing = "null";
 
     google.sheets({ version: "v4", auth }).spreadsheets.values.update({
         spreadsheetId: clubSheet,
