@@ -253,36 +253,6 @@ const getOneData = async (
   console.log("no similar");
 };
 
-const getOneDataSpecial = async (
-  sheets,
-  spreadsheetId,
-  range,
-  valueComparing,
-  column // where the item you looking  for are located
-) => {
-  const data = await sheetData(sheets, spreadsheetId, range);
-
-  const newData = data.sort((a, b) => {
-    console.log(column, "column");
-    console.log( b[column].toString(), "breoberioonerb");
-    return a[column].toString().localeCompare(b[column].toString());
-  });
-  console.log(newData, "newdata");
-  let start = 0;
-  let end = newData.length - 1;
-  while (start <= end) {
-    let mid = Math.floor((start + end) / 2);
-    if (newData[mid][column].toString() === valueComparing.toString()) {
-      return newData[mid];
-    } else if (newData[mid][column] < valueComparing) {
-      start = mid + 1;
-    } else {
-      end = mid - 1;
-    }
-  }
-
-  console.log("no similar");
-};
 
 //find one cell to update the value of the cell
 //sheets- represents the sheets value from  the return object from authSheetsMiddleware
@@ -495,5 +465,4 @@ module.exports = {
   uploadToFolder,
   createSheetInFolder,
   appendNewItemBatch,
-  getOneDataSpecial,
 };
