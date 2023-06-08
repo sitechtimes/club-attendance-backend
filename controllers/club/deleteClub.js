@@ -24,7 +24,6 @@ exports.removeClub = async (req, res) => {
     const UserID = req.body.user.uid;
     const sheets = req.object.sheets;
 
-    // This uses the row number to get the club's sheetid
     const allClubs = await google
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
