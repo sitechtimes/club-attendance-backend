@@ -51,7 +51,7 @@ exports.removeClub = async (req, res) => {
       .sheets({ version: "v4", auth })
       .spreadsheets.values.get({
         spreadsheetId: clubSheet,
-        range: `A:A`,
+        range: `D:D`,
       });
     let allOsis = allOsisData.data.values;
     let allOsisString = JSON.stringify(allOsis);
