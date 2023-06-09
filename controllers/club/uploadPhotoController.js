@@ -20,6 +20,19 @@ exports.uploadPhoto = async (req, res, next) => {
     const buffString = buff.toString("hex", 0, 4);
     console.log(buffString, "buffString");
 
+    function getTodaysDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      
+      const formattedDate = `${year}-${month}-${day}`;
+      return formattedDate;
+    }
+
+    const today = getTodaysDate();
+    console.log(today, "date"); 
+
     // This gets the list of every club's name
     const mainClubDataSheet = await sheetData(
       sheets,
