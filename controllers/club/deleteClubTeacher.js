@@ -26,7 +26,6 @@ exports.removeClub = async (req, res) => {
     const OSIS = req.body.goneOsis;
     const sheets = req.object.sheets;
 
-
     // This gets the clubDataRowNumber (what row the user's club is at on the main sheet)
     const clubDatas = await getOneData(
       sheets,
@@ -38,50 +37,6 @@ exports.removeClub = async (req, res) => {
     const clubDataRowNumber = clubDatas[17];
     console.log(clubDataRowNumber, "clubDataRowNumber");
 
-    // This gets the user's rownumber on the user data sheet
-    const userDatas = await getOneData(
-        sheets,
-        userDataSheetID,
-        "userData",
-        OSIS,
-        5
-    );
-    const userRowNumber = userDatas[11];
-    console.log(userRowNumber, "userRowNumber");
-
-    // This uses the row number to get the club's sheetid
-    const userInfo = await google
-      .sheets({ version: "v4", auth })
-      .spreadsheets.values.get({
-        spreadsheetId: userDataSheetID,
-        range: `userData!J${userRowNumber}:J${userRowNumber}`,
-      });
-    let userClubs = userInfo.data.values[0][0];
-    console.log(userClubs, "userClubs");
-    const arrayUserClubs = JSON.parse(userClubs);
-    console.log(arrayUserClubs);
-
-    const newArray = arrayUserClubs.filter((club) => club.clubCode !== clubCode);
-    console.log(newArray);
-    const newArrayString = JSON.stringify(newArray);
-    
-    let newUserInfo;
-    if (newArrayString === "[]") {
-      newUserInfo = "null";
-    } else {
-      newUserInfo = JSON.stringify(newArray);
-    }
-    console.log(newUserInfo, "newUserInfo");
-    
-    google.sheets({ version: "v4", auth }).spreadsheets.values.update({
-        spreadsheetId: userDataSheetID,
-        range: `userData!J${userRowNumber}:J${userRowNumber}`,
-        valueInputOption: "RAW",
-        resource: {
-          values: [[newUserInfo]],
-        },
-    });
-
     // This uses the row number to get the club's sheetid
     const clubSheetData = await google
       .sheets({ version: "v4", auth })
@@ -92,26 +47,88 @@ exports.removeClub = async (req, res) => {
     let clubSheet = clubSheetData.data.values[0][0];
     console.log(clubSheet);
 
-    const specificClubUID = await getOneData(
-      sheets,
-      clubSheet,
-      "Sheet1",
-      OSIS,
-      3
-    );
-    console.log(specificClubUID, "specificClubUID");
-    const specificClubRowNumber = specificClubUID[9].toString();
-    console.log(specificClubRowNumber, "specificClubRowNumber 2");
-    const nothing = "null";
-
-    google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+    const allOsisData = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
         spreadsheetId: clubSheet,
-        range: `Sheet1!A${specificClubRowNumber}:J${specificClubRowNumber}`,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          values: [[nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing]],
-        },
-    });
+        range: `A:A`,
+      });
+    let allOsis = allOsisData.data.values;
+    let allOsisString = JSON.stringify(allOsis);
+    console.log(allOsis);
+    console.log(!allOsisString.includes(OSIS), "allOsis no includes");
+
+    let response;
+    if (!allOsisString.includes(OSIS)) {
+      response = "Invalid OSIS"
+    } else {
+      // This gets the user's rownumber on the user data sheet
+      const userDatas = await getOneData(
+        sheets,
+        userDataSheetID,
+        "userData",
+        OSIS,
+        5
+      );
+      const userRowNumber = userDatas[11];
+      console.log(userRowNumber, "userRowNumber");
+
+      // This uses the row number to get the club's sheetid
+      const userInfo = await google
+        .sheets({ version: "v4", auth })
+        .spreadsheets.values.get({
+          spreadsheetId: userDataSheetID,
+          range: `userData!J${userRowNumber}:J${userRowNumber}`,
+        });
+      let userClubs = userInfo.data.values[0][0];
+      console.log(userClubs, "userClubs");
+      const arrayUserClubs = JSON.parse(userClubs);
+      console.log(arrayUserClubs);
+
+      const newArray = arrayUserClubs.filter((club) => club.clubCode !== clubCode);
+      console.log(newArray);
+      const newArrayString = JSON.stringify(newArray);
+  
+      let newUserInfo;
+      if (newArrayString === "[]") {
+        newUserInfo = "null";
+      } else {
+        newUserInfo = JSON.stringify(newArray);
+      }
+      console.log(newUserInfo, "newUserInfo");
+  
+      google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+          spreadsheetId: userDataSheetID,
+          range: `userData!J${userRowNumber}:J${userRowNumber}`,
+          valueInputOption: "RAW",
+          resource: {
+            values: [[newUserInfo]],
+          },
+      });
+
+      const specificClubUID = await getOneData(
+        sheets,
+        clubSheet,
+        "Sheet1",
+        OSIS,
+        3
+      );
+      console.log(specificClubUID, "specificClubUID");
+      const specificClubRowNumber = specificClubUID[9].toString();
+      console.log(specificClubRowNumber, "specificClubRowNumber 2");
+      const nothing = "null";
+
+      google.sheets({ version: "v4", auth }).spreadsheets.values.update({
+          spreadsheetId: clubSheet,
+          range: `Sheet1!A${specificClubRowNumber}:J${specificClubRowNumber}`,
+          valueInputOption: "USER_ENTERED",
+          resource: {
+            values: [[nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing]],
+          },
+      });
+      response = "Deleted"
+    };
+    res.json(response);
   } catch (error) {
     console.log(error);
   }
