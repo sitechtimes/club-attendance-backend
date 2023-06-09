@@ -16,6 +16,8 @@ const auth = new google.auth.GoogleAuth({
 
 exports.addUserDataToClub = async (req, res, next) => {
   try {
+    console.log(req.body);
+    const userEmail = req.body.user.email;
     const UserID = req.body.user.uid;
     const ClubCode = req.body.clubCode;
     const sheets = req.object.sheets;
@@ -53,6 +55,22 @@ exports.addUserDataToClub = async (req, res, next) => {
     );
     const userRowNumber = userDatas[11].toString();
     console.log(userRowNumber, "userRowNumber");
+
+    // This uses the row number to get the club's sheetid
+    const clubPresidents = await google
+      .sheets({ version: "v4", auth })
+      .spreadsheets.values.get({
+        spreadsheetId: MainClubData,
+        range: `clubData!J${clubDataRowNumber}:J${clubDataRowNumber}`,
+      });
+    let clubPres = clubPresidents.data.values[0][0];
+
+    let position;
+    if (clubPres.includes(userEmail)) {
+      position = "President"
+    } else {
+      position = "member"
+    };
 
     const userClubIDs = await google
       .sheets({ version: "v4", auth })
@@ -104,7 +122,7 @@ exports.addUserDataToClub = async (req, res, next) => {
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [
-            [UID, firstName, lastName, OSIS, `member`, grade, email, offClass, `0`, specificClubRowNumber],
+            [UID, firstName, lastName, OSIS, position, grade, email, offClass, `0`, specificClubRowNumber],
           ],
         },
       });
