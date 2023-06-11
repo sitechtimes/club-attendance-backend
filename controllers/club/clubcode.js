@@ -67,7 +67,7 @@ exports.addUserDataToClub = async (req, res, next) => {
 
     let position;
     if (clubPres.includes(userEmail)) {
-      position = "President"
+      position = "president"
     } else {
       position = "member"
     };
