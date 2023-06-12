@@ -95,7 +95,7 @@ exports.uploadPhoto = async (req, res, next) => {
     ) {
       let response = await drive.files.create({
         requestBody: {
-          name: file.originalname,
+          name: today,
           parents: [`${folderID}`],
         },
         media: {
