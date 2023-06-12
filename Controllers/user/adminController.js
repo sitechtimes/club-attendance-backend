@@ -5,7 +5,6 @@ exports.adminCheck = async (req, res, next) => {
     if (req.body.user.clientAuthority !== "admin") {
       return res.json("You are not authorize");
     }
-
     return next();
   } catch (error) {
     console.log(error);

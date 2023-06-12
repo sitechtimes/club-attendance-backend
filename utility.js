@@ -11,6 +11,7 @@ const sheetData = async (sheets, spreadsheetId, range) => {
   });
 
   const sheetDataValues = sheet.data.values;
+
   return sheetDataValues;
 };
 
@@ -237,6 +238,7 @@ const getOneData = async (
   const newData = data.sort((a, b) => {
     return a[column].toString().localeCompare(b[column].toString());
   });
+
   let start = 0;
   let end = newData.length - 1;
   while (start <= end) {
@@ -252,7 +254,6 @@ const getOneData = async (
 
   console.log("no similar");
 };
-
 
 //find one cell to update the value of the cell
 //sheets- represents the sheets value from  the return object from authSheetsMiddleware
